@@ -25,3 +25,11 @@ func (r *PGUserRepository) GetByLoginAndPassword(login string, password string) 
 func (r *PGUserRepository) GetByID(id int64) (models.UserModel, error) {
 	return models.UserModel{}, nil
 }
+
+func (r *PGUserRepository) CheckIfUserExists(login string) (bool, error) {
+	return false, nil
+}
+
+func (r *PGUserRepository) CheckIfTokenIsValid(token string) (bool, error) {
+	return false, nil
+}

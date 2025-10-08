@@ -62,7 +62,7 @@ func (a *App) BuildServices() error {
 }
 
 func (a *App) BuildHandlers() error {
-	a.handlers = handlers.NewEchoHandlers(a.logger)
+	a.handlers = handlers.NewFiberHandlers(a.logger)
 	a.handlers.BuildGroups()
 	a.handlers.BuildAuthMiddleware(a.config.JwtSecret())
 	a.handlers.BuildRoutes()

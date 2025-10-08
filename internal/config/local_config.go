@@ -31,20 +31,21 @@ func (c *LocalConfig) Parse() error {
 	flag.Parse()
 
 	runAddress := os.Getenv("RUN_ADDRESS")
-	databaseURI := os.Getenv("DATABASE_URI")
-	accrualSystemAddress := os.Getenv("ACCRUAL_SYSTEM_ADDRESS")
-	jwtSecret := os.Getenv("JWT_SECRET")
-
-	if runAddress == "" {
+	if runAddress != "" {
 		c.runAddress = runAddress
 	}
-	if databaseURI == "" {
+
+	databaseURI := os.Getenv("DATABASE_URI")
+	if databaseURI != "" {
 		c.databaseURI = databaseURI
 	}
-	if accrualSystemAddress == "" {
+	accrualSystemAddress := os.Getenv("ACCRUAL_SYSTEM_ADDRESS")
+	if accrualSystemAddress != "" {
 		c.accrualSystemAddress = accrualSystemAddress
 	}
-	if jwtSecret == "" {
+
+	jwtSecret := os.Getenv("JWT_SECRET")
+	if jwtSecret != "" {
 		c.jwtSecret = jwtSecret
 	}
 	return nil

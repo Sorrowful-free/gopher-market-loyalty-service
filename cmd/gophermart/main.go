@@ -3,6 +3,8 @@ package main
 import (
 	"log"
 
+	_ "github.com/lib/pq"
+
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/app"
 )
 
