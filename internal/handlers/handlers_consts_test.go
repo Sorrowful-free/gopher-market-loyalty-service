@@ -1,6 +1,13 @@
 package handlers
 
 const (
+	TestRegisterUserPath = "/api/user/register"
+	TestLoginPath        = "/api/user/login"
+	TestOrderPath        = "/api/user/orders"
+	TestBalancePath      = "/api/user/balance"
+	TestWithdrawPath     = "/api/user/balance/withdraw"
+	TestWithdrawalsPath  = "/api/user/balance/withdrawals"
+
 	TestLoginJSON = `{"login": "test", "password": "test"}`
 	TestLoginText = `"login": "test", "password": "test"`
 

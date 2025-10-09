@@ -8,9 +8,10 @@ import (
 )
 
 type FiberHandlers struct {
-	fiberApp       *fiber.App
-	publicGroup    fiber.Router
-	protectedGroup fiber.Router
+	fiberApp     *fiber.App
+	userGroup    fiber.Router
+	orderGroup   fiber.Router
+	balanceGroup fiber.Router
 
 	logger       logger.Logger
 	jwtService   services.JWTService
@@ -28,8 +29,9 @@ func NewFiberHandlers(logger logger.Logger, jwtService services.JWTService, user
 }
 
 func (h *FiberHandlers) BuildGroups() {
-	h.publicGroup = h.fiberApp.Group(PublicGroup)
-	h.protectedGroup = h.fiberApp.Group(ProtectedGroup)
+	h.userGroup = h.fiberApp.Group(UserGroup)
+	h.orderGroup = h.userGroup.Group(OrderGroup)
+	h.balanceGroup = h.userGroup.Group(BalanceGroup)
 }
 
 func (h *FiberHandlers) BuildAuthMiddleware(jwtSecret string) {
@@ -39,16 +41,20 @@ func (h *FiberHandlers) BuildAuthMiddleware(jwtSecret string) {
 }
 
 func (h *FiberHandlers) BuildRoutes() {
-	h.publicGroup.Post(RegisterPath, h.RegisterHandler).Use(h.jsonValidator.ValidateContentType)
-	h.publicGroup.Post(LoginPath, Login).Use(h.jsonValidator.ValidateContentType)
-	h.publicGroup.Get(GetOrderPath, GetOrder).Use(h.jsonValidator.ValidateContentType)
 
-	h.protectedGroup.Use(h.authMiddleware.RequireAuth)
-	h.protectedGroup.Post(CreateOrderPath, CreateOrder).Use(h.textValidator.ValidateContentType)
-	h.protectedGroup.Get(GetOrdersListPath, GetOrdersList).Use(h.jsonValidator.ValidateContentType)
-	h.protectedGroup.Get(BalancePath, Balance).Use(h.jsonValidator.ValidateContentType)
-	h.protectedGroup.Post(WithdrawPath, Withdraw).Use(h.jsonValidator.ValidateContentType)
-	h.protectedGroup.Get(WithdrawalsPath, Withdrawals).Use(h.jsonValidator.ValidateContentType)
+	h.userGroup.Use(h.jsonValidator.ValidateContentType)
+	h.userGroup.Post(RegisterUserPath, h.RegisterHandler)
+	h.userGroup.Post(LoginUserPath, Login)
+
+	h.orderGroup.Post(CreateOrderPath, CreateOrder).Use(h.textValidator.ValidateContentType, h.authMiddleware.RequireAuth)
+	h.orderGroup.Get(GetOrdersListPath, GetOrdersList).Use(h.jsonValidator.ValidateContentType, h.authMiddleware.RequireAuth)
+	h.orderGroup.Get(GetOrderPath, GetOrder).Use(h.jsonValidator.ValidateContentType)
+
+	h.balanceGroup.Use(h.authMiddleware.RequireAuth)
+	h.balanceGroup.Use(h.jsonValidator.ValidateContentType)
+	h.balanceGroup.Get(GetBalancePath, Balance)
+	h.balanceGroup.Post(WithdrawBalancePath, Withdraw)
+	h.balanceGroup.Get(BalanceWithdrawalsPath, Withdrawals)
 }
 
 func (h *FiberHandlers) Run() error {

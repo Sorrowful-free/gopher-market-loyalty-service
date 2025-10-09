@@ -10,11 +10,11 @@ import (
 
 func TestWithdrawalsHandler(t *testing.T) {
 	app := fiber.New()
-	app.Get(WithdrawalsPath, Withdrawals)
+	app.Get(BalanceWithdrawalsPath, Withdrawals)
 	app.Listen(":3000")
 
 	t.Run("successful_withdrawals", func(t *testing.T) {
-		req := httptest.NewRequest(fiber.MethodGet, WithdrawalsPath, nil)
+		req := httptest.NewRequest(fiber.MethodGet, BalanceWithdrawalsPath, nil)
 		resp, err := app.Test(req)
 		if err != nil {
 			t.Fatalf("Failed to test app: %v", err)
@@ -24,7 +24,7 @@ func TestWithdrawalsHandler(t *testing.T) {
 	})
 
 	t.Run("successful_withdrawals_with_empty_list", func(t *testing.T) {
-		req := httptest.NewRequest(fiber.MethodGet, WithdrawalsPath, nil)
+		req := httptest.NewRequest(fiber.MethodGet, BalanceWithdrawalsPath, nil)
 		resp, err := app.Test(req)
 		if err != nil {
 			t.Fatalf("Failed to test app: %v", err)
@@ -34,7 +34,7 @@ func TestWithdrawalsHandler(t *testing.T) {
 	})
 
 	t.Run("failed_withdrawals_with_user_not_authenticated", func(t *testing.T) {
-		req := httptest.NewRequest(fiber.MethodGet, WithdrawalsPath, nil)
+		req := httptest.NewRequest(fiber.MethodGet, BalanceWithdrawalsPath, nil)
 		resp, err := app.Test(req)
 		if err != nil {
 			t.Fatalf("Failed to test app: %v", err)
@@ -44,7 +44,7 @@ func TestWithdrawalsHandler(t *testing.T) {
 	})
 
 	t.Run("failed_withdrawals_with_internal_error", func(t *testing.T) {
-		req := httptest.NewRequest(fiber.MethodGet, WithdrawalsPath, nil)
+		req := httptest.NewRequest(fiber.MethodGet, BalanceWithdrawalsPath, nil)
 		resp, err := app.Test(req)
 		if err != nil {
 			t.Fatalf("Failed to test app: %v", err)

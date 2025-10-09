@@ -1,17 +1,20 @@
 package handlers
 
 const (
-	PublicGroup    = "/api/user"
-	ProtectedGroup = "/api/user"
+	UserGroup = "/api/user"
 
-	RegisterPath      = "/api/user/register"
-	LoginPath         = "/api/user/login"
-	CreateOrderPath   = "/api/user/orders"
-	GetOrdersListPath = "/api/user/orders"
-	GetOrderPath      = "/api/user/orders/:order"
+	RegisterUserPath = "/register"
+	LoginUserPath    = "/login"
 
-	BalancePath  = "/api/user/balance"
-	WithdrawPath = "/api/user/balance/withdraw"
+	OrderGroup = "/order"
 
-	WithdrawalsPath = "/api/user/balance/withdrawals"
+	CreateOrderPath   = "/"
+	GetOrdersListPath = "/"
+	GetOrderPath      = "/:order"
+
+	BalanceGroup = "/balance"
+
+	GetBalancePath         = "/"
+	WithdrawBalancePath    = "/withdraw"
+	BalanceWithdrawalsPath = "/withdrawals"
 )
