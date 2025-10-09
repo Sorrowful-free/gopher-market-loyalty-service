@@ -10,15 +10,14 @@ import (
 )
 
 func TestRegisterHandler(t *testing.T) {
-	app := fiber.New()
-	app.Post(RegisterPath, RegisterHandler)
-	app.Listen(":3000")
+
+	fiberHandlers := TestSetupFiberHandlers(t)
 
 	t.Run("successful_registration", func(t *testing.T) {
 
 		req := httptest.NewRequest(fiber.MethodPost, RegisterPath, bytes.NewBuffer([]byte(TestLoginJSON)))
 		req.Header.Set(fiber.HeaderContentType, fiber.MIMEApplicationJSON)
-		resp, err := app.Test(req)
+		resp, err := fiberHandlers.fiberApp.Test(req)
 		if err != nil {
 			t.Fatalf("Failed to test app: %v", err)
 		}
@@ -30,7 +29,7 @@ func TestRegisterHandler(t *testing.T) {
 	t.Run("failed_registration_with_wrong_format", func(t *testing.T) {
 		req := httptest.NewRequest(fiber.MethodPost, RegisterPath, bytes.NewBuffer([]byte(TestLoginText)))
 		req.Header.Set(fiber.HeaderContentType, fiber.MIMETextPlain)
-		resp, err := app.Test(req)
+		resp, err := fiberHandlers.fiberApp.Test(req)
 		if err != nil {
 			t.Fatalf("Failed to test app: %v", err)
 		}
@@ -41,7 +40,7 @@ func TestRegisterHandler(t *testing.T) {
 	t.Run("failed_registration_with_existing_login", func(t *testing.T) {
 		req := httptest.NewRequest(fiber.MethodPost, RegisterPath, bytes.NewBuffer([]byte(TestLoginJSON)))
 		req.Header.Set(fiber.HeaderContentType, fiber.MIMEApplicationJSON)
-		resp, err := app.Test(req)
+		resp, err := fiberHandlers.fiberApp.Test(req)
 		if err != nil {
 			t.Fatalf("Failed to test app: %v", err)
 		}
@@ -52,7 +51,7 @@ func TestRegisterHandler(t *testing.T) {
 	t.Run("failed_registration_with_internal_error", func(t *testing.T) {
 		req := httptest.NewRequest(fiber.MethodPost, RegisterPath, bytes.NewBuffer([]byte(TestLoginJSON)))
 		req.Header.Set(fiber.HeaderContentType, fiber.MIMEApplicationJSON)
-		resp, err := app.Test(req)
+		resp, err := fiberHandlers.fiberApp.Test(req)
 		if err != nil {
 			t.Fatalf("Failed to test app: %v", err)
 		}
