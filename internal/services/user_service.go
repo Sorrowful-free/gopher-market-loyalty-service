@@ -9,9 +9,6 @@ import (
 type UserService interface {
 	Register(login string, password string) (string, error)
 	Login(login string, password string) (string, error)
-
-	CheckIfUserExists(login string) (bool, error)
-	CheckIfTokenIsValid(token string) (bool, error)
 }
 
 type UserServiceImpl struct {
@@ -36,12 +33,4 @@ func (s *UserServiceImpl) Login(login string, password string) (string, error) {
 		return "", fmt.Errorf("failed to get user: %w", err)
 	}
 	return user.ID, nil
-}
-
-func (s *UserServiceImpl) CheckIfUserExists(login string) (bool, error) {
-	return s.userRepository.CheckIfUserExists(login)
-}
-
-func (s *UserServiceImpl) CheckIfTokenIsValid(token string) (bool, error) {
-	return s.userRepository.CheckIfTokenIsValid(token)
 }

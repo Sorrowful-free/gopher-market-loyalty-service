@@ -16,8 +16,11 @@ type App struct {
 
 	db *sql.DB
 
-	userRepository repositories.UserRepository
-	userService    services.UserService
+	userRepository  repositories.UserRepository
+	orderRepository repositories.OrderRepository
+
+	userService  services.UserService
+	orderService services.OrderService
 
 	handlers handlers.Handlers
 }
@@ -53,16 +56,18 @@ func (a *App) BuildDatabase() error {
 
 func (a *App) BuildRepositories() error {
 	a.userRepository = repositories.NewPGUserRepository(a.db)
+	a.orderRepository = repositories.NewPGOrderRepository(a.db)
 	return nil
 }
 
 func (a *App) BuildServices() error {
 	a.userService = services.NewUserService(a.userRepository)
+	a.orderService = services.NewOrderService(a.orderRepository)
 	return nil
 }
 
 func (a *App) BuildHandlers() error {
-	a.handlers = handlers.NewFiberHandlers(a.logger)
+	a.handlers = handlers.NewFiberHandlers(a.logger, a.userService, a.orderService)
 	a.handlers.BuildGroups()
 	a.handlers.BuildAuthMiddleware(a.config.JwtSecret())
 	a.handlers.BuildRoutes()

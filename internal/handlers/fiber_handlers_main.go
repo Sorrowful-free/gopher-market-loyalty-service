@@ -3,6 +3,7 @@ package handlers
 import (
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/logger"
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/middlewares"
+	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/services"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -11,14 +12,16 @@ type FiberHandlers struct {
 	publicGroup    fiber.Router
 	protectedGroup fiber.Router
 
-	logger logger.Logger
+	logger       logger.Logger
+	userService  services.UserService
+	orderService services.OrderService
 
 	authMiddleware *middlewares.FiberAuthMiddleware
 }
 
-func NewFiberHandlers(logger logger.Logger) *FiberHandlers {
+func NewFiberHandlers(logger logger.Logger, userService services.UserService, orderService services.OrderService) *FiberHandlers {
 	fiberApp := fiber.New()
-	return &FiberHandlers{fiberApp: fiberApp, logger: logger}
+	return &FiberHandlers{fiberApp: fiberApp, logger: logger, userService: userService, orderService: orderService}
 }
 
 func (h *FiberHandlers) BuildGroups() {
