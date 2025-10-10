@@ -34,36 +34,6 @@ func (m *MockUserRepository) EXPECT() *MockUserRepositoryMockRecorder {
 	return m.recorder
 }
 
-// CheckIfTokenIsValid mocks base method.
-func (m *MockUserRepository) CheckIfTokenIsValid(token string) (bool, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CheckIfTokenIsValid", token)
-	ret0, _ := ret[0].(bool)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// CheckIfTokenIsValid indicates an expected call of CheckIfTokenIsValid.
-func (mr *MockUserRepositoryMockRecorder) CheckIfTokenIsValid(token interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckIfTokenIsValid", reflect.TypeOf((*MockUserRepository)(nil).CheckIfTokenIsValid), token)
-}
-
-// CheckIfUserExists mocks base method.
-func (m *MockUserRepository) CheckIfUserExists(login string) (bool, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CheckIfUserExists", login)
-	ret0, _ := ret[0].(bool)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// CheckIfUserExists indicates an expected call of CheckIfUserExists.
-func (mr *MockUserRepositoryMockRecorder) CheckIfUserExists(login interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckIfUserExists", reflect.TypeOf((*MockUserRepository)(nil).CheckIfUserExists), login)
-}
-
 // Create mocks base method.
 func (m *MockUserRepository) Create(login, password string) (models.UserModel, error) {
 	m.ctrl.T.Helper()

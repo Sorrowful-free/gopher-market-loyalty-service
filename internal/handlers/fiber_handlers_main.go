@@ -3,8 +3,10 @@ package handlers
 import (
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/logger"
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/middlewares"
+	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/models"
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/services"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/skip"
 )
 
 type FiberHandlers struct {
@@ -19,8 +21,6 @@ type FiberHandlers struct {
 	orderService services.OrderService
 
 	authMiddleware *middlewares.FiberAuthMiddleware
-	jsonValidator  *middlewares.ValidateContentTypeMiddleware
-	textValidator  *middlewares.ValidateContentTypeMiddleware
 }
 
 func NewFiberHandlers(logger logger.Logger, jwtService services.JWTService, userService services.UserService, orderService services.OrderService) *FiberHandlers {
@@ -36,22 +36,21 @@ func (h *FiberHandlers) BuildGroups() {
 
 func (h *FiberHandlers) BuildAuthMiddleware(jwtSecret string) {
 	h.authMiddleware = middlewares.NewFiberAuthMiddleware(jwtSecret, h.logger, h.jwtService)
-	h.jsonValidator = middlewares.NewValidateContentTypeMiddleware(fiber.MIMEApplicationJSON)
-	h.textValidator = middlewares.NewValidateContentTypeMiddleware(fiber.MIMETextPlain)
 }
 
 func (h *FiberHandlers) BuildRoutes() {
 
-	h.userGroup.Use(h.jsonValidator.ValidateContentType)
-	h.userGroup.Post(RegisterUserPath, h.RegisterHandler)
-	h.userGroup.Post(LoginUserPath, Login)
+	h.userGroup.Post(RegisterUserPath, middlewares.ValidateRequestAsJSON(models.RegisterRequest{}), h.RegisterHandler)
+	h.userGroup.Post(LoginUserPath, middlewares.ValidateRequestAsJSON(models.LoginRequest{}), h.LoginHandler)
 
-	h.orderGroup.Post(CreateOrderPath, CreateOrder).Use(h.textValidator.ValidateContentType, h.authMiddleware.RequireAuth)
-	h.orderGroup.Get(GetOrdersListPath, GetOrdersList).Use(h.jsonValidator.ValidateContentType, h.authMiddleware.RequireAuth)
-	h.orderGroup.Get(GetOrderPath, GetOrder).Use(h.jsonValidator.ValidateContentType)
+	h.orderGroup.Use(skip.New(h.authMiddleware.RequireAuth, func(c *fiber.Ctx) bool {
+		return c.Path() == GetOrderPath
+	}))
+	h.orderGroup.Post(CreateOrderPath, middlewares.ValidateRequestAsText(), h.CreateOrderHandler)
+	h.orderGroup.Get(GetOrdersListPath, GetOrdersList)
+	h.orderGroup.Get(GetOrderPath, GetOrder)
 
 	h.balanceGroup.Use(h.authMiddleware.RequireAuth)
-	h.balanceGroup.Use(h.jsonValidator.ValidateContentType)
 	h.balanceGroup.Get(GetBalancePath, Balance)
 	h.balanceGroup.Post(WithdrawBalancePath, Withdraw)
 	h.balanceGroup.Get(BalanceWithdrawalsPath, Withdrawals)

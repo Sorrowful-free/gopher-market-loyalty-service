@@ -6,7 +6,7 @@ const (
 	RegisterUserPath = "/register"
 	LoginUserPath    = "/login"
 
-	OrderGroup = "/order"
+	OrderGroup = "/orders"
 
 	CreateOrderPath   = "/"
 	GetOrdersListPath = "/"

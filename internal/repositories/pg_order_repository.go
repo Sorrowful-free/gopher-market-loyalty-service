@@ -14,14 +14,14 @@ func NewPGOrderRepository(db *sql.DB) OrderRepository {
 	return &PGOrderRepository{db: db}
 }
 
-func (r *PGOrderRepository) CreateOrder(order models.OrderModel) (models.OrderModel, error) {
+func (r *PGOrderRepository) CreateOrder(userID string, order string) (models.OrderModel, error) {
 	return models.OrderModel{}, nil
 }
 
-func (r *PGOrderRepository) GetOrdersList(userID int64) ([]models.OrderModel, error) {
+func (r *PGOrderRepository) GetOrdersList(userID string) ([]models.OrderModel, error) {
 	return []models.OrderModel{}, nil
 }
 
-func (r *PGOrderRepository) GetOrder(orderID int64) (models.OrderModel, error) {
+func (r *PGOrderRepository) GetOrder(orderID string) (models.OrderModel, error) {
 	return models.OrderModel{}, nil
 }

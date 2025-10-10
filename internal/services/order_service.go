@@ -6,9 +6,9 @@ import (
 )
 
 type OrderService interface {
-	CreateOrder(order models.OrderModel) (models.OrderModel, error)
-	GetOrdersList(userID int64) ([]models.OrderModel, error)
-	GetOrder(orderID int64) (models.OrderModel, error)
+	CreateOrder(userID string, order string) (models.OrderModel, error)
+	GetOrdersList(userID string) ([]models.OrderModel, error)
+	GetOrder(orderID string) (models.OrderModel, error)
 }
 
 type OrderServiceImpl struct {
@@ -19,14 +19,14 @@ func NewOrderService(orderRepository repositories.OrderRepository) OrderService 
 	return &OrderServiceImpl{orderRepository: orderRepository}
 }
 
-func (s *OrderServiceImpl) CreateOrder(order models.OrderModel) (models.OrderModel, error) {
-	return s.orderRepository.CreateOrder(order)
+func (s *OrderServiceImpl) CreateOrder(userID string, order string) (models.OrderModel, error) {
+	return s.orderRepository.CreateOrder(userID, order)
 }
 
-func (s *OrderServiceImpl) GetOrdersList(userID int64) ([]models.OrderModel, error) {
+func (s *OrderServiceImpl) GetOrdersList(userID string) ([]models.OrderModel, error) {
 	return s.orderRepository.GetOrdersList(userID)
 }
 
-func (s *OrderServiceImpl) GetOrder(orderID int64) (models.OrderModel, error) {
+func (s *OrderServiceImpl) GetOrder(orderID string) (models.OrderModel, error) {
 	return s.orderRepository.GetOrder(orderID)
 }

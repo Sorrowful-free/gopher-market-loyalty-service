@@ -35,22 +35,22 @@ func (m *MockOrderRepository) EXPECT() *MockOrderRepositoryMockRecorder {
 }
 
 // CreateOrder mocks base method.
-func (m *MockOrderRepository) CreateOrder(order models.OrderModel) (models.OrderModel, error) {
+func (m *MockOrderRepository) CreateOrder(userID, order string) (models.OrderModel, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateOrder", order)
+	ret := m.ctrl.Call(m, "CreateOrder", userID, order)
 	ret0, _ := ret[0].(models.OrderModel)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // CreateOrder indicates an expected call of CreateOrder.
-func (mr *MockOrderRepositoryMockRecorder) CreateOrder(order interface{}) *gomock.Call {
+func (mr *MockOrderRepositoryMockRecorder) CreateOrder(userID, order interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateOrder", reflect.TypeOf((*MockOrderRepository)(nil).CreateOrder), order)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateOrder", reflect.TypeOf((*MockOrderRepository)(nil).CreateOrder), userID, order)
 }
 
 // GetOrder mocks base method.
-func (m *MockOrderRepository) GetOrder(orderID int64) (models.OrderModel, error) {
+func (m *MockOrderRepository) GetOrder(orderID string) (models.OrderModel, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetOrder", orderID)
 	ret0, _ := ret[0].(models.OrderModel)
@@ -65,7 +65,7 @@ func (mr *MockOrderRepositoryMockRecorder) GetOrder(orderID interface{}) *gomock
 }
 
 // GetOrdersList mocks base method.
-func (m *MockOrderRepository) GetOrdersList(userID int64) ([]models.OrderModel, error) {
+func (m *MockOrderRepository) GetOrdersList(userID string) ([]models.OrderModel, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetOrdersList", userID)
 	ret0, _ := ret[0].([]models.OrderModel)
