@@ -12,7 +12,7 @@ import (
 
 func (h *FiberHandlers) RegisterHandler(c *fiber.Ctx) error {
 
-	registerRequest := c.Locals(middlewares.RequestContent).(models.RegisterRequest)
+	registerRequest := c.Locals(middlewares.RequestContentKey).(models.RegisterRequest)
 	userID, err := h.userService.Register(registerRequest.Login, registerRequest.Password)
 
 	var userServiceError services.UserServiceError

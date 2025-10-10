@@ -3,7 +3,7 @@ package middlewares
 import "github.com/gofiber/fiber/v2"
 
 const (
-	RequestContent = "request_content"
+	RequestContentKey = "request_content"
 )
 
 func ValidateRequestAsJSON[T any](requestContent T) func(c *fiber.Ctx) error {
@@ -24,7 +24,7 @@ func ValidateRequestAsJSON[T any](requestContent T) func(c *fiber.Ctx) error {
 			})
 		}
 
-		c.Locals(RequestContent, requestContent)
+		c.Locals(RequestContentKey, requestContent)
 
 		return c.Next()
 	}
@@ -44,7 +44,7 @@ func ValidateRequestAsText() func(c *fiber.Ctx) error {
 		}
 
 		stringContent := string(c.BodyRaw())
-		c.Locals(RequestContent, stringContent)
+		c.Locals(RequestContentKey, stringContent)
 
 		return c.Next()
 	}

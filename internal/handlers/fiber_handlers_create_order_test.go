@@ -25,7 +25,7 @@ func TestCreateOrderHandler(t *testing.T) {
 		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(&services.JWTClaims{}, nil)
 		jwtService.EXPECT().ExtractToken(gomock.Any()).Return("userID", nil)
 
-		req := httptest.NewRequest(fiber.MethodPost, TestCreateOrderPath, bytes.NewBuffer([]byte(TestOrderText)))
+		req := httptest.NewRequest(fiber.MethodPost, TestCreateOrderPath, bytes.NewBuffer([]byte(TestOrderID)))
 		req.Header.Set(fiber.HeaderContentType, fiber.MIMETextPlain)
 		resp, err := fiberApp.Test(req)
 		if err != nil {
@@ -41,7 +41,7 @@ func TestCreateOrderHandler(t *testing.T) {
 		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(&services.JWTClaims{}, nil)
 		jwtService.EXPECT().ExtractToken(gomock.Any()).Return("userID", nil)
 
-		req := httptest.NewRequest(fiber.MethodPost, TestCreateOrderPath, bytes.NewBuffer([]byte(TestOrderText)))
+		req := httptest.NewRequest(fiber.MethodPost, TestCreateOrderPath, bytes.NewBuffer([]byte(TestOrderID)))
 		req.Header.Set(fiber.HeaderContentType, fiber.MIMETextPlain)
 		resp, err := fiberApp.Test(req)
 		if err != nil {
@@ -57,7 +57,7 @@ func TestCreateOrderHandler(t *testing.T) {
 		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(&services.JWTClaims{}, nil)
 		jwtService.EXPECT().ExtractToken(gomock.Any()).Return("userID", nil)
 
-		req := httptest.NewRequest(fiber.MethodPost, TestCreateOrderPath, bytes.NewBuffer([]byte(TestOrderText)))
+		req := httptest.NewRequest(fiber.MethodPost, TestCreateOrderPath, bytes.NewBuffer([]byte(TestOrderID)))
 		req.Header.Set(fiber.HeaderContentType, fiber.MIMETextPlain)
 		resp, err := fiberApp.Test(req)
 		if err != nil {
@@ -73,7 +73,7 @@ func TestCreateOrderHandler(t *testing.T) {
 		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(&services.JWTClaims{}, nil)
 		jwtService.EXPECT().ExtractToken(gomock.Any()).Return("userID", nil)
 
-		req := httptest.NewRequest(fiber.MethodPost, TestCreateOrderPath, bytes.NewBuffer([]byte(TestOrderText)))
+		req := httptest.NewRequest(fiber.MethodPost, TestCreateOrderPath, bytes.NewBuffer([]byte(TestOrderID)))
 		req.Header.Set(fiber.HeaderContentType, fiber.MIMETextPlain)
 		resp, err := fiberApp.Test(req)
 		if err != nil {
@@ -89,7 +89,7 @@ func TestCreateOrderHandler(t *testing.T) {
 		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(&services.JWTClaims{}, nil)
 		jwtService.EXPECT().ExtractToken(gomock.Any()).Return("userID", nil)
 
-		req := httptest.NewRequest(fiber.MethodPost, TestCreateOrderPath, bytes.NewBuffer([]byte(TestOrderText)))
+		req := httptest.NewRequest(fiber.MethodPost, TestCreateOrderPath, bytes.NewBuffer([]byte(TestOrderID)))
 		req.Header.Set(fiber.HeaderContentType, fiber.MIMETextPlain)
 		resp, err := fiberApp.Test(req)
 		if err != nil {

@@ -49,19 +49,19 @@ func (mr *MockUserRepositoryMockRecorder) Create(login, password interface{}) *g
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockUserRepository)(nil).Create), login, password)
 }
 
-// GetByID mocks base method.
-func (m *MockUserRepository) GetByID(id int64) (models.UserModel, error) {
+// GetBalance mocks base method.
+func (m *MockUserRepository) GetBalance(userID string) (models.BalanceModel, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetByID", id)
-	ret0, _ := ret[0].(models.UserModel)
+	ret := m.ctrl.Call(m, "GetBalance", userID)
+	ret0, _ := ret[0].(models.BalanceModel)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetByID indicates an expected call of GetByID.
-func (mr *MockUserRepositoryMockRecorder) GetByID(id interface{}) *gomock.Call {
+// GetBalance indicates an expected call of GetBalance.
+func (mr *MockUserRepositoryMockRecorder) GetBalance(userID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByID", reflect.TypeOf((*MockUserRepository)(nil).GetByID), id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBalance", reflect.TypeOf((*MockUserRepository)(nil).GetBalance), userID)
 }
 
 // GetByLoginAndPassword mocks base method.

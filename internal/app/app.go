@@ -19,9 +19,10 @@ type App struct {
 	userRepository  repositories.UserRepository
 	orderRepository repositories.OrderRepository
 
-	jwtService   services.JWTService
-	userService  services.UserService
-	orderService services.OrderService
+	jwtService     services.JWTService
+	userService    services.UserService
+	orderService   services.OrderService
+	balanceService services.BalanceService
 
 	handlers handlers.Handlers
 }
@@ -65,11 +66,12 @@ func (a *App) BuildServices() error {
 	a.jwtService = services.NewJWTService(a.config.JwtSecret(), a.logger)
 	a.userService = services.NewUserService(a.userRepository)
 	a.orderService = services.NewOrderService(a.orderRepository)
+	a.balanceService = services.NewBalanceService(a.userRepository, a.orderRepository)
 	return nil
 }
 
 func (a *App) BuildHandlers() error {
-	a.handlers = handlers.NewFiberHandlers(a.logger, a.jwtService, a.userService, a.orderService)
+	a.handlers = handlers.NewFiberHandlers(a.logger, a.jwtService, a.userService, a.orderService, a.balanceService)
 	a.handlers.BuildGroups()
 	a.handlers.BuildAuthMiddleware(a.config.JwtSecret())
 	a.handlers.BuildRoutes()

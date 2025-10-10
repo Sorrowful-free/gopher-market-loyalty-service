@@ -15,17 +15,18 @@ type FiberHandlers struct {
 	orderGroup   fiber.Router
 	balanceGroup fiber.Router
 
-	logger       logger.Logger
-	jwtService   services.JWTService
-	userService  services.UserService
-	orderService services.OrderService
+	logger         logger.Logger
+	jwtService     services.JWTService
+	userService    services.UserService
+	orderService   services.OrderService
+	balanceService services.BalanceService
 
 	authMiddleware *middlewares.FiberAuthMiddleware
 }
 
-func NewFiberHandlers(logger logger.Logger, jwtService services.JWTService, userService services.UserService, orderService services.OrderService) *FiberHandlers {
+func NewFiberHandlers(logger logger.Logger, jwtService services.JWTService, userService services.UserService, orderService services.OrderService, balanceService services.BalanceService) *FiberHandlers {
 	fiberApp := fiber.New()
-	return &FiberHandlers{fiberApp: fiberApp, logger: logger, jwtService: jwtService, userService: userService, orderService: orderService}
+	return &FiberHandlers{fiberApp: fiberApp, logger: logger, jwtService: jwtService, userService: userService, orderService: orderService, balanceService: balanceService}
 }
 
 func (h *FiberHandlers) BuildGroups() {
@@ -47,13 +48,13 @@ func (h *FiberHandlers) BuildRoutes() {
 		return c.Path() == GetOrderPath
 	}))
 	h.orderGroup.Post(CreateOrderPath, middlewares.ValidateRequestAsText(), h.CreateOrderHandler)
-	h.orderGroup.Get(GetOrdersListPath, GetOrdersList)
+	h.orderGroup.Get(GetOrdersListPath, h.GetOrdersListHandler)
 	h.orderGroup.Get(GetOrderPath, GetOrder)
 
 	h.balanceGroup.Use(h.authMiddleware.RequireAuth)
-	h.balanceGroup.Get(GetBalancePath, Balance)
-	h.balanceGroup.Post(WithdrawBalancePath, Withdraw)
-	h.balanceGroup.Get(BalanceWithdrawalsPath, Withdrawals)
+	h.balanceGroup.Get(GetBalancePath, h.GetBalanceHandler)
+	h.balanceGroup.Post(WithdrawPath, middlewares.ValidateRequestAsJSON(models.WithdrawRequest{}), h.WithdrawHandler)
+	h.balanceGroup.Get(WithdrawalsPath, h.WithdrawalsHandler)
 }
 
 func (h *FiberHandlers) Run() error {

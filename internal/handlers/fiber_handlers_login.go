@@ -11,7 +11,7 @@ import (
 )
 
 func (h *FiberHandlers) LoginHandler(c *fiber.Ctx) error {
-	loginRequest := c.Locals(middlewares.RequestContent).(models.LoginRequest)
+	loginRequest := c.Locals(middlewares.RequestContentKey).(models.LoginRequest)
 	userID, err := h.userService.Login(loginRequest.Login, loginRequest.Password)
 
 	var userServiceError services.UserServiceError
