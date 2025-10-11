@@ -6,6 +6,7 @@ const (
 
 	TestCreateOrderPath   = "/api/user/orders"
 	TestGetOrdersListPath = "/api/user/orders"
+	TestGetOrderPath      = "/api/user/orders/12345678903"
 
 	TestGetBalancePath  = "/api/user/balance"
 	TestWithdrawPath    = "/api/user/balance/withdraw"

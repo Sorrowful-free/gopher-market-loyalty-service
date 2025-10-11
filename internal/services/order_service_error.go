@@ -7,7 +7,7 @@ const (
 	OrderServiceErrorOrderAlreadyExists
 	OrderServiceErrorOrderCreatedOtherUser
 	OrderServiceErrorOrderInvalid
-	OrderServiceErrorInternalError
+	OrderServiceErrorOrderTooManyRequests
 )
 
 type OrderServiceError struct {

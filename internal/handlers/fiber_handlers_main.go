@@ -6,7 +6,6 @@ import (
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/models"
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/services"
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/skip"
 )
 
 type FiberHandlers struct {
@@ -44,12 +43,9 @@ func (h *FiberHandlers) BuildRoutes() {
 	h.userGroup.Post(RegisterUserPath, middlewares.ValidateRequestAsJSON(models.RegisterRequest{}), h.RegisterHandler)
 	h.userGroup.Post(LoginUserPath, middlewares.ValidateRequestAsJSON(models.LoginRequest{}), h.LoginHandler)
 
-	h.orderGroup.Use(skip.New(h.authMiddleware.RequireAuth, func(c *fiber.Ctx) bool {
-		return c.Path() == GetOrderPath
-	}))
-	h.orderGroup.Post(CreateOrderPath, middlewares.ValidateRequestAsText(), h.CreateOrderHandler)
-	h.orderGroup.Get(GetOrdersListPath, h.GetOrdersListHandler)
-	h.orderGroup.Get(GetOrderPath, GetOrder)
+	h.orderGroup.Post(CreateOrderPath, h.authMiddleware.RequireAuth, middlewares.ValidateRequestAsText(), h.CreateOrderHandler)
+	h.orderGroup.Get(GetOrdersListPath, h.authMiddleware.RequireAuth, h.GetOrdersListHandler)
+	h.orderGroup.Get(GetOrderPath, h.GetOrderHandler)
 
 	h.balanceGroup.Use(h.authMiddleware.RequireAuth)
 	h.balanceGroup.Get(GetBalancePath, h.GetBalanceHandler)

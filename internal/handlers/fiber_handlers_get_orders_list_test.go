@@ -23,7 +23,7 @@ func TestGetOrdersListHandler(t *testing.T) {
 
 		orders := []models.OrderModel{
 			{
-				Number:    TestOrderID,
+				Order:     TestOrderID,
 				Status:    models.OrderStatusNew,
 				CreatedAt: time.Now(),
 			},
