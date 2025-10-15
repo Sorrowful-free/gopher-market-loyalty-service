@@ -12,14 +12,12 @@ const (
 )
 
 type FiberAuthMiddleware struct {
-	jwtSecret  []byte
 	logger     logger.Logger
 	jwtService services.JWTService
 }
 
-func NewFiberAuthMiddleware(jwtSecret string, logger logger.Logger, jwtService services.JWTService) *FiberAuthMiddleware {
+func NewFiberAuthMiddleware(logger logger.Logger, jwtService services.JWTService) *FiberAuthMiddleware {
 	return &FiberAuthMiddleware{
-		jwtSecret:  []byte(jwtSecret),
 		logger:     logger,
 		jwtService: jwtService,
 	}

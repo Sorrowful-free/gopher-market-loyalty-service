@@ -29,7 +29,7 @@ func (h *FiberHandlers) CreateOrderHandler(c *fiber.Ctx) error {
 				"error": "Order created other user",
 			})
 
-		case services.OrderServiceErrorOrderInvalid:
+		case services.OrderServiceErrorOrderIdIsInvalid:
 			return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{
 				"error": "Order invalid",
 			})

@@ -73,7 +73,7 @@ func (a *App) BuildServices() error {
 func (a *App) BuildHandlers() error {
 	a.handlers = handlers.NewFiberHandlers(a.logger, a.jwtService, a.userService, a.orderService, a.balanceService)
 	a.handlers.BuildGroups()
-	a.handlers.BuildAuthMiddleware(a.config.JwtSecret())
+	a.handlers.BuildAuthMiddleware()
 	a.handlers.BuildRoutes()
 	return nil
 }

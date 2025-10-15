@@ -7,7 +7,6 @@ import (
 
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/logger"
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/services"
-	"github.com/Sorrowful-free/gopher-market-loyalty-service/mocks"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
@@ -15,8 +14,8 @@ import (
 
 func TestFiberAuthMiddleware(t *testing.T) {
 	ctrl := gomock.NewController(t)
-	jwtService := mocks.NewMockJWTService(ctrl)
-	fiberAuthMiddleware := NewFiberAuthMiddleware("test", logger.NewZapLogger(), jwtService)
+	jwtService := services.NewMockJWTService(ctrl)
+	fiberAuthMiddleware := NewFiberAuthMiddleware(logger.NewZapLogger(), jwtService)
 	t.Run("successful_auth", func(t *testing.T) {
 
 		jwtService.EXPECT().ExtractToken(gomock.Any()).Return("token", nil)

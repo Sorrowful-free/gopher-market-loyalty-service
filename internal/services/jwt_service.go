@@ -9,32 +9,30 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-const (
-	AuthorizationKey = "Authorization"
-)
-
 type JWTClaims struct {
 	UserID string `json:"user_id"`
-	jwt.Claims
+	jwt.RegisteredClaims
 }
+
+var EMPTY_JWT_CLAIMS = JWTClaims{}
 
 type JWTService interface {
 	GenerateToken(userID string) (string, error)
-	ValidateToken(token string) (*JWTClaims, error)
+	ValidateToken(token string) (JWTClaims, error)
 	ExtractToken(c *fiber.Ctx) (string, error)
 }
 
 type JWTServiceImpl struct {
-	jwtSecret string
+	jwtSecret []byte
 	logger    logger.Logger
 }
 
 func NewJWTService(jwtSecret string, logger logger.Logger) JWTService {
-	return &JWTServiceImpl{jwtSecret: jwtSecret, logger: logger}
+	return &JWTServiceImpl{jwtSecret: []byte(jwtSecret), logger: logger}
 }
 
 func (s *JWTServiceImpl) ExtractToken(c *fiber.Ctx) (string, error) {
-	authHeader := c.Get(AuthorizationKey)
+	authHeader := c.Get(fiber.HeaderAuthorization)
 	if authHeader == "" {
 		s.logger.Error("Authorization header required")
 		return "", fiber.NewError(fiber.StatusUnauthorized, "Authorization header required")
@@ -49,8 +47,9 @@ func (s *JWTServiceImpl) ExtractToken(c *fiber.Ctx) (string, error) {
 	return tokenParts[1], nil
 }
 
-func (s *JWTServiceImpl) ValidateToken(tokenString string) (*JWTClaims, error) {
-	token, err := jwt.ParseWithClaims(tokenString, &JWTClaims{}, func(token *jwt.Token) (interface{}, error) {
+func (s *JWTServiceImpl) ValidateToken(tokenString string) (JWTClaims, error) {
+	var claims JWTClaims
+	token, err := jwt.ParseWithClaims(tokenString, &claims, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			s.logger.Error("Invalid signing method")
 			return nil, fiber.NewError(fiber.StatusUnauthorized, "Invalid signing method")
@@ -59,31 +58,31 @@ func (s *JWTServiceImpl) ValidateToken(tokenString string) (*JWTClaims, error) {
 	})
 
 	if err != nil {
-		return nil, err
+		return EMPTY_JWT_CLAIMS, err
 	}
 
 	if !token.Valid {
 		s.logger.Error("Invalid token")
-		return nil, fiber.NewError(fiber.StatusUnauthorized, "Invalid token")
+		return EMPTY_JWT_CLAIMS, fiber.NewError(fiber.StatusUnauthorized, "Invalid token")
 	}
 
-	claims, ok := token.Claims.(*JWTClaims)
+	newClaims, ok := (token.Claims).(*JWTClaims)
 	if !ok {
 		s.logger.Error("Invalid token claims")
-		return nil, fiber.NewError(fiber.StatusUnauthorized, "Invalid token claims")
+		return EMPTY_JWT_CLAIMS, fiber.NewError(fiber.StatusUnauthorized, "Invalid token claims")
 	}
 
-	return claims, nil
+	return *newClaims, nil
 }
 
 func (s *JWTServiceImpl) GenerateToken(userID string) (string, error) {
 	claims := &JWTClaims{
-		UserID: userID,
-		Claims: jwt.RegisteredClaims{
+		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 			NotBefore: jwt.NewNumericDate(time.Now()),
 		},
+		UserID: userID,
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

@@ -9,7 +9,7 @@ const (
 )
 
 type UserServiceError struct {
-	Code    int64
+	Code    int
 	Message string
 }
 
@@ -17,6 +17,6 @@ func (e UserServiceError) Error() string {
 	return fmt.Sprintf("User service error: %d - %s", e.Code, e.Message)
 }
 
-func NewUserServiceError(code int64, message string) UserServiceError {
+func NewUserServiceError(code int, message string) UserServiceError {
 	return UserServiceError{Code: code, Message: message}
 }

@@ -2,7 +2,7 @@ package handlers
 
 type Handlers interface {
 	BuildGroups()
-	BuildAuthMiddleware(jwtSecret string)
+	BuildAuthMiddleware()
 	BuildRoutes()
 	Run() error
 }

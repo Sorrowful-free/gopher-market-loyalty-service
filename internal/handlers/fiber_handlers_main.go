@@ -34,8 +34,8 @@ func (h *FiberHandlers) BuildGroups() {
 	h.balanceGroup = h.userGroup.Group(BalanceGroup)
 }
 
-func (h *FiberHandlers) BuildAuthMiddleware(jwtSecret string) {
-	h.authMiddleware = middlewares.NewFiberAuthMiddleware(jwtSecret, h.logger, h.jwtService)
+func (h *FiberHandlers) BuildAuthMiddleware() {
+	h.authMiddleware = middlewares.NewFiberAuthMiddleware(h.logger, h.jwtService)
 }
 
 func (h *FiberHandlers) BuildRoutes() {

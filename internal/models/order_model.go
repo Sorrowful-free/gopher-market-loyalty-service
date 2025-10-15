@@ -16,6 +16,8 @@ type OrderModel struct {
 	CreatedAt time.Time `json:"uploaded_at"`
 }
 
+var EMPTY_ORDER_MODEL = OrderModel{}
+
 func NewOrderModel(order string, status string, accrual int64) *OrderModel {
 	return &OrderModel{
 		Order:     order,

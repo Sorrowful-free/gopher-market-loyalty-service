@@ -4,17 +4,17 @@ import (
 	"testing"
 
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/logger"
-	"github.com/Sorrowful-free/gopher-market-loyalty-service/mocks"
+	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/services"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang/mock/gomock"
 )
 
 type FiberHandlersMock struct {
 	logger         logger.Logger
-	jwtService     *mocks.MockJWTService
-	userService    *mocks.MockUserService
-	orderService   *mocks.MockOrderService
-	balanceService *mocks.MockBalanceService
+	jwtService     *services.MockJWTService
+	userService    *services.MockUserService
+	orderService   *services.MockOrderService
+	balanceService *services.MockBalanceService
 	fiberApp       *fiber.App
 }
 
@@ -22,15 +22,15 @@ func SetupMockFiberHandlers(t *testing.T) *FiberHandlersMock {
 
 	logger := logger.NewZapLogger()
 	ctrl := gomock.NewController(t)
-	jwtService := mocks.NewMockJWTService(ctrl)
-	userService := mocks.NewMockUserService(ctrl)
-	orderService := mocks.NewMockOrderService(ctrl)
-	balanceService := mocks.NewMockBalanceService(ctrl)
+	jwtService := services.NewMockJWTService(ctrl)
+	userService := services.NewMockUserService(ctrl)
+	orderService := services.NewMockOrderService(ctrl)
+	balanceService := services.NewMockBalanceService(ctrl)
 
 	fiberHandlers := NewFiberHandlers(logger, jwtService, userService, orderService, balanceService)
 
 	fiberHandlers.BuildGroups()
-	fiberHandlers.BuildAuthMiddleware("test")
+	fiberHandlers.BuildAuthMiddleware()
 	fiberHandlers.BuildRoutes()
 
 	return &FiberHandlersMock{
