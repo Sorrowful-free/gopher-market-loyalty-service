@@ -5,6 +5,7 @@ import "fmt"
 const (
 	UserRepositoryErrorUserNotFound = iota
 	UserRepositoryErrorUserAlreadyExists
+	UserRepositoryErrorInternalError
 )
 
 type UserRepositoryError struct {

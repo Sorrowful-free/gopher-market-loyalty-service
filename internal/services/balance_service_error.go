@@ -6,6 +6,8 @@ const (
 	BalanceServiceErrorNotEnoughBalance = iota
 	BalanceServiceErrorOrderIdIsInvalid
 	BalanceServiceErrorWrongOrder
+	BalanceServiceErrorUserNotFound
+	BalanceServiceErrorInternalError
 )
 
 type BalanceServiceError struct {

@@ -5,4 +5,5 @@ const (
 	TestJWTSecret      = "test"
 	TestValidOrderID   = "3773213834"
 	TestInvalidOrderID = "1234567890"
+	TestSum            = 100
 )

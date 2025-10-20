@@ -29,4 +29,53 @@ func TestBalanceService(t *testing.T) {
 		require.Error(t, err)
 		require.Equal(t, models.BalanceModel{}, balance)
 	})
+
+	t.Run("successful_withdraw", func(t *testing.T) {
+		userRepository.EXPECT().GetBalance(gomock.Any()).Return(models.BalanceModel{
+			Current:   TestSum,
+			Withdrawn: 0,
+		}, nil)
+		err := balanceService.Withdraw(TestUserID, TestValidOrderID, TestSum)
+		require.NoError(t, err)
+
+	})
+
+	t.Run("failed_withdraw_with_invalid_order_id", func(t *testing.T) {
+		err := balanceService.Withdraw(TestUserID, TestInvalidOrderID, TestSum)
+		var balanceServiceError BalanceServiceError
+		require.ErrorAs(t, err, &balanceServiceError)
+		require.Equal(t, BalanceServiceErrorOrderIdIsInvalid, balanceServiceError.Code)
+		require.Equal(t, "Order id is invalid", balanceServiceError.Message)
+	})
+
+	t.Run("failed_withdraw_with_not_enough_balance", func(t *testing.T) {
+		userRepository.EXPECT().GetBalance(gomock.Any()).Return(models.BalanceModel{
+			Current:   0,
+			Withdrawn: 0,
+		}, nil)
+		err := balanceService.Withdraw(TestUserID, TestValidOrderID, TestSum)
+		var balanceServiceError BalanceServiceError
+		require.ErrorAs(t, err, &balanceServiceError)
+		require.Equal(t, BalanceServiceErrorNotEnoughBalance, balanceServiceError.Code)
+		require.Equal(t, "Not enough balance", balanceServiceError.Message)
+	})
+
+	t.Run("failed_withdraw_with_user_not_found", func(t *testing.T) {
+		userRepository.EXPECT().GetBalance(gomock.Any()).Return(models.BalanceModel{}, repositories.NewUserRepositoryError(repositories.UserRepositoryErrorUserNotFound, "User not found"))
+		err := balanceService.Withdraw(TestUserID, TestValidOrderID, TestSum)
+		var balanceServiceError BalanceServiceError
+		require.ErrorAs(t, err, &balanceServiceError)
+		require.Equal(t, BalanceServiceErrorUserNotFound, balanceServiceError.Code)
+		require.Equal(t, "User not found", balanceServiceError.Message)
+	})
+
+	t.Run("failed_withdraw_with_internal_error", func(t *testing.T) {
+		userRepository.EXPECT().GetBalance(gomock.Any()).Return(models.BalanceModel{}, errors.New("internal server error"))
+		err := balanceService.Withdraw(TestUserID, TestValidOrderID, TestSum)
+		var balanceServiceError BalanceServiceError
+		require.ErrorAs(t, err, &balanceServiceError)
+		require.Equal(t, BalanceServiceErrorInternalError, balanceServiceError.Code)
+		require.Equal(t, "Internal server error", balanceServiceError.Message)
+	})
+
 }
