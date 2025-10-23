@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"net/http/httptest"
 	"testing"
@@ -21,7 +22,7 @@ func TestRegisterHandler(t *testing.T) {
 
 	t.Run("successful_registration", func(t *testing.T) {
 
-		userService.EXPECT().Register(gomock.Any(), gomock.Any()).Return("userID", nil)
+		userService.EXPECT().Register(context.TODO(), gomock.Any(), gomock.Any()).Return("userID", nil)
 		jwtService.EXPECT().GenerateToken(gomock.Any()).Return("token", nil)
 
 		req := httptest.NewRequest(fiber.MethodPost, TestRegisterUserPath, bytes.NewBuffer([]byte(TestLoginJSON)))
@@ -49,7 +50,7 @@ func TestRegisterHandler(t *testing.T) {
 
 	t.Run("failed_registration_with_existing_login", func(t *testing.T) {
 
-		userService.EXPECT().Register(gomock.Any(), gomock.Any()).Return("userID", services.NewUserServiceError(services.UserServiceErrorUserExists, "User already exists"))
+		userService.EXPECT().Register(context.TODO(), gomock.Any(), gomock.Any()).Return("userID", services.NewUserServiceError(services.UserServiceErrorUserExists, "User already exists"))
 
 		req := httptest.NewRequest(fiber.MethodPost, TestRegisterUserPath, bytes.NewBuffer([]byte(TestLoginJSON)))
 		req.Header.Set(fiber.HeaderContentType, fiber.MIMEApplicationJSON)
@@ -63,7 +64,7 @@ func TestRegisterHandler(t *testing.T) {
 
 	t.Run("failed_registration_with_internal_error", func(t *testing.T) {
 
-		userService.EXPECT().Register(gomock.Any(), gomock.Any()).Return("userID", errors.New("internal server error"))
+		userService.EXPECT().Register(context.TODO(), gomock.Any(), gomock.Any()).Return("userID", errors.New("internal server error"))
 
 		req := httptest.NewRequest(fiber.MethodPost, TestRegisterUserPath, bytes.NewBuffer([]byte(TestLoginJSON)))
 		req.Header.Set(fiber.HeaderContentType, fiber.MIMEApplicationJSON)

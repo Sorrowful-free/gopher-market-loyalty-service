@@ -1,6 +1,7 @@
 package services
 
 import (
+	"context"
 	"testing"
 
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/models"
@@ -20,7 +21,7 @@ func TestOrderService(t *testing.T) {
 			Status:  models.OrderStatusNew,
 			Accrual: 100,
 		}, nil)
-		order, err := orderService.CreateOrder(TestUserID, TestValidOrderID)
+		order, err := orderService.CreateOrder(context.TODO(), TestUserID, TestValidOrderID)
 		require.NoError(t, err)
 		require.Equal(t, TestValidOrderID, order.Order)
 	})
@@ -34,7 +35,7 @@ func TestOrderService(t *testing.T) {
 			},
 		}, nil)
 
-		orders, err := orderService.GetOrdersList(TestUserID)
+		orders, err := orderService.GetOrdersList(context.TODO(), TestUserID)
 		require.NoError(t, err)
 		require.Equal(t, TestValidOrderID, orders[0].Order)
 	})
@@ -46,14 +47,14 @@ func TestOrderService(t *testing.T) {
 			Accrual: 100,
 		}, nil)
 
-		order, err := orderService.GetOrder(TestValidOrderID)
+		order, err := orderService.GetOrder(context.TODO(), TestValidOrderID)
 		require.NoError(t, err)
 		require.Equal(t, TestValidOrderID, order.Order)
 	})
 
 	t.Run("successful_get_order_with_order_not_found", func(t *testing.T) {
 		orderRepository.EXPECT().GetOrder(gomock.Any()).Return(models.EMPTY_ORDER_MODEL, repositories.NewOrderRepositoryError(repositories.OrderRepositoryErrorOrderNotFound, "Order not found"))
-		_, err := orderService.GetOrder(TestValidOrderID)
+		_, err := orderService.GetOrder(context.TODO(), TestValidOrderID)
 		var orderServiceError OrderServiceError
 		require.ErrorAs(t, err, &orderServiceError)
 		require.Equal(t, OrderServiceErrorOrderNotFound, orderServiceError.Code)
@@ -61,7 +62,7 @@ func TestOrderService(t *testing.T) {
 	})
 
 	t.Run("failed_get_order_with_order_id_is_invalid", func(t *testing.T) {
-		_, err := orderService.GetOrder(TestInvalidOrderID)
+		_, err := orderService.GetOrder(context.TODO(), TestInvalidOrderID)
 		var orderServiceError OrderServiceError
 		require.ErrorAs(t, err, &orderServiceError)
 		require.Equal(t, OrderServiceErrorOrderIdIsInvalid, orderServiceError.Code)
@@ -70,7 +71,7 @@ func TestOrderService(t *testing.T) {
 
 	t.Run("failed_crete_order_is_created_by_other_user", func(t *testing.T) {
 		orderRepository.EXPECT().CreateOrder(gomock.Any(), gomock.Any()).Return(models.EMPTY_ORDER_MODEL, repositories.NewOrderRepositoryError(repositories.OrderRepositoryErrorOrderCreatedOtherUser, "Order created by other user"))
-		_, err := orderService.CreateOrder(TestUserID, TestValidOrderID)
+		_, err := orderService.CreateOrder(context.TODO(), TestUserID, TestValidOrderID)
 		var orderServiceError OrderServiceError
 		require.ErrorAs(t, err, &orderServiceError)
 		require.Equal(t, OrderServiceErrorOrderCreatedOtherUser, orderServiceError.Code)

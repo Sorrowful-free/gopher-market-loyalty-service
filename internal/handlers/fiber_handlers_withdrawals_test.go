@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"errors"
 	"net/http/httptest"
 	"testing"
@@ -27,7 +28,7 @@ func TestWithdrawalsHandler(t *testing.T) {
 				ProcessedAt: time.Now(),
 			},
 		}
-		balanceService.EXPECT().GetWithdrawals(gomock.Any()).Return(withdrawals, nil)
+		balanceService.EXPECT().GetWithdrawals(context.TODO(), gomock.Any()).Return(withdrawals, nil)
 		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(&services.JWTClaims{}, nil)
 		jwtService.EXPECT().ExtractToken(gomock.Any()).Return("userID", nil)
 
@@ -41,7 +42,7 @@ func TestWithdrawalsHandler(t *testing.T) {
 	})
 
 	t.Run("successful_withdrawals_with_empty_list", func(t *testing.T) {
-		balanceService.EXPECT().GetWithdrawals(gomock.Any()).Return([]models.WithdrawalModel{}, nil)
+		balanceService.EXPECT().GetWithdrawals(context.TODO(), gomock.Any()).Return([]models.WithdrawalModel{}, nil)
 		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(&services.JWTClaims{}, nil)
 		jwtService.EXPECT().ExtractToken(gomock.Any()).Return("userID", nil)
 
@@ -55,7 +56,7 @@ func TestWithdrawalsHandler(t *testing.T) {
 	})
 
 	t.Run("failed_withdrawals_with_internal_error", func(t *testing.T) {
-		balanceService.EXPECT().GetWithdrawals(gomock.Any()).Return([]models.WithdrawalModel{}, errors.New("internal server error"))
+		balanceService.EXPECT().GetWithdrawals(context.TODO(), gomock.Any()).Return([]models.WithdrawalModel{}, errors.New("internal server error"))
 		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(&services.JWTClaims{}, nil)
 		jwtService.EXPECT().ExtractToken(gomock.Any()).Return("userID", nil)
 

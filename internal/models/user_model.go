@@ -8,6 +8,8 @@ type UserModel struct {
 	Withdrawn int64  `json:"withdrawn"`
 }
 
+var EMPTY_USER_MODEL = UserModel{}
+
 func NewUserModel(id string, login string, password string, current int64, withdrawn int64) *UserModel {
 	return &UserModel{
 		ID:        id,

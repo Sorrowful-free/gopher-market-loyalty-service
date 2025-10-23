@@ -16,6 +16,7 @@ type JWTClaims struct {
 
 var EMPTY_JWT_CLAIMS = JWTClaims{}
 
+//go:generate mockgen -source=jwt_service.go -destination=mock_jwt_service.go -package=services
 type JWTService interface {
 	GenerateToken(userID string) (string, error)
 	ValidateToken(token string) (JWTClaims, error)

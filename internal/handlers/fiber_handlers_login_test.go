@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"net/http/httptest"
 	"testing"
@@ -19,7 +20,7 @@ func TestLoginHandler(t *testing.T) {
 	userService := fiberHandlers.userService
 
 	t.Run("successful_login", func(t *testing.T) {
-		userService.EXPECT().Login(gomock.Any(), gomock.Any()).Return("token", nil)
+		userService.EXPECT().Login(context.TODO(), gomock.Any(), gomock.Any()).Return("token", nil)
 		jwtService.EXPECT().GenerateToken(gomock.Any()).Return("token", nil)
 
 		req := httptest.NewRequest(fiber.MethodPost, TestLoginUserPath, bytes.NewBuffer([]byte(TestLoginJSON)))
@@ -44,7 +45,7 @@ func TestLoginHandler(t *testing.T) {
 	})
 
 	t.Run("failed_login_with_wrong_credentials", func(t *testing.T) {
-		userService.EXPECT().Login(gomock.Any(), gomock.Any()).Return("", services.NewUserServiceError(services.UserServiceErrorUserNotFound, "User not found"))
+		userService.EXPECT().Login(context.TODO(), gomock.Any(), gomock.Any()).Return("", services.NewUserServiceError(services.UserServiceErrorUserNotFound, "User not found"))
 
 		req := httptest.NewRequest(fiber.MethodPost, TestLoginUserPath, bytes.NewBuffer([]byte(TestLoginJSON)))
 		req.Header.Set(fiber.HeaderContentType, fiber.MIMEApplicationJSON)
@@ -57,7 +58,7 @@ func TestLoginHandler(t *testing.T) {
 	})
 
 	t.Run("failed_login_with_internal_error", func(t *testing.T) {
-		userService.EXPECT().Login(gomock.Any(), gomock.Any()).Return("", errors.New("internal error"))
+		userService.EXPECT().Login(context.TODO(), gomock.Any(), gomock.Any()).Return("", errors.New("internal error"))
 
 		req := httptest.NewRequest(fiber.MethodPost, TestLoginUserPath, bytes.NewBuffer([]byte(TestLoginJSON)))
 		req.Header.Set(fiber.HeaderContentType, fiber.MIMEApplicationJSON)

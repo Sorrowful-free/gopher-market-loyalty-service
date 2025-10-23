@@ -1,6 +1,7 @@
 package services
 
 import (
+	"context"
 	"errors"
 
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/models"
@@ -8,10 +9,11 @@ import (
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/utils"
 )
 
+//go:generate mockgen -source=balance_service.go -destination=mock_balance_service.go -package=services
 type BalanceService interface {
-	GetBalance(userID string) (models.BalanceModel, error)
-	Withdraw(userID string, orderID string, sum float64) error
-	GetWithdrawals(userID string) ([]models.WithdrawalModel, error)
+	GetBalance(ctx context.Context, userID string) (models.BalanceModel, error)
+	Withdraw(ctx context.Context, userID string, orderID string, sum float64) error
+	GetWithdrawals(ctx context.Context, userID string) ([]models.WithdrawalModel, error)
 }
 
 type BalanceServiceImpl struct {
@@ -23,8 +25,12 @@ func NewBalanceService(userRepository repositories.UserRepository, orderReposito
 	return &BalanceServiceImpl{userRepository: userRepository, orderRepository: orderRepository}
 }
 
-func (s *BalanceServiceImpl) GetBalance(userID string) (models.BalanceModel, error) {
-	balance, err := s.userRepository.GetBalance(userID)
+func (s *BalanceServiceImpl) GetBalance(ctx context.Context, userID string) (models.BalanceModel, error) {
+	if ctx.Err() != nil {
+		return models.EMPTY_BALANCE_MODEL, ctx.Err()
+	}
+
+	balance, err := s.userRepository.GetBalance(ctx, userID)
 	if err != nil {
 		return models.EMPTY_BALANCE_MODEL, err
 	}
@@ -39,13 +45,16 @@ func (s *BalanceServiceImpl) GetBalance(userID string) (models.BalanceModel, err
 	return balance, nil
 }
 
-func (s *BalanceServiceImpl) Withdraw(userID string, orderID string, sum float64) error {
+func (s *BalanceServiceImpl) Withdraw(ctx context.Context, userID string, orderID string, sum float64) error {
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
 
 	if !utils.ValidateLuhn(orderID) {
 		return NewBalanceServiceError(BalanceServiceErrorOrderIdIsInvalid, "Order id is invalid")
 	}
 
-	balance, err := s.userRepository.GetBalance(userID)
+	balance, err := s.userRepository.GetBalance(ctx, userID)
 	var userRepositoryError repositories.UserRepositoryError
 	if errors.As(err, &userRepositoryError) {
 		switch userRepositoryError.Code {
@@ -65,6 +74,15 @@ func (s *BalanceServiceImpl) Withdraw(userID string, orderID string, sum float64
 	return nil
 }
 
-func (s *BalanceServiceImpl) GetWithdrawals(userID string) ([]models.WithdrawalModel, error) {
+func (s *BalanceServiceImpl) GetWithdrawals(ctx context.Context, userID string) ([]models.WithdrawalModel, error) {
+	if ctx.Err() != nil {
+		return nil, ctx.Err()
+	}
+
+	// withdrawals, err := s.orderRepository.GetWithdrawals(ctx, userID)
+	// if err != nil {
+	// 	return nil, err
+	// }
+
 	return nil, nil
 }

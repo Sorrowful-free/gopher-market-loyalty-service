@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"net/http/httptest"
 	"testing"
@@ -19,7 +20,7 @@ func TestWithdrawHandler(t *testing.T) {
 	jwtService := fiberHandlers.jwtService
 
 	t.Run("successful_withdraw", func(t *testing.T) {
-		balanceService.EXPECT().Withdraw(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil)
+		balanceService.EXPECT().Withdraw(context.TODO(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil)
 		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(&services.JWTClaims{}, nil)
 		jwtService.EXPECT().ExtractToken(gomock.Any()).Return("userID", nil)
 
@@ -34,7 +35,7 @@ func TestWithdrawHandler(t *testing.T) {
 	})
 
 	t.Run("failed_withdraw_with_not_enough_balance", func(t *testing.T) {
-		balanceService.EXPECT().Withdraw(gomock.Any(), gomock.Any(), gomock.Any()).Return(services.NewBalanceServiceError(services.BalanceServiceErrorNotEnoughBalance, "Not enough balance"))
+		balanceService.EXPECT().Withdraw(context.TODO(), gomock.Any(), gomock.Any(), gomock.Any()).Return(services.NewBalanceServiceError(services.BalanceServiceErrorNotEnoughBalance, "Not enough balance"))
 		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(&services.JWTClaims{}, nil)
 		jwtService.EXPECT().ExtractToken(gomock.Any()).Return("userID", nil)
 
@@ -49,7 +50,7 @@ func TestWithdrawHandler(t *testing.T) {
 	})
 
 	t.Run("failed_withdraw_with_not_wrong_order", func(t *testing.T) {
-		balanceService.EXPECT().Withdraw(gomock.Any(), gomock.Any(), gomock.Any()).Return(services.NewBalanceServiceError(services.BalanceServiceErrorWrongOrder, "Wrong order"))
+		balanceService.EXPECT().Withdraw(context.TODO(), gomock.Any(), gomock.Any(), gomock.Any()).Return(services.NewBalanceServiceError(services.BalanceServiceErrorWrongOrder, "Wrong order"))
 		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(&services.JWTClaims{}, nil)
 		jwtService.EXPECT().ExtractToken(gomock.Any()).Return("userID", nil)
 
@@ -64,7 +65,7 @@ func TestWithdrawHandler(t *testing.T) {
 	})
 
 	t.Run("failed_withdraw_with_internal_error", func(t *testing.T) {
-		balanceService.EXPECT().Withdraw(gomock.Any(), gomock.Any(), gomock.Any()).Return(errors.New("internal server error"))
+		balanceService.EXPECT().Withdraw(context.TODO(), gomock.Any(), gomock.Any(), gomock.Any()).Return(errors.New("internal server error"))
 		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(&services.JWTClaims{}, nil)
 		jwtService.EXPECT().ExtractToken(gomock.Any()).Return("userID", nil)
 

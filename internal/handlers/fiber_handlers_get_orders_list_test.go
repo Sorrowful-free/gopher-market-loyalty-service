@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"errors"
 	"net/http/httptest"
 	"testing"
@@ -29,7 +30,7 @@ func TestGetOrdersListHandler(t *testing.T) {
 			},
 		}
 
-		orderService.EXPECT().GetOrdersList(gomock.Any()).Return(orders, nil)
+		orderService.EXPECT().GetOrdersList(context.TODO(), gomock.Any()).Return(orders, nil)
 		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(&services.JWTClaims{}, nil)
 		jwtService.EXPECT().ExtractToken(gomock.Any()).Return("userID", nil)
 
@@ -44,7 +45,7 @@ func TestGetOrdersListHandler(t *testing.T) {
 
 	t.Run("successful_get_orders_list_with_empty_list", func(t *testing.T) {
 
-		orderService.EXPECT().GetOrdersList(gomock.Any()).Return([]models.OrderModel{}, nil)
+		orderService.EXPECT().GetOrdersList(context.TODO(), gomock.Any()).Return([]models.OrderModel{}, nil)
 		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(&services.JWTClaims{}, nil)
 		jwtService.EXPECT().ExtractToken(gomock.Any()).Return("userID", nil)
 
@@ -59,7 +60,7 @@ func TestGetOrdersListHandler(t *testing.T) {
 
 	t.Run("failed_get_orders_list_with_internal_error", func(t *testing.T) {
 
-		orderService.EXPECT().GetOrdersList(gomock.Any()).Return([]models.OrderModel{}, errors.New("internal server error"))
+		orderService.EXPECT().GetOrdersList(context.TODO(), gomock.Any()).Return([]models.OrderModel{}, errors.New("internal server error"))
 		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(&services.JWTClaims{}, nil)
 		jwtService.EXPECT().ExtractToken(gomock.Any()).Return("userID", nil)
 

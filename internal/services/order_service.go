@@ -1,6 +1,7 @@
 package services
 
 import (
+	"context"
 	"errors"
 
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/models"
@@ -8,10 +9,11 @@ import (
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/utils"
 )
 
+//go:generate mockgen -source=order_service.go -destination=mock_order_service.go -package=services
 type OrderService interface {
-	CreateOrder(userID string, order string) (models.OrderModel, error)
-	GetOrdersList(userID string) ([]models.OrderModel, error)
-	GetOrder(orderID string) (models.OrderModel, error)
+	CreateOrder(ctx context.Context, userID string, order string) (models.OrderModel, error)
+	GetOrdersList(ctx context.Context, userID string) ([]models.OrderModel, error)
+	GetOrder(ctx context.Context, orderID string) (models.OrderModel, error)
 }
 
 type OrderServiceImpl struct {
@@ -22,7 +24,11 @@ func NewOrderService(orderRepository repositories.OrderRepository) OrderService 
 	return &OrderServiceImpl{orderRepository: orderRepository}
 }
 
-func (s *OrderServiceImpl) CreateOrder(userID string, order string) (models.OrderModel, error) {
+func (s *OrderServiceImpl) CreateOrder(ctx context.Context, userID string, order string) (models.OrderModel, error) {
+	if ctx.Err() != nil {
+		return models.EMPTY_ORDER_MODEL, ctx.Err()
+	}
+
 	if !utils.ValidateLuhn(order) {
 		return models.EMPTY_ORDER_MODEL, NewOrderServiceError(OrderServiceErrorOrderIdIsInvalid, "Order id is invalid")
 	}
@@ -45,7 +51,11 @@ func (s *OrderServiceImpl) CreateOrder(userID string, order string) (models.Orde
 	return orderModel, nil
 }
 
-func (s *OrderServiceImpl) GetOrdersList(userID string) ([]models.OrderModel, error) {
+func (s *OrderServiceImpl) GetOrdersList(ctx context.Context, userID string) ([]models.OrderModel, error) {
+	if ctx.Err() != nil {
+		return []models.OrderModel{}, ctx.Err()
+	}
+
 	orders, err := s.orderRepository.GetOrdersList(userID)
 	if err != nil {
 		return nil, err
@@ -53,7 +63,11 @@ func (s *OrderServiceImpl) GetOrdersList(userID string) ([]models.OrderModel, er
 	return orders, nil
 }
 
-func (s *OrderServiceImpl) GetOrder(orderID string) (models.OrderModel, error) {
+func (s *OrderServiceImpl) GetOrder(ctx context.Context, orderID string) (models.OrderModel, error) {
+
+	if ctx.Err() != nil {
+		return models.EMPTY_ORDER_MODEL, ctx.Err()
+	}
 
 	if !utils.ValidateLuhn(orderID) {
 		return models.EMPTY_ORDER_MODEL, NewOrderServiceError(OrderServiceErrorOrderIdIsInvalid, "Order id is invalid")

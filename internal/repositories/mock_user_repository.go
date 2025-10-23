@@ -5,6 +5,7 @@
 package repositories
 
 import (
+	context "context"
 	reflect "reflect"
 
 	models "github.com/Sorrowful-free/gopher-market-loyalty-service/internal/models"
@@ -35,46 +36,46 @@ func (m *MockUserRepository) EXPECT() *MockUserRepositoryMockRecorder {
 }
 
 // Create mocks base method.
-func (m *MockUserRepository) Create(login, password string) (models.UserModel, error) {
+func (m *MockUserRepository) Create(ctx context.Context, login, password string) (models.UserModel, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Create", login, password)
+	ret := m.ctrl.Call(m, "Create", ctx, login, password)
 	ret0, _ := ret[0].(models.UserModel)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Create indicates an expected call of Create.
-func (mr *MockUserRepositoryMockRecorder) Create(login, password interface{}) *gomock.Call {
+func (mr *MockUserRepositoryMockRecorder) Create(ctx, login, password interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockUserRepository)(nil).Create), login, password)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockUserRepository)(nil).Create), ctx, login, password)
 }
 
 // GetBalance mocks base method.
-func (m *MockUserRepository) GetBalance(userID string) (models.BalanceModel, error) {
+func (m *MockUserRepository) GetBalance(ctx context.Context, userID string) (models.BalanceModel, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetBalance", userID)
+	ret := m.ctrl.Call(m, "GetBalance", ctx, userID)
 	ret0, _ := ret[0].(models.BalanceModel)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetBalance indicates an expected call of GetBalance.
-func (mr *MockUserRepositoryMockRecorder) GetBalance(userID interface{}) *gomock.Call {
+func (mr *MockUserRepositoryMockRecorder) GetBalance(ctx, userID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBalance", reflect.TypeOf((*MockUserRepository)(nil).GetBalance), userID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBalance", reflect.TypeOf((*MockUserRepository)(nil).GetBalance), ctx, userID)
 }
 
 // GetByLoginAndPassword mocks base method.
-func (m *MockUserRepository) GetByLoginAndPassword(login, password string) (models.UserModel, error) {
+func (m *MockUserRepository) GetByLoginAndPassword(ctx context.Context, login, password string) (models.UserModel, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetByLoginAndPassword", login, password)
+	ret := m.ctrl.Call(m, "GetByLoginAndPassword", ctx, login, password)
 	ret0, _ := ret[0].(models.UserModel)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetByLoginAndPassword indicates an expected call of GetByLoginAndPassword.
-func (mr *MockUserRepositoryMockRecorder) GetByLoginAndPassword(login, password interface{}) *gomock.Call {
+func (mr *MockUserRepositoryMockRecorder) GetByLoginAndPassword(ctx, login, password interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByLoginAndPassword", reflect.TypeOf((*MockUserRepository)(nil).GetByLoginAndPassword), login, password)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByLoginAndPassword", reflect.TypeOf((*MockUserRepository)(nil).GetByLoginAndPassword), ctx, login, password)
 }

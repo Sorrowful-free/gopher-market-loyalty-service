@@ -7,7 +7,7 @@ import (
 
 func (h *FiberHandlers) WithdrawalsHandler(c *fiber.Ctx) error {
 	userID := c.Locals(middlewares.UserIDKey).(string)
-	withdrawals, err := h.balanceService.GetWithdrawals(userID)
+	withdrawals, err := h.balanceService.GetWithdrawals(c.Context(), userID)
 
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{

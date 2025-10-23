@@ -8,7 +8,7 @@ import (
 func (h *FiberHandlers) GetOrdersListHandler(c *fiber.Ctx) error {
 
 	userID := c.Locals(middlewares.UserIDKey).(string)
-	orders, err := h.orderService.GetOrdersList(userID)
+	orders, err := h.orderService.GetOrdersList(c.Context(), userID)
 
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{

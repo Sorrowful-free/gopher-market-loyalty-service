@@ -12,7 +12,8 @@ import (
 
 func (h *FiberHandlers) LoginHandler(c *fiber.Ctx) error {
 	loginRequest := c.Locals(middlewares.RequestContentKey).(models.LoginRequest)
-	userID, err := h.userService.Login(loginRequest.Login, loginRequest.Password)
+	user, err := h.userService.Login(c.Context(), loginRequest.Login, loginRequest.Password)
+	userID := user.ID
 
 	var userServiceError services.UserServiceError
 	if errors.As(err, &userServiceError) && userServiceError.Code == services.UserServiceErrorUserNotFound {

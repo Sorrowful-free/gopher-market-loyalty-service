@@ -7,7 +7,7 @@ import (
 
 func (h *FiberHandlers) GetBalanceHandler(c *fiber.Ctx) error {
 	userID := c.Locals(middlewares.UserIDKey).(string)
-	balance, err := h.balanceService.GetBalance(userID)
+	balance, err := h.balanceService.GetBalance(c.Context(), userID)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Internal server error",
