@@ -2,14 +2,16 @@ package repositories
 
 import "fmt"
 
+type UserRepositoryErrorCode int
+
 const (
-	UserRepositoryErrorUserNotFound = iota
+	UserRepositoryErrorUserNotFound UserRepositoryErrorCode = iota
 	UserRepositoryErrorUserAlreadyExists
 	UserRepositoryErrorInternalError
 )
 
 type UserRepositoryError struct {
-	Code    int64
+	Code    UserRepositoryErrorCode
 	Message string
 }
 
@@ -17,6 +19,6 @@ func (e UserRepositoryError) Error() string {
 	return fmt.Sprintf("User repository error: %d - %s", e.Code, e.Message)
 }
 
-func NewUserRepositoryError(code int64, message string) UserRepositoryError {
+func NewUserRepositoryError(code UserRepositoryErrorCode, message string) UserRepositoryError {
 	return UserRepositoryError{Code: code, Message: message}
 }

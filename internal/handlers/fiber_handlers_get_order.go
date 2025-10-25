@@ -10,7 +10,7 @@ import (
 func (h *FiberHandlers) GetOrderHandler(c *fiber.Ctx) error {
 
 	orderID := c.Params("order")
-	order, err := h.orderService.GetOrder(orderID)
+	order, err := h.orderService.GetOrder(c.Context(), orderID)
 
 	var orderServiceError services.OrderServiceError
 	if errors.As(err, &orderServiceError) {

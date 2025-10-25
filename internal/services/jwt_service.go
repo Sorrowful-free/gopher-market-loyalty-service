@@ -5,21 +5,15 @@ import (
 	"time"
 
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/logger"
+	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/models"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
 )
 
-type JWTClaims struct {
-	UserID string `json:"user_id"`
-	jwt.RegisteredClaims
-}
-
-var EMPTY_JWT_CLAIMS = JWTClaims{}
-
 //go:generate mockgen -source=jwt_service.go -destination=mock_jwt_service.go -package=services
 type JWTService interface {
 	GenerateToken(userID string) (string, error)
-	ValidateToken(token string) (JWTClaims, error)
+	ValidateToken(token string) (models.JWTClaims, error)
 	ExtractToken(c *fiber.Ctx) (string, error)
 }
 
@@ -48,8 +42,8 @@ func (s *JWTServiceImpl) ExtractToken(c *fiber.Ctx) (string, error) {
 	return tokenParts[1], nil
 }
 
-func (s *JWTServiceImpl) ValidateToken(tokenString string) (JWTClaims, error) {
-	var claims JWTClaims
+func (s *JWTServiceImpl) ValidateToken(tokenString string) (models.JWTClaims, error) {
+	var claims models.JWTClaims
 	token, err := jwt.ParseWithClaims(tokenString, &claims, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			s.logger.Error("Invalid signing method")
@@ -59,25 +53,25 @@ func (s *JWTServiceImpl) ValidateToken(tokenString string) (JWTClaims, error) {
 	})
 
 	if err != nil {
-		return EMPTY_JWT_CLAIMS, err
+		return models.EMPTY_JWT_CLAIMS, err
 	}
 
 	if !token.Valid {
 		s.logger.Error("Invalid token")
-		return EMPTY_JWT_CLAIMS, fiber.NewError(fiber.StatusUnauthorized, "Invalid token")
+		return models.EMPTY_JWT_CLAIMS, fiber.NewError(fiber.StatusUnauthorized, "Invalid token")
 	}
 
-	newClaims, ok := (token.Claims).(*JWTClaims)
+	newClaims, ok := (token.Claims).(*models.JWTClaims)
 	if !ok {
 		s.logger.Error("Invalid token claims")
-		return EMPTY_JWT_CLAIMS, fiber.NewError(fiber.StatusUnauthorized, "Invalid token claims")
+		return models.EMPTY_JWT_CLAIMS, fiber.NewError(fiber.StatusUnauthorized, "Invalid token claims")
 	}
 
 	return *newClaims, nil
 }
 
 func (s *JWTServiceImpl) GenerateToken(userID string) (string, error) {
-	claims := &JWTClaims{
+	claims := &models.JWTClaims{
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),

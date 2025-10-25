@@ -2,11 +2,11 @@ package handlers
 
 import (
 	"bytes"
-	"context"
 	"errors"
 	"net/http/httptest"
 	"testing"
 
+	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/models"
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/services"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang/mock/gomock"
@@ -22,7 +22,7 @@ func TestRegisterHandler(t *testing.T) {
 
 	t.Run("successful_registration", func(t *testing.T) {
 
-		userService.EXPECT().Register(context.TODO(), gomock.Any(), gomock.Any()).Return("userID", nil)
+		userService.EXPECT().Register(gomock.Any(), gomock.Any(), gomock.Any()).Return(models.EMPTY_USER_MODEL, nil)
 		jwtService.EXPECT().GenerateToken(gomock.Any()).Return("token", nil)
 
 		req := httptest.NewRequest(fiber.MethodPost, TestRegisterUserPath, bytes.NewBuffer([]byte(TestLoginJSON)))
@@ -50,7 +50,7 @@ func TestRegisterHandler(t *testing.T) {
 
 	t.Run("failed_registration_with_existing_login", func(t *testing.T) {
 
-		userService.EXPECT().Register(context.TODO(), gomock.Any(), gomock.Any()).Return("userID", services.NewUserServiceError(services.UserServiceErrorUserExists, "User already exists"))
+		userService.EXPECT().Register(gomock.Any(), gomock.Any(), gomock.Any()).Return(models.EMPTY_USER_MODEL, services.NewUserServiceError(services.UserServiceErrorUserExists, "User already exists"))
 
 		req := httptest.NewRequest(fiber.MethodPost, TestRegisterUserPath, bytes.NewBuffer([]byte(TestLoginJSON)))
 		req.Header.Set(fiber.HeaderContentType, fiber.MIMEApplicationJSON)
@@ -64,7 +64,7 @@ func TestRegisterHandler(t *testing.T) {
 
 	t.Run("failed_registration_with_internal_error", func(t *testing.T) {
 
-		userService.EXPECT().Register(context.TODO(), gomock.Any(), gomock.Any()).Return("userID", errors.New("internal server error"))
+		userService.EXPECT().Register(gomock.Any(), gomock.Any(), gomock.Any()).Return(models.EMPTY_USER_MODEL, errors.New("internal server error"))
 
 		req := httptest.NewRequest(fiber.MethodPost, TestRegisterUserPath, bytes.NewBuffer([]byte(TestLoginJSON)))
 		req.Header.Set(fiber.HeaderContentType, fiber.MIMEApplicationJSON)

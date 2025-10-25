@@ -10,6 +10,4 @@ import (
 type UserRepository interface {
 	Create(ctx context.Context, login string, password string) (models.UserModel, error)
 	GetByLoginAndPassword(ctx context.Context, login string, password string) (models.UserModel, error)
-
-	GetBalance(ctx context.Context, userID string) (models.BalanceModel, error)
 }

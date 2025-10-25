@@ -7,7 +7,8 @@ package services
 import (
 	reflect "reflect"
 
-	v2 "github.com/gofiber/fiber/v2"
+	models "github.com/Sorrowful-free/gopher-market-loyalty-service/internal/models"
+	fiber "github.com/gofiber/fiber/v2"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -35,7 +36,7 @@ func (m *MockJWTService) EXPECT() *MockJWTServiceMockRecorder {
 }
 
 // ExtractToken mocks base method.
-func (m *MockJWTService) ExtractToken(c *v2.Ctx) (string, error) {
+func (m *MockJWTService) ExtractToken(c *fiber.Ctx) (string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ExtractToken", c)
 	ret0, _ := ret[0].(string)
@@ -65,10 +66,10 @@ func (mr *MockJWTServiceMockRecorder) GenerateToken(userID interface{}) *gomock.
 }
 
 // ValidateToken mocks base method.
-func (m *MockJWTService) ValidateToken(token string) (JWTClaims, error) {
+func (m *MockJWTService) ValidateToken(token string) (models.JWTClaims, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ValidateToken", token)
-	ret0, _ := ret[0].(JWTClaims)
+	ret0, _ := ret[0].(models.JWTClaims)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

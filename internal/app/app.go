@@ -16,8 +16,9 @@ type App struct {
 
 	db *sql.DB
 
-	userRepository  repositories.UserRepository
-	orderRepository repositories.OrderRepository
+	userRepository    repositories.UserRepository
+	orderRepository   repositories.OrderRepository
+	balanceRepository repositories.BalanceRepository
 
 	jwtService     services.JWTService
 	userService    services.UserService
@@ -59,6 +60,7 @@ func (a *App) BuildDatabase() error {
 func (a *App) BuildRepositories() error {
 	a.userRepository = repositories.NewPGUserRepository(a.db)
 	a.orderRepository = repositories.NewPGOrderRepository(a.db)
+	a.balanceRepository = repositories.NewPGBalanceRepository(a.db)
 	return nil
 }
 
@@ -66,7 +68,7 @@ func (a *App) BuildServices() error {
 	a.jwtService = services.NewJWTService(a.config.JwtSecret(), a.logger)
 	a.userService = services.NewUserService(a.userRepository)
 	a.orderService = services.NewOrderService(a.orderRepository)
-	a.balanceService = services.NewBalanceService(a.userRepository, a.orderRepository)
+	a.balanceService = services.NewBalanceService(a.balanceRepository)
 	return nil
 }
 

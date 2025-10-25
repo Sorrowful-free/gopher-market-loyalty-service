@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/models"
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/repositories"
@@ -17,12 +18,11 @@ type BalanceService interface {
 }
 
 type BalanceServiceImpl struct {
-	userRepository  repositories.UserRepository
-	orderRepository repositories.OrderRepository
+	balanceRepository repositories.BalanceRepository
 }
 
-func NewBalanceService(userRepository repositories.UserRepository, orderRepository repositories.OrderRepository) BalanceService {
-	return &BalanceServiceImpl{userRepository: userRepository, orderRepository: orderRepository}
+func NewBalanceService(balanceRepository repositories.BalanceRepository) BalanceService {
+	return &BalanceServiceImpl{balanceRepository: balanceRepository}
 }
 
 func (s *BalanceServiceImpl) GetBalance(ctx context.Context, userID string) (models.BalanceModel, error) {
@@ -30,7 +30,7 @@ func (s *BalanceServiceImpl) GetBalance(ctx context.Context, userID string) (mod
 		return models.EMPTY_BALANCE_MODEL, ctx.Err()
 	}
 
-	balance, err := s.userRepository.GetBalance(ctx, userID)
+	balance, err := s.balanceRepository.GetBalance(ctx, userID)
 	if err != nil {
 		return models.EMPTY_BALANCE_MODEL, err
 	}
@@ -54,11 +54,11 @@ func (s *BalanceServiceImpl) Withdraw(ctx context.Context, userID string, orderI
 		return NewBalanceServiceError(BalanceServiceErrorOrderIdIsInvalid, "Order id is invalid")
 	}
 
-	balance, err := s.userRepository.GetBalance(ctx, userID)
-	var userRepositoryError repositories.UserRepositoryError
-	if errors.As(err, &userRepositoryError) {
-		switch userRepositoryError.Code {
-		case repositories.UserRepositoryErrorUserNotFound:
+	balance, err := s.balanceRepository.GetBalance(ctx, userID)
+	var balanceRepositoryError repositories.BalanceRepositoryError
+	if errors.As(err, &balanceRepositoryError) {
+		switch balanceRepositoryError.Code {
+		case repositories.BalanceRepositoryErrorUserNotFound:
 			return NewBalanceServiceError(BalanceServiceErrorUserNotFound, "User not found")
 		}
 	}
@@ -71,7 +71,7 @@ func (s *BalanceServiceImpl) Withdraw(ctx context.Context, userID string, orderI
 		return NewBalanceServiceError(BalanceServiceErrorNotEnoughBalance, "Not enough balance")
 	}
 
-	return nil
+	return s.balanceRepository.Withdraw(ctx, userID, orderID, sum)
 }
 
 func (s *BalanceServiceImpl) GetWithdrawals(ctx context.Context, userID string) ([]models.WithdrawalModel, error) {
@@ -79,10 +79,19 @@ func (s *BalanceServiceImpl) GetWithdrawals(ctx context.Context, userID string) 
 		return nil, ctx.Err()
 	}
 
-	// withdrawals, err := s.orderRepository.GetWithdrawals(ctx, userID)
-	// if err != nil {
-	// 	return nil, err
-	// }
+	withdrawals, err := s.balanceRepository.GetWithdrawals(ctx, userID)
 
-	return nil, nil
+	var balanceRepositoryError repositories.BalanceRepositoryError
+	if errors.As(err, &balanceRepositoryError) {
+		switch balanceRepositoryError.Code {
+		case repositories.BalanceRepositoryErrorUserNotFound:
+			return models.EMPTY_ARRAY_OF_WITHDRAWAL_MODEL, NewBalanceServiceError(BalanceServiceErrorUserNotFound, "User not found")
+		}
+	}
+
+	if err != nil {
+		return models.EMPTY_ARRAY_OF_WITHDRAWAL_MODEL, fmt.Errorf("failed to get withdrawals: %w", err)
+	}
+
+	return withdrawals, nil
 }

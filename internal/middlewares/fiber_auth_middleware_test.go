@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/logger"
+	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/models"
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/services"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang/mock/gomock"
@@ -19,7 +20,7 @@ func TestFiberAuthMiddleware(t *testing.T) {
 	t.Run("successful_auth", func(t *testing.T) {
 
 		jwtService.EXPECT().ExtractToken(gomock.Any()).Return("token", nil)
-		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(&services.JWTClaims{}, nil)
+		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(models.EMPTY_JWT_CLAIMS, nil)
 
 		fiberApp := fiber.New()
 		fiberApp.Use(fiberAuthMiddleware.RequireAuth)
@@ -40,7 +41,7 @@ func TestFiberAuthMiddleware(t *testing.T) {
 	t.Run("failed_auth", func(t *testing.T) {
 
 		jwtService.EXPECT().ExtractToken(gomock.Any()).Return("token", nil)
-		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(nil, errors.New("invalid token"))
+		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(models.EMPTY_JWT_CLAIMS, errors.New("invalid token"))
 
 		fiberApp := fiber.New()
 		fiberApp.Use(fiberAuthMiddleware.RequireAuth)

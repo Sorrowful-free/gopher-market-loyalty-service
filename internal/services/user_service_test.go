@@ -17,15 +17,16 @@ func TestUserService(t *testing.T) {
 	userService := NewUserService(userRepository)
 
 	t.Run("successful_register", func(t *testing.T) {
-		userRepository.EXPECT().Create(context.TODO(), gomock.Any(), gomock.Any()).Return(models.UserModel{ID: "test_id"}, nil)
-		userID, err := userService.Register(context.TODO(), "test", "test")
+		userRepository.EXPECT().Create(gomock.Any(), gomock.Any(), gomock.Any()).Return(models.UserModel{ID: "test_id"}, nil)
+		user, err := userService.Register(context.TODO(), "test", "test")
+		userID := user.ID
 
 		require.Equal(t, "test_id", userID)
 		require.NoError(t, err)
 	})
 
 	t.Run("failed_register_with_user_already_exists", func(t *testing.T) {
-		userRepository.EXPECT().Create(context.TODO(), gomock.Any(), gomock.Any()).Return(models.UserModel{}, repositories.NewUserRepositoryError(repositories.UserRepositoryErrorUserAlreadyExists, "User already exists"))
+		userRepository.EXPECT().Create(gomock.Any(), gomock.Any(), gomock.Any()).Return(models.UserModel{}, repositories.NewUserRepositoryError(repositories.UserRepositoryErrorUserAlreadyExists, "User already exists"))
 		_, err := userService.Register(context.TODO(), "test", "test")
 
 		var userServiceError UserServiceError
@@ -35,22 +36,23 @@ func TestUserService(t *testing.T) {
 	})
 
 	t.Run("failed_register_with_internal_error", func(t *testing.T) {
-		userRepository.EXPECT().Create(context.TODO(), gomock.Any(), gomock.Any()).Return(models.UserModel{}, errors.New("internal server error"))
+		userRepository.EXPECT().Create(gomock.Any(), gomock.Any(), gomock.Any()).Return(models.UserModel{}, errors.New("internal server error"))
 		_, err := userService.Register(context.TODO(), "test", "test")
 
 		require.Error(t, err)
 	})
 
 	t.Run("successful_login", func(t *testing.T) {
-		userRepository.EXPECT().GetByLoginAndPassword(context.TODO(), gomock.Any(), gomock.Any()).Return(models.UserModel{ID: "test_id"}, nil)
-		userID, err := userService.Login(context.TODO(), "test", "test")
+		userRepository.EXPECT().GetByLoginAndPassword(gomock.Any(), gomock.Any(), gomock.Any()).Return(models.UserModel{ID: "test_id"}, nil)
+		user, err := userService.Login(context.TODO(), "test", "test")
+		userID := user.ID
 
 		require.Equal(t, "test_id", userID)
 		require.NoError(t, err)
 	})
 
 	t.Run("failed_login_with_user_not_found", func(t *testing.T) {
-		userRepository.EXPECT().GetByLoginAndPassword(context.TODO(), gomock.Any(), gomock.Any()).Return(models.UserModel{}, repositories.NewUserRepositoryError(repositories.UserRepositoryErrorUserNotFound, "User not found"))
+		userRepository.EXPECT().GetByLoginAndPassword(gomock.Any(), gomock.Any(), gomock.Any()).Return(models.UserModel{}, repositories.NewUserRepositoryError(repositories.UserRepositoryErrorUserNotFound, "User not found"))
 		_, err := userService.Login(context.TODO(), "test", "test")
 
 		var userServiceError UserServiceError
@@ -60,7 +62,7 @@ func TestUserService(t *testing.T) {
 	})
 
 	t.Run("failed_login_with_internal_error", func(t *testing.T) {
-		userRepository.EXPECT().GetByLoginAndPassword(context.TODO(), gomock.Any(), gomock.Any()).Return(models.UserModel{}, errors.New("internal server error"))
+		userRepository.EXPECT().GetByLoginAndPassword(gomock.Any(), gomock.Any(), gomock.Any()).Return(models.UserModel{}, errors.New("internal server error"))
 		_, err := userService.Login(context.TODO(), "test", "test")
 		require.Error(t, err)
 	})

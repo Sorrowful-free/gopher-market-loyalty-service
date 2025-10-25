@@ -2,11 +2,11 @@ package handlers
 
 import (
 	"bytes"
-	"context"
 	"errors"
 	"net/http/httptest"
 	"testing"
 
+	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/models"
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/services"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang/mock/gomock"
@@ -20,8 +20,8 @@ func TestWithdrawHandler(t *testing.T) {
 	jwtService := fiberHandlers.jwtService
 
 	t.Run("successful_withdraw", func(t *testing.T) {
-		balanceService.EXPECT().Withdraw(context.TODO(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil)
-		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(&services.JWTClaims{}, nil)
+		balanceService.EXPECT().Withdraw(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil)
+		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(models.EMPTY_JWT_CLAIMS, nil)
 		jwtService.EXPECT().ExtractToken(gomock.Any()).Return("userID", nil)
 
 		req := httptest.NewRequest(fiber.MethodPost, TestWithdrawPath, bytes.NewBuffer([]byte(TestWithdrawJSON)))
@@ -35,8 +35,8 @@ func TestWithdrawHandler(t *testing.T) {
 	})
 
 	t.Run("failed_withdraw_with_not_enough_balance", func(t *testing.T) {
-		balanceService.EXPECT().Withdraw(context.TODO(), gomock.Any(), gomock.Any(), gomock.Any()).Return(services.NewBalanceServiceError(services.BalanceServiceErrorNotEnoughBalance, "Not enough balance"))
-		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(&services.JWTClaims{}, nil)
+		balanceService.EXPECT().Withdraw(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(services.NewBalanceServiceError(services.BalanceServiceErrorNotEnoughBalance, "Not enough balance"))
+		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(models.EMPTY_JWT_CLAIMS, nil)
 		jwtService.EXPECT().ExtractToken(gomock.Any()).Return("userID", nil)
 
 		req := httptest.NewRequest(fiber.MethodPost, TestWithdrawPath, bytes.NewBuffer([]byte(TestWithdrawJSON)))
@@ -50,8 +50,8 @@ func TestWithdrawHandler(t *testing.T) {
 	})
 
 	t.Run("failed_withdraw_with_not_wrong_order", func(t *testing.T) {
-		balanceService.EXPECT().Withdraw(context.TODO(), gomock.Any(), gomock.Any(), gomock.Any()).Return(services.NewBalanceServiceError(services.BalanceServiceErrorWrongOrder, "Wrong order"))
-		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(&services.JWTClaims{}, nil)
+		balanceService.EXPECT().Withdraw(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(services.NewBalanceServiceError(services.BalanceServiceErrorWrongOrder, "Wrong order"))
+		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(models.EMPTY_JWT_CLAIMS, nil)
 		jwtService.EXPECT().ExtractToken(gomock.Any()).Return("userID", nil)
 
 		req := httptest.NewRequest(fiber.MethodPost, TestWithdrawPath, bytes.NewBuffer([]byte(TestWithdrawJSON)))
@@ -65,8 +65,8 @@ func TestWithdrawHandler(t *testing.T) {
 	})
 
 	t.Run("failed_withdraw_with_internal_error", func(t *testing.T) {
-		balanceService.EXPECT().Withdraw(context.TODO(), gomock.Any(), gomock.Any(), gomock.Any()).Return(errors.New("internal server error"))
-		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(&services.JWTClaims{}, nil)
+		balanceService.EXPECT().Withdraw(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(errors.New("internal server error"))
+		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(models.EMPTY_JWT_CLAIMS, nil)
 		jwtService.EXPECT().ExtractToken(gomock.Any()).Return("userID", nil)
 
 		req := httptest.NewRequest(fiber.MethodPost, TestWithdrawPath, bytes.NewBuffer([]byte(TestWithdrawJSON)))

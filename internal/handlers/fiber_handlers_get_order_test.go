@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"context"
 	"errors"
 	"net/http/httptest"
 	"testing"
@@ -19,7 +18,7 @@ func TestGetOrderHandler(t *testing.T) {
 	orderService := fiberHandlers.orderService
 
 	t.Run("successful_get_order", func(t *testing.T) {
-		orderService.EXPECT().GetOrder(context.TODO(), gomock.Any()).Return(models.OrderModel{
+		orderService.EXPECT().GetOrder(gomock.Any(), gomock.Any()).Return(models.OrderModel{
 			Order:   TestOrderID,
 			Status:  models.OrderStatusNew,
 			Accrual: 100,
@@ -34,7 +33,7 @@ func TestGetOrderHandler(t *testing.T) {
 	})
 
 	t.Run("successful_get_order_with_order_not_found", func(t *testing.T) {
-		orderService.EXPECT().GetOrder(context.TODO(), gomock.Any()).Return(models.OrderModel{}, services.NewOrderServiceError(services.OrderServiceErrorOrderNotFound, "Order not found"))
+		orderService.EXPECT().GetOrder(gomock.Any(), gomock.Any()).Return(models.OrderModel{}, services.NewOrderServiceError(services.OrderServiceErrorOrderNotFound, "Order not found"))
 		req := httptest.NewRequest(fiber.MethodGet, TestGetOrderPath, nil)
 		resp, err := fiberApp.Test(req)
 		if err != nil {
@@ -45,7 +44,7 @@ func TestGetOrderHandler(t *testing.T) {
 	})
 
 	t.Run("failed_get_order_with_too_many_requests", func(t *testing.T) {
-		orderService.EXPECT().GetOrder(context.TODO(), gomock.Any()).Return(models.OrderModel{}, services.NewOrderServiceError(services.OrderServiceErrorOrderTooManyRequests, "Too many requests"))
+		orderService.EXPECT().GetOrder(gomock.Any(), gomock.Any()).Return(models.OrderModel{}, services.NewOrderServiceError(services.OrderServiceErrorOrderTooManyRequests, "Too many requests"))
 		req := httptest.NewRequest(fiber.MethodGet, TestGetOrderPath, nil)
 		resp, err := fiberApp.Test(req)
 		if err != nil {
@@ -56,7 +55,7 @@ func TestGetOrderHandler(t *testing.T) {
 	})
 
 	t.Run("failed_get_order_with_internal_error", func(t *testing.T) {
-		orderService.EXPECT().GetOrder(context.TODO(), gomock.Any()).Return(models.OrderModel{}, errors.New("internal server error"))
+		orderService.EXPECT().GetOrder(gomock.Any(), gomock.Any()).Return(models.OrderModel{}, errors.New("internal server error"))
 		req := httptest.NewRequest(fiber.MethodGet, TestGetOrderPath, nil)
 		resp, err := fiberApp.Test(req)
 		if err != nil {
