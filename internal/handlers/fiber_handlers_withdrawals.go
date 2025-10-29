@@ -6,7 +6,7 @@ import (
 )
 
 func (h *FiberHandlers) WithdrawalsHandler(c *fiber.Ctx) error {
-	userID := c.Locals(middlewares.UserIDKey).(string)
+	userID := c.Locals(middlewares.UserKey).(string)
 	withdrawals, err := h.balanceService.GetWithdrawals(c.Context(), userID)
 
 	if err != nil {

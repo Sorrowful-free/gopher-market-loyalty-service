@@ -36,22 +36,22 @@ func (m *MockOrderService) EXPECT() *MockOrderServiceMockRecorder {
 }
 
 // CreateOrder mocks base method.
-func (m *MockOrderService) CreateOrder(ctx context.Context, userID, order string) (models.OrderModel, error) {
+func (m *MockOrderService) CreateOrder(ctx context.Context, userID, orderID int) (models.OrderModel, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateOrder", ctx, userID, order)
+	ret := m.ctrl.Call(m, "CreateOrder", ctx, userID, orderID)
 	ret0, _ := ret[0].(models.OrderModel)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // CreateOrder indicates an expected call of CreateOrder.
-func (mr *MockOrderServiceMockRecorder) CreateOrder(ctx, userID, order interface{}) *gomock.Call {
+func (mr *MockOrderServiceMockRecorder) CreateOrder(ctx, userID, orderID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateOrder", reflect.TypeOf((*MockOrderService)(nil).CreateOrder), ctx, userID, order)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateOrder", reflect.TypeOf((*MockOrderService)(nil).CreateOrder), ctx, userID, orderID)
 }
 
 // GetOrder mocks base method.
-func (m *MockOrderService) GetOrder(ctx context.Context, orderID string) (models.OrderModel, error) {
+func (m *MockOrderService) GetOrder(ctx context.Context, orderID int) (models.OrderModel, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetOrder", ctx, orderID)
 	ret0, _ := ret[0].(models.OrderModel)
@@ -66,7 +66,7 @@ func (mr *MockOrderServiceMockRecorder) GetOrder(ctx, orderID interface{}) *gomo
 }
 
 // GetOrdersList mocks base method.
-func (m *MockOrderService) GetOrdersList(ctx context.Context, userID string) ([]models.OrderModel, error) {
+func (m *MockOrderService) GetOrdersList(ctx context.Context, userID int) ([]models.OrderModel, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetOrdersList", ctx, userID)
 	ret0, _ := ret[0].([]models.OrderModel)

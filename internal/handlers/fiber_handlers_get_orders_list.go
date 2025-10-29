@@ -7,7 +7,7 @@ import (
 
 func (h *FiberHandlers) GetOrdersListHandler(c *fiber.Ctx) error {
 
-	userID := c.Locals(middlewares.UserIDKey).(string)
+	userID := c.Locals(middlewares.UserKey).(int)
 	orders, err := h.orderService.GetOrdersList(c.Context(), userID)
 
 	if err != nil {

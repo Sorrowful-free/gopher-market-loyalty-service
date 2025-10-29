@@ -17,11 +17,11 @@ func TestUserService(t *testing.T) {
 	userService := NewUserService(userRepository)
 
 	t.Run("successful_register", func(t *testing.T) {
-		userRepository.EXPECT().Create(gomock.Any(), gomock.Any(), gomock.Any()).Return(models.UserModel{ID: "test_id"}, nil)
+		userRepository.EXPECT().Create(gomock.Any(), gomock.Any(), gomock.Any()).Return(models.UserModel{ID: TestUserID}, nil)
 		user, err := userService.Register(context.TODO(), "test", "test")
 		userID := user.ID
 
-		require.Equal(t, "test_id", userID)
+		require.Equal(t, TestUserID, userID)
 		require.NoError(t, err)
 	})
 
@@ -43,11 +43,11 @@ func TestUserService(t *testing.T) {
 	})
 
 	t.Run("successful_login", func(t *testing.T) {
-		userRepository.EXPECT().GetByLoginAndPassword(gomock.Any(), gomock.Any(), gomock.Any()).Return(models.UserModel{ID: "test_id"}, nil)
+		userRepository.EXPECT().GetByLoginAndPassword(gomock.Any(), gomock.Any(), gomock.Any()).Return(models.UserModel{ID: TestUserID}, nil)
 		user, err := userService.Login(context.TODO(), "test", "test")
 		userID := user.ID
 
-		require.Equal(t, "test_id", userID)
+		require.Equal(t, TestUserID, userID)
 		require.NoError(t, err)
 	})
 

@@ -16,6 +16,7 @@ var userNotFoundError = NewUserServiceError(UserServiceErrorUserNotFound, "User 
 type UserService interface {
 	Register(ctx context.Context, login string, password string) (models.UserModel, error)
 	Login(ctx context.Context, login string, password string) (models.UserModel, error)
+	GetUser(ctx context.Context, userID int) (models.UserModel, error)
 }
 
 type UserServiceImpl struct {
@@ -65,4 +66,8 @@ func (s *UserServiceImpl) Login(ctx context.Context, login string, password stri
 		return models.EMPTY_USER_MODEL, fmt.Errorf("failed to get user: %w", err)
 	}
 	return user, nil
+}
+
+func (s *UserServiceImpl) GetUser(userID int) (models.UserModel, error) {
+	return models.EMPTY_USER_MODEL, nil
 }

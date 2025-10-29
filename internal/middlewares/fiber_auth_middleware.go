@@ -2,28 +2,38 @@ package middlewares
 
 import (
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/logger"
+	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/models"
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/services"
 	"github.com/gofiber/fiber/v2"
 )
 
 const (
-	UserIDKey = "user_id"
-	LoginKey  = "login"
+	UserKey  = "user_id"
+	LoginKey = "login"
 )
 
 type FiberAuthMiddleware struct {
-	logger     logger.Logger
-	jwtService services.JWTService
+	logger      logger.Logger
+	jwtService  services.JWTService
+	userService services.UserService
 }
 
-func NewFiberAuthMiddleware(logger logger.Logger, jwtService services.JWTService) *FiberAuthMiddleware {
+func NewFiberAuthMiddleware(logger logger.Logger, jwtService services.JWTService, userService services.UserService) *FiberAuthMiddleware {
 	return &FiberAuthMiddleware{
-		logger:     logger,
-		jwtService: jwtService,
+		logger:      logger,
+		jwtService:  jwtService,
+		userService: userService,
 	}
 }
 
 func (m *FiberAuthMiddleware) RequireAuth(c *fiber.Ctx) error {
+
+	ctx := c.Context()
+
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	token, err := m.jwtService.ExtractToken(c)
 	if err != nil {
 		m.logger.Error("Failed to extract token", "error", err)
@@ -40,7 +50,27 @@ func (m *FiberAuthMiddleware) RequireAuth(c *fiber.Ctx) error {
 		})
 	}
 
-	c.Locals(UserIDKey, claims.UserID)
+	user, err := m.userService.GetUser(ctx, claims.UserID)
 
+	if err != nil {
+		m.logger.Error("Failed to validate token", "error", err)
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
+	SetUser(c, user)
 	return c.Next()
+}
+
+func GetUser(c *fiber.Ctx) (models.UserModel, error) {
+	user, ok := c.Locals(UserKey).(models.UserModel)
+	if ok {
+		return user, nil
+	}
+	return models.EMPTY_USER_MODEL, NewFiberAuthMiddlewareError("Cannot convert user struct")
+}
+
+func SetUser(c *fiber.Ctx, user models.UserModel) {
+	c.Locals(UserKey, user)
 }

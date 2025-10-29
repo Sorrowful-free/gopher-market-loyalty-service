@@ -36,7 +36,7 @@ func (m *MockBalanceService) EXPECT() *MockBalanceServiceMockRecorder {
 }
 
 // GetBalance mocks base method.
-func (m *MockBalanceService) GetBalance(ctx context.Context, userID string) (models.BalanceModel, error) {
+func (m *MockBalanceService) GetBalance(ctx context.Context, userID int) (models.BalanceModel, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetBalance", ctx, userID)
 	ret0, _ := ret[0].(models.BalanceModel)
@@ -51,7 +51,7 @@ func (mr *MockBalanceServiceMockRecorder) GetBalance(ctx, userID interface{}) *g
 }
 
 // GetWithdrawals mocks base method.
-func (m *MockBalanceService) GetWithdrawals(ctx context.Context, userID string) ([]models.WithdrawalModel, error) {
+func (m *MockBalanceService) GetWithdrawals(ctx context.Context, userID int) ([]models.WithdrawalModel, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetWithdrawals", ctx, userID)
 	ret0, _ := ret[0].([]models.WithdrawalModel)
@@ -66,7 +66,7 @@ func (mr *MockBalanceServiceMockRecorder) GetWithdrawals(ctx, userID interface{}
 }
 
 // Withdraw mocks base method.
-func (m *MockBalanceService) Withdraw(ctx context.Context, userID, orderID string, sum float64) error {
+func (m *MockBalanceService) Withdraw(ctx context.Context, userID, orderID int, sum float64) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Withdraw", ctx, userID, orderID, sum)
 	ret0, _ := ret[0].(error)

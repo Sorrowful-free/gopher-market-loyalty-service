@@ -51,7 +51,7 @@ func (mr *MockJWTServiceMockRecorder) ExtractToken(c interface{}) *gomock.Call {
 }
 
 // GenerateToken mocks base method.
-func (m *MockJWTService) GenerateToken(userID string) (string, error) {
+func (m *MockJWTService) GenerateToken(userID int) (string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GenerateToken", userID)
 	ret0, _ := ret[0].(string)

@@ -11,7 +11,7 @@ import (
 
 func (h *FiberHandlers) WithdrawHandler(c *fiber.Ctx) error {
 	withdrawRequest := c.Locals(middlewares.RequestContentKey).(models.WithdrawRequest)
-	userID := c.Locals(middlewares.UserIDKey).(string)
+	userID := c.Locals(middlewares.UserKey).(string)
 
 	err := h.balanceService.Withdraw(c.Context(), userID, withdrawRequest.Order, float64(withdrawRequest.Sum))
 
