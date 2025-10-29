@@ -1,20 +1,21 @@
 package app
 
 import (
-	"database/sql"
+	"context"
 
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/config"
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/handlers"
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/logger"
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/repositories"
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/services"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type App struct {
 	logger logger.Logger
 	config config.Config
 
-	db *sql.DB
+	pgxPool *pgxpool.Pool
 
 	userRepository    repositories.UserRepository
 	orderRepository   repositories.OrderRepository
@@ -48,19 +49,21 @@ func (a *App) BuildLogger() error {
 }
 
 func (a *App) BuildDatabase() error {
-	db, err := sql.Open("postgres", a.config.DatabaseURI())
-	if err != nil {
-		a.logger.Error("Failed to open database", "error", err)
+	pgxPool, err := pgxpool.New(context.Background(), a.config.DatabaseURI())
+
+	if err == nil {
+		a.logger.Error("Failed to connect to pgx", "error", err)
 		return err
 	}
-	a.db = db
+
+	a.pgxPool = pgxPool
 	return nil
 }
 
 func (a *App) BuildRepositories() error {
-	a.userRepository = repositories.NewPGUserRepository(a.db)
-	a.orderRepository = repositories.NewPGOrderRepository(a.db)
-	a.balanceRepository = repositories.NewPGBalanceRepository(a.db)
+	a.userRepository = repositories.NewPGXUserRepository(a.pgxPool)
+	a.orderRepository = repositories.NewPGXOrderRepository(a.pgxPool)
+	a.balanceRepository = repositories.NewPGXBalanceRepository(a.pgxPool)
 	return nil
 }
 

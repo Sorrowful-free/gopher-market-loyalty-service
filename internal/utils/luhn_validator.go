@@ -1,10 +1,15 @@
 package utils
 
-func ValidateLuhn(number string) bool {
+import "strconv"
+
+func ValidateLuhn(number int) bool {
+
+	numberString := strconv.Itoa(number)
+
 	sum := 0
-	length := len(number)
+	length := len(numberString)
 	for i := 0; i < length; i++ {
-		digit := int(number[i] - '0')
+		digit := int(numberString[i] - '0')
 		if (length-i)%2 == 0 {
 			digit = digit * 2
 			if digit > 9 {

@@ -12,9 +12,9 @@ import (
 
 //go:generate mockgen -source=balance_service.go -destination=mock_balance_service.go -package=services
 type BalanceService interface {
-	GetBalance(ctx context.Context, userID string) (models.BalanceModel, error)
-	Withdraw(ctx context.Context, userID string, orderID string, sum float64) error
-	GetWithdrawals(ctx context.Context, userID string) ([]models.WithdrawalModel, error)
+	GetBalance(ctx context.Context, userID int) (models.BalanceModel, error)
+	Withdraw(ctx context.Context, userID int, orderID int, sum float64) error
+	GetWithdrawals(ctx context.Context, userID int) ([]models.WithdrawalModel, error)
 }
 
 type BalanceServiceImpl struct {
@@ -25,7 +25,7 @@ func NewBalanceService(balanceRepository repositories.BalanceRepository) Balance
 	return &BalanceServiceImpl{balanceRepository: balanceRepository}
 }
 
-func (s *BalanceServiceImpl) GetBalance(ctx context.Context, userID string) (models.BalanceModel, error) {
+func (s *BalanceServiceImpl) GetBalance(ctx context.Context, userID int) (models.BalanceModel, error) {
 	if ctx.Err() != nil {
 		return models.EMPTY_BALANCE_MODEL, ctx.Err()
 	}
@@ -45,7 +45,7 @@ func (s *BalanceServiceImpl) GetBalance(ctx context.Context, userID string) (mod
 	return balance, nil
 }
 
-func (s *BalanceServiceImpl) Withdraw(ctx context.Context, userID string, orderID string, sum float64) error {
+func (s *BalanceServiceImpl) Withdraw(ctx context.Context, userID int, orderID int, sum float64) error {
 	if ctx.Err() != nil {
 		return ctx.Err()
 	}
@@ -74,7 +74,7 @@ func (s *BalanceServiceImpl) Withdraw(ctx context.Context, userID string, orderI
 	return s.balanceRepository.Withdraw(ctx, userID, orderID, sum)
 }
 
-func (s *BalanceServiceImpl) GetWithdrawals(ctx context.Context, userID string) ([]models.WithdrawalModel, error) {
+func (s *BalanceServiceImpl) GetWithdrawals(ctx context.Context, userID int) ([]models.WithdrawalModel, error) {
 	if ctx.Err() != nil {
 		return nil, ctx.Err()
 	}

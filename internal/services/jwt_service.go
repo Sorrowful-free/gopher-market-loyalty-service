@@ -12,7 +12,7 @@ import (
 
 //go:generate mockgen -source=jwt_service.go -destination=mock_jwt_service.go -package=services
 type JWTService interface {
-	GenerateToken(userID string) (string, error)
+	GenerateToken(userID int64) (string, error)
 	ValidateToken(token string) (models.JWTClaims, error)
 	ExtractToken(c *fiber.Ctx) (string, error)
 }
@@ -70,7 +70,7 @@ func (s *JWTServiceImpl) ValidateToken(tokenString string) (models.JWTClaims, er
 	return *newClaims, nil
 }
 
-func (s *JWTServiceImpl) GenerateToken(userID string) (string, error) {
+func (s *JWTServiceImpl) GenerateToken(userID int64) (string, error) {
 	claims := &models.JWTClaims{
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),

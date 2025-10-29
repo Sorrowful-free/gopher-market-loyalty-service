@@ -11,9 +11,9 @@ import (
 
 //go:generate mockgen -source=order_service.go -destination=mock_order_service.go -package=services
 type OrderService interface {
-	CreateOrder(ctx context.Context, userID string, order string) (models.OrderModel, error)
-	GetOrdersList(ctx context.Context, userID string) ([]models.OrderModel, error)
-	GetOrder(ctx context.Context, orderID string) (models.OrderModel, error)
+	CreateOrder(ctx context.Context, userID int, orderID int) (models.OrderModel, error)
+	GetOrdersList(ctx context.Context, userID int) ([]models.OrderModel, error)
+	GetOrder(ctx context.Context, orderID int) (models.OrderModel, error)
 }
 
 type OrderServiceImpl struct {
@@ -24,16 +24,16 @@ func NewOrderService(orderRepository repositories.OrderRepository) OrderService 
 	return &OrderServiceImpl{orderRepository: orderRepository}
 }
 
-func (s *OrderServiceImpl) CreateOrder(ctx context.Context, userID string, order string) (models.OrderModel, error) {
+func (s *OrderServiceImpl) CreateOrder(ctx context.Context, userID int, orderID int) (models.OrderModel, error) {
 	if ctx.Err() != nil {
 		return models.EMPTY_ORDER_MODEL, ctx.Err()
 	}
 
-	if !utils.ValidateLuhn(order) {
+	if !utils.ValidateLuhn(orderID) {
 		return models.EMPTY_ORDER_MODEL, NewOrderServiceError(OrderServiceErrorOrderIdIsInvalid, "Order id is invalid")
 	}
 
-	orderModel, err := s.orderRepository.CreateOrder(userID, order)
+	orderModel, err := s.orderRepository.CreateOrder(userID, orderID)
 
 	var orderRepositoryError repositories.OrderRepositoryError
 	if errors.As(err, &orderRepositoryError) {
@@ -51,7 +51,7 @@ func (s *OrderServiceImpl) CreateOrder(ctx context.Context, userID string, order
 	return orderModel, nil
 }
 
-func (s *OrderServiceImpl) GetOrdersList(ctx context.Context, userID string) ([]models.OrderModel, error) {
+func (s *OrderServiceImpl) GetOrdersList(ctx context.Context, userID int) ([]models.OrderModel, error) {
 	if ctx.Err() != nil {
 		return []models.OrderModel{}, ctx.Err()
 	}
@@ -63,7 +63,7 @@ func (s *OrderServiceImpl) GetOrdersList(ctx context.Context, userID string) ([]
 	return orders, nil
 }
 
-func (s *OrderServiceImpl) GetOrder(ctx context.Context, orderID string) (models.OrderModel, error) {
+func (s *OrderServiceImpl) GetOrder(ctx context.Context, orderID int) (models.OrderModel, error) {
 
 	if ctx.Err() != nil {
 		return models.EMPTY_ORDER_MODEL, ctx.Err()

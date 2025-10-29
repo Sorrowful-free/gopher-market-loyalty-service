@@ -10,8 +10,8 @@ import (
 
 func (h *FiberHandlers) CreateOrderHandler(c *fiber.Ctx) error {
 
-	createOrderRequest := c.Locals(middlewares.RequestContentKey).(string)
-	userID := c.Locals(middlewares.UserIDKey).(string)
+	createOrderRequest := c.Locals(middlewares.RequestContentKey).(int)
+	userID := c.Locals(middlewares.UserIDKey).(int)
 
 	_, err := h.orderService.CreateOrder(c.Context(), userID, createOrderRequest)
 
