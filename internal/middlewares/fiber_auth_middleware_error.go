@@ -7,7 +7,7 @@ type FiberAuthMiddlewareError struct {
 }
 
 func (e FiberAuthMiddlewareError) Error() string {
-	return fmt.Sprintf("Order repository error: %s", e.Message)
+	return fmt.Sprintf("Auth error: %s", e.Message)
 }
 
 func NewFiberAuthMiddlewareError(message string) FiberAuthMiddlewareError {

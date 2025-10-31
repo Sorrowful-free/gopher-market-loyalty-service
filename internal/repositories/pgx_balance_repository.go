@@ -17,12 +17,12 @@ func NewPGXBalanceRepository(pgxPool *pgxpool.Pool) *PGXBalanceRepository {
 	}
 }
 
-func (r *PGXBalanceRepository) GetBalance(ctx context.Context, userID string) (models.BalanceModel, error) {
+func (r *PGXBalanceRepository) GetBalance(ctx context.Context, userID int) (models.BalanceModel, error) {
 	return models.EMPTY_BALANCE_MODEL, nil
 }
-func (r *PGXBalanceRepository) Withdraw(ctx context.Context, userID string, orderID string, sum float64) error {
+func (r *PGXBalanceRepository) Withdraw(ctx context.Context, userID int, orderID int, sum float64) error {
 	return nil
 }
-func (r *PGXBalanceRepository) GetWithdrawals(ctx context.Context, userID string) ([]models.WithdrawalModel, error) {
+func (r *PGXBalanceRepository) GetWithdrawals(ctx context.Context, userID int) ([]models.WithdrawalModel, error) {
 	return []models.WithdrawalModel{}, nil
 }

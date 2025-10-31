@@ -6,7 +6,15 @@ import (
 )
 
 func (h *FiberHandlers) WithdrawalsHandler(c *fiber.Ctx) error {
-	userID := c.Locals(middlewares.UserKey).(string)
+	user, err := middlewares.GetUser(c)
+
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Internal server error",
+		})
+	}
+
+	userID := user.ID
 	withdrawals, err := h.balanceService.GetWithdrawals(c.Context(), userID)
 
 	if err != nil {

@@ -19,7 +19,7 @@ func TestGetOrderHandler(t *testing.T) {
 
 	t.Run("successful_get_order", func(t *testing.T) {
 		orderService.EXPECT().GetOrder(gomock.Any(), gomock.Any()).Return(models.OrderModel{
-			Order:   TestOrderID,
+			OrderID: TestOrderID,
 			Status:  models.OrderStatusNew,
 			Accrual: 100,
 		}, nil)

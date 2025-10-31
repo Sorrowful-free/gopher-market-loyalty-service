@@ -68,6 +68,6 @@ func (s *UserServiceImpl) Login(ctx context.Context, login string, password stri
 	return user, nil
 }
 
-func (s *UserServiceImpl) GetUser(userID int) (models.UserModel, error) {
+func (s *UserServiceImpl) GetUser(ctx context.Context, userID int) (models.UserModel, error) {
 	return models.EMPTY_USER_MODEL, nil
 }

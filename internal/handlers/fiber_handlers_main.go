@@ -35,13 +35,13 @@ func (h *FiberHandlers) BuildGroups() {
 }
 
 func (h *FiberHandlers) BuildAuthMiddleware() {
-	h.authMiddleware = middlewares.NewFiberAuthMiddleware(h.logger, h.jwtService)
+	h.authMiddleware = middlewares.NewFiberAuthMiddleware(h.logger, h.jwtService, h.userService)
 }
 
 func (h *FiberHandlers) BuildRoutes() {
 
-	h.userGroup.Post(RegisterUserPath, middlewares.ValidateRequestAsJSON(models.RegisterRequest{}), h.RegisterHandler)
-	h.userGroup.Post(LoginUserPath, middlewares.ValidateRequestAsJSON(models.LoginRequest{}), h.LoginHandler)
+	h.userGroup.Post(RegisterUserPath, middlewares.ValidateRequestAsJSON[models.RegisterRequest](), h.RegisterHandler)
+	h.userGroup.Post(LoginUserPath, middlewares.ValidateRequestAsJSON[models.LoginRequest](), h.LoginHandler)
 
 	h.orderGroup.Post(CreateOrderPath, h.authMiddleware.RequireAuth, middlewares.ValidateRequestAsText(), h.CreateOrderHandler)
 	h.orderGroup.Get(GetOrdersListPath, h.authMiddleware.RequireAuth, h.GetOrdersListHandler)
@@ -49,7 +49,7 @@ func (h *FiberHandlers) BuildRoutes() {
 
 	h.balanceGroup.Use(h.authMiddleware.RequireAuth)
 	h.balanceGroup.Get(GetBalancePath, h.GetBalanceHandler)
-	h.balanceGroup.Post(WithdrawPath, middlewares.ValidateRequestAsJSON(models.WithdrawRequest{}), h.WithdrawHandler)
+	h.balanceGroup.Post(WithdrawPath, middlewares.ValidateRequestAsJSON[models.WithdrawRequest](), h.WithdrawHandler)
 	h.balanceGroup.Get(WithdrawalsPath, h.WithdrawalsHandler)
 }
 

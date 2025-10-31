@@ -10,10 +10,24 @@ import (
 )
 
 func (h *FiberHandlers) WithdrawHandler(c *fiber.Ctx) error {
-	withdrawRequest := c.Locals(middlewares.RequestContentKey).(models.WithdrawRequest)
-	userID := c.Locals(middlewares.UserKey).(string)
 
-	err := h.balanceService.Withdraw(c.Context(), userID, withdrawRequest.Order, float64(withdrawRequest.Sum))
+	user, err := middlewares.GetUser(c)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Internal server error",
+		})
+	}
+
+	userID := user.ID
+
+	withdrawRequest, err := middlewares.GetRequestBody[models.WithdrawRequest](c)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Internal server error",
+		})
+	}
+
+	err = h.balanceService.Withdraw(c.Context(), userID, withdrawRequest.Order, float64(withdrawRequest.Sum))
 
 	var balanceServiceError services.BalanceServiceError
 	if errors.As(err, &balanceServiceError) {

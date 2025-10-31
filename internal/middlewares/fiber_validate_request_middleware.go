@@ -6,7 +6,7 @@ const (
 	RequestContentKey = "request_content"
 )
 
-func ValidateRequestAsJSON[T any](requestContent T) func(c *fiber.Ctx) error {
+func ValidateRequestAsJSON[T any]() func(c *fiber.Ctx) error {
 
 	return func(c *fiber.Ctx) error {
 		actualContentType := c.Get(fiber.HeaderContentType)
@@ -17,7 +17,7 @@ func ValidateRequestAsJSON[T any](requestContent T) func(c *fiber.Ctx) error {
 				"actual":   actualContentType,
 			})
 		}
-
+		var requestContent T
 		if err := c.BodyParser(&requestContent); err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 				"error": "Invalid request body",
@@ -48,5 +48,13 @@ func ValidateRequestAsText() func(c *fiber.Ctx) error {
 
 		return c.Next()
 	}
+}
 
+func GetRequestBody[T any](c *fiber.Ctx) (T, error) {
+	bodyRaw := c.Locals(RequestContentKey)
+	bodyT, ok := bodyRaw.(T)
+	if !ok {
+		return bodyT, NewFiberValidaterRequestMiddlewareError("Cannot conver request body")
+	}
+	return bodyT, nil
 }

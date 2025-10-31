@@ -59,7 +59,7 @@ func (m *FiberAuthMiddleware) RequireAuth(c *fiber.Ctx) error {
 		})
 	}
 
-	SetUser(c, user)
+	c.Locals(UserKey, user)
 	return c.Next()
 }
 
@@ -69,8 +69,4 @@ func GetUser(c *fiber.Ctx) (models.UserModel, error) {
 		return user, nil
 	}
 	return models.EMPTY_USER_MODEL, NewFiberAuthMiddlewareError("Cannot convert user struct")
-}
-
-func SetUser(c *fiber.Ctx, user models.UserModel) {
-	c.Locals(UserKey, user)
 }

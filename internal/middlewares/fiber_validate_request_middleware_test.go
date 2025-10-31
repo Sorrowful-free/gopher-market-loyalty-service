@@ -14,7 +14,7 @@ func TestFiberValidateRequestMiddleware(t *testing.T) {
 
 	t.Run("successful_validate_json_request", func(t *testing.T) {
 		fiberApp := fiber.New()
-		fiberApp.Use(ValidateRequestAsJSON(models.LoginRequest{}))
+		fiberApp.Use(ValidateRequestAsJSON[models.LoginRequest]())
 		fiberApp.Post("/", func(c *fiber.Ctx) error {
 			c.Status(fiber.StatusOK)
 			return nil
@@ -31,7 +31,7 @@ func TestFiberValidateRequestMiddleware(t *testing.T) {
 
 	t.Run("failed_validate_json_request", func(t *testing.T) {
 		fiberApp := fiber.New()
-		fiberApp.Use(ValidateRequestAsJSON(models.LoginRequest{}))
+		fiberApp.Use(ValidateRequestAsJSON[models.LoginRequest]())
 		fiberApp.Post("/", func(c *fiber.Ctx) error {
 			c.Status(fiber.StatusOK)
 			return nil
@@ -49,7 +49,7 @@ func TestFiberValidateRequestMiddleware(t *testing.T) {
 
 	t.Run("failed_validate_json_request_with_wrong_content_type", func(t *testing.T) {
 		fiberApp := fiber.New()
-		fiberApp.Use(ValidateRequestAsJSON(models.LoginRequest{}))
+		fiberApp.Use(ValidateRequestAsJSON[models.LoginRequest]())
 		fiberApp.Post("/", func(c *fiber.Ctx) error {
 			c.Status(fiber.StatusOK)
 			return nil
