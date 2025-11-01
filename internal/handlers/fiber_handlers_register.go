@@ -12,7 +12,13 @@ import (
 
 func (h *FiberHandlers) RegisterHandler(c *fiber.Ctx) error {
 
-	registerRequest := c.Locals(middlewares.RequestContentKey).(models.RegisterRequest)
+	registerRequest, err := middlewares.GetRequestBody[models.RegisterRequest](c)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": fmt.Sprintf("Internal server error: %s", err.Error()),
+		})
+	}
+
 	user, err := h.userService.Register(c.Context(), registerRequest.Login, registerRequest.Password)
 	userID := user.ID
 

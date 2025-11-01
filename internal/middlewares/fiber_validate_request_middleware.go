@@ -49,12 +49,3 @@ func ValidateRequestAsText() func(c *fiber.Ctx) error {
 		return c.Next()
 	}
 }
-
-func GetRequestBody[T any](c *fiber.Ctx) (T, error) {
-	bodyRaw := c.Locals(RequestContentKey)
-	bodyT, ok := bodyRaw.(T)
-	if !ok {
-		return bodyT, NewFiberValidaterRequestMiddlewareError("Cannot conver request body")
-	}
-	return bodyT, nil
-}

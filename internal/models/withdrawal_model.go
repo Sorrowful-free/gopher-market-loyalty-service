@@ -3,7 +3,9 @@ package models
 import "time"
 
 type WithdrawalModel struct {
-	Order       string    `json:"order"`
+	ID          int       `json:"id"`
+	UserID      int       `json:"user_id"`
+	OrderID     int       `json:"order"`
 	Sum         float64   `json:"sum"`
 	ProcessedAt time.Time `json:"processed_at"`
 }
@@ -11,9 +13,11 @@ type WithdrawalModel struct {
 var EMPTY_WITHDRAWAL_MODEL = WithdrawalModel{}
 var EMPTY_ARRAY_OF_WITHDRAWAL_MODEL = []WithdrawalModel{}
 
-func NewWithdrawalModel(order string, sum float64, processedAt time.Time) *WithdrawalModel {
+func NewWithdrawalModel(id int, userID int, orderID int, sum float64, processedAt time.Time) *WithdrawalModel {
 	return &WithdrawalModel{
-		Order:       order,
+		ID:          id,
+		UserID:      userID,
+		OrderID:     orderID,
 		Sum:         sum,
 		ProcessedAt: processedAt,
 	}

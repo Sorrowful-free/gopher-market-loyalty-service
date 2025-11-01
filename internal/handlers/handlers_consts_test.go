@@ -15,7 +15,9 @@ const (
 	TestLoginJSON = `{"login": "test", "password": "test"}`
 	TestLoginText = `"login": "test", "password": "test"`
 
-	TestOrderID = 12345678903
+	TestUserID       = 1
+	TestOrderID      = 12345678903
+	TestWithdrawalID = 1
 
 	TestWithdrawJSON = `{"order": "12345678903", "sum": 100}`
 )

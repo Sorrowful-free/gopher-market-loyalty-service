@@ -13,16 +13,19 @@ const (
 
 type OrderModel struct {
 	OrderID   int         `json:"order"`
+	UserID    int         `json:"user_id"`
 	Status    OrderStatus `json:"status"`
 	Accrual   float64     `json:"accrual"`
 	CreatedAt time.Time   `json:"uploaded_at"`
 }
 
 var EMPTY_ORDER_MODEL = OrderModel{}
+var EMPTY_ARRAY_OF_ORDER_MODEL = []OrderModel{}
 
-func NewOrderModel(orderID int, status OrderStatus, accrual float64) *OrderModel {
+func NewOrderModel(orderID int, userID int, status OrderStatus, accrual float64) *OrderModel {
 	return &OrderModel{
 		OrderID:   orderID,
+		UserID:    userID,
 		Status:    status,
 		Accrual:   accrual,
 		CreatedAt: time.Now(),
