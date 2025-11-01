@@ -2,7 +2,6 @@ package middlewares
 
 import (
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/logger"
-	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/models"
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/services"
 	"github.com/gofiber/fiber/v2"
 )
@@ -61,12 +60,4 @@ func (m *FiberAuthMiddleware) RequireAuth(c *fiber.Ctx) error {
 
 	c.Locals(UserKey, user)
 	return c.Next()
-}
-
-func GetUser(c *fiber.Ctx) (models.UserModel, error) {
-	user, ok := c.Locals(UserKey).(models.UserModel)
-	if ok {
-		return user, nil
-	}
-	return models.EMPTY_USER_MODEL, NewFiberAuthMiddlewareError("Cannot convert user struct")
 }

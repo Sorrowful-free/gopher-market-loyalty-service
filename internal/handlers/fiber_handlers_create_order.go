@@ -10,11 +10,15 @@ import (
 
 func (h *FiberHandlers) CreateOrderHandler(c *fiber.Ctx) error {
 
-	createOrderRequest := c.Locals(middlewares.RequestContentKey).(int)
+	user, createOrderRequest, err := middlewares.GetUserAndRequestBody[int](c)
 
-	userID := c.Locals(middlewares.UserKey).(int)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Internal server error",
+		})
+	}
 
-	_, err := h.orderService.CreateOrder(c.Context(), userID, createOrderRequest)
+	_, err = h.orderService.CreateOrder(c.Context(), user.ID, createOrderRequest)
 
 	var orderServiceError services.OrderServiceError
 	if errors.As(err, &orderServiceError) {

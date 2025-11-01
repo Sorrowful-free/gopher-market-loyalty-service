@@ -11,9 +11,16 @@ import (
 )
 
 func (h *FiberHandlers) LoginHandler(c *fiber.Ctx) error {
-	loginRequest := c.Locals(middlewares.RequestContentKey).(models.LoginRequest)
+
+	loginRequest, err := middlewares.GetRequestBody[models.LoginRequest](c)
+
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Internal server error",
+		})
+	}
+
 	user, err := h.userService.Login(c.Context(), loginRequest.Login, loginRequest.Password)
-	userID := user.ID
 
 	var userServiceError services.UserServiceError
 	if errors.As(err, &userServiceError) && userServiceError.Code == services.UserServiceErrorUserNotFound {
@@ -21,13 +28,14 @@ func (h *FiberHandlers) LoginHandler(c *fiber.Ctx) error {
 			"error": "Invalid login or password",
 		})
 	}
+
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Internal server error",
 		})
 	}
 
-	token, err := h.jwtService.GenerateToken(userID)
+	token, err := h.jwtService.GenerateToken(user.ID)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Internal server error",
