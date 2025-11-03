@@ -1,4 +1,4 @@
-DB_URI = postgresql://postgres:postgres@localhost:5432/praktikum
+DB_URI = postgresql://postgres:postgres@localhost:5432/gophermart
 MIGRATIONS_DIR = migrations
 GO_BIN = go
 PSQL_BIN = psql
