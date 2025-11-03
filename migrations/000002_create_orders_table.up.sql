@@ -1,4 +1,4 @@
-CREATE TABLE order(
+CREATE TABLE orders(
     id INT PRIMARY KEY,
     user_id INT,
     status VARCHAR(16),
