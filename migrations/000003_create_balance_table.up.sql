@@ -7,5 +7,5 @@ CREATE TABLE balance(
 );
 
 CREATE INDEX idx_balance_id ON balance(id);
-ALTER TABLE balance ADD CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users(user_id);
-ALTER TABLE balance ADD CONSTRAINT fk_order_id FOREIGN KEY (order_id) REFERENCES orders(order_id);
+ALTER TABLE balance ADD CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users(id);
+ALTER TABLE balance ADD CONSTRAINT fk_order_id FOREIGN KEY (order_id) REFERENCES orders(id);
