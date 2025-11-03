@@ -30,6 +30,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Install PostgreSQL client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
       - name: Apply up migrations
         run: |
           make migrate-up DB_URI="postgresql://postgres:postgres@postgres/praktikum?sslmode=disable"
