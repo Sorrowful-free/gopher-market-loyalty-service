@@ -5,12 +5,12 @@ PSQL_BIN = psql
 
 migrate-up:
 	$(PSQL_BIN) $(DB_URI) -f $(MIGRATIONS_DIR)/000001_create_users_table.up.sql
-	$(PSQL_BIN) $(DB_URI) -f $(MIGRATIONS_DIR)/000002_create_order_table.up.sql
+	$(PSQL_BIN) $(DB_URI) -f $(MIGRATIONS_DIR)/000002_create_orders_table.up.sql
 	$(PSQL_BIN) $(DB_URI) -f $(MIGRATIONS_DIR)/000003_create_balance_table.up.sql
 
 migrate-down:
 	$(PSQL_BIN) $(DB_URI) -f $(MIGRATIONS_DIR)/000001_create_users_table.down.sql
-	$(PSQL_BIN) $(DB_URI) -f $(MIGRATIONS_DIR)/000002_create_order_table.down.sql
+	$(PSQL_BIN) $(DB_URI) -f $(MIGRATIONS_DIR)/000002_create_orders_table.down.sql
 	$(PSQL_BIN) $(DB_URI) -f $(MIGRATIONS_DIR)/000003_create_balance_table.down.sql
 
 migrate-reset:
