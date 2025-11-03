@@ -30,6 +30,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Apply up migrations
+        run: |
+          make migrate-up DB_URI="postgresql://postgres:postgres@postgres/praktikum?sslmode=disable"
+
       - name: Download autotests binaries
         uses: robinraju/release-downloader@v1.8
         with:
