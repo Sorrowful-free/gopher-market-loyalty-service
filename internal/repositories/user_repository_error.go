@@ -8,6 +8,7 @@ const (
 	UserRepositoryErrorUserNotFound UserRepositoryErrorCode = iota
 	UserRepositoryErrorUserAlreadyExists
 	UserRepositoryErrorInternalError
+	UserRepositoryErrorInvalidCredentials
 )
 
 type UserRepositoryError struct {

@@ -33,7 +33,7 @@ func (s *OrderServiceImpl) CreateOrder(ctx context.Context, userID int, orderID 
 		return models.EMPTY_ORDER_MODEL, NewOrderServiceError(OrderServiceErrorOrderIdIsInvalid, "Order id is invalid")
 	}
 
-	orderModel, err := s.orderRepository.CreateOrder(userID, orderID)
+	orderModel, err := s.orderRepository.CreateOrder(ctx, userID, orderID)
 
 	var orderRepositoryError repositories.OrderRepositoryError
 	if errors.As(err, &orderRepositoryError) {
@@ -56,7 +56,7 @@ func (s *OrderServiceImpl) GetOrdersList(ctx context.Context, userID int) ([]mod
 		return []models.OrderModel{}, ctx.Err()
 	}
 
-	orders, err := s.orderRepository.GetOrdersList(userID)
+	orders, err := s.orderRepository.GetOrdersList(ctx, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -73,7 +73,7 @@ func (s *OrderServiceImpl) GetOrder(ctx context.Context, orderID int) (models.Or
 		return models.EMPTY_ORDER_MODEL, NewOrderServiceError(OrderServiceErrorOrderIdIsInvalid, "Order id is invalid")
 	}
 
-	orderModel, err := s.orderRepository.GetOrder(orderID)
+	orderModel, err := s.orderRepository.GetOrder(ctx, orderID)
 	var orderRepositoryError repositories.OrderRepositoryError
 	if errors.As(err, &orderRepositoryError) {
 		switch orderRepositoryError.Code {

@@ -8,6 +8,7 @@ const (
 	OrderRepositoryErrorOrderNotFound OrderRepositoryErrorCode = iota
 	OrderRepositoryErrorOrderAlreadyExists
 	OrderRepositoryErrorOrderCreatedOtherUser
+	OrderRepositoryErrorInternalError
 )
 
 type OrderRepositoryError struct {

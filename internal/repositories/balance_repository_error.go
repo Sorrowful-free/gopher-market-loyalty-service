@@ -9,6 +9,7 @@ const (
 	BalanceRepositoryErrorOrderIdIsInvalid
 	BalanceRepositoryErrorWrongOrder
 	BalanceRepositoryErrorUserNotFound
+	BalanceRepositoryErrorInternalError
 )
 
 type BalanceRepositoryError struct {

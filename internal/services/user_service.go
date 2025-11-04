@@ -69,5 +69,20 @@ func (s *UserServiceImpl) Login(ctx context.Context, login string, password stri
 }
 
 func (s *UserServiceImpl) GetUser(ctx context.Context, userID int) (models.UserModel, error) {
-	return models.EMPTY_USER_MODEL, nil
+	if ctx.Err() != nil {
+		return models.EMPTY_USER_MODEL, ctx.Err()
+	}
+
+	user, err := s.userRepository.GetByID(ctx, userID)
+	if err != nil {
+		return models.EMPTY_USER_MODEL, fmt.Errorf("failed to get user: %w", err)
+	}
+	var userRepositoryError repositories.UserRepositoryError
+	if errors.As(err, &userRepositoryError) {
+		switch userRepositoryError.Code {
+		case repositories.UserRepositoryErrorUserNotFound:
+			return models.EMPTY_USER_MODEL, userNotFoundError
+		}
+	}
+	return user, nil
 }

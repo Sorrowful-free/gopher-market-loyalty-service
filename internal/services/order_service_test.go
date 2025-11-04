@@ -16,7 +16,7 @@ func TestOrderService(t *testing.T) {
 	orderService := NewOrderService(orderRepository)
 
 	t.Run("successful_create_order", func(t *testing.T) {
-		orderRepository.EXPECT().CreateOrder(gomock.Any(), gomock.Any()).Return(models.OrderModel{
+		orderRepository.EXPECT().CreateOrder(gomock.Any(), gomock.Any(), gomock.Any()).Return(models.OrderModel{
 			OrderID: TestValidOrderID,
 			Status:  models.OrderStatusNew,
 			Accrual: 100,
@@ -27,7 +27,7 @@ func TestOrderService(t *testing.T) {
 	})
 
 	t.Run("successful_get_orders_list", func(t *testing.T) {
-		orderRepository.EXPECT().GetOrdersList(gomock.Any()).Return([]models.OrderModel{
+		orderRepository.EXPECT().GetOrdersList(gomock.Any(), gomock.Any()).Return([]models.OrderModel{
 			{
 				OrderID: TestValidOrderID,
 				Status:  models.OrderStatusNew,
@@ -41,7 +41,7 @@ func TestOrderService(t *testing.T) {
 	})
 
 	t.Run("successful_get_order", func(t *testing.T) {
-		orderRepository.EXPECT().GetOrder(gomock.Any()).Return(models.OrderModel{
+		orderRepository.EXPECT().GetOrder(gomock.Any(), gomock.Any()).Return(models.OrderModel{
 			OrderID: TestValidOrderID,
 			Status:  models.OrderStatusNew,
 			Accrual: 100,
@@ -53,7 +53,7 @@ func TestOrderService(t *testing.T) {
 	})
 
 	t.Run("successful_get_order_with_order_not_found", func(t *testing.T) {
-		orderRepository.EXPECT().GetOrder(gomock.Any()).Return(models.EMPTY_ORDER_MODEL, repositories.NewOrderRepositoryError(repositories.OrderRepositoryErrorOrderNotFound, "Order not found"))
+		orderRepository.EXPECT().GetOrder(gomock.Any(), gomock.Any()).Return(models.EMPTY_ORDER_MODEL, repositories.NewOrderRepositoryError(repositories.OrderRepositoryErrorOrderNotFound, "Order not found"))
 		_, err := orderService.GetOrder(context.TODO(), TestValidOrderID)
 		var orderServiceError OrderServiceError
 		require.ErrorAs(t, err, &orderServiceError)
@@ -70,7 +70,7 @@ func TestOrderService(t *testing.T) {
 	})
 
 	t.Run("failed_crete_order_is_created_by_other_user", func(t *testing.T) {
-		orderRepository.EXPECT().CreateOrder(gomock.Any(), gomock.Any()).Return(models.EMPTY_ORDER_MODEL, repositories.NewOrderRepositoryError(repositories.OrderRepositoryErrorOrderCreatedOtherUser, "Order created by other user"))
+		orderRepository.EXPECT().CreateOrder(gomock.Any(), gomock.Any(), gomock.Any()).Return(models.EMPTY_ORDER_MODEL, repositories.NewOrderRepositoryError(repositories.OrderRepositoryErrorOrderCreatedOtherUser, "Order created by other user"))
 		_, err := orderService.CreateOrder(context.TODO(), TestUserID, TestValidOrderID)
 		var orderServiceError OrderServiceError
 		require.ErrorAs(t, err, &orderServiceError)

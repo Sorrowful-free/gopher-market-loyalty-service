@@ -1,7 +1,10 @@
 package repositories
 
 import (
+	context "context"
+
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/models"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -13,14 +16,58 @@ func NewPGXOrderRepository(pgxPool *pgxpool.Pool) OrderRepository {
 	return &PGXOrderRepository{pgxPool: pgxPool}
 }
 
-func (r *PGXOrderRepository) CreateOrder(userID int, order int) (models.OrderModel, error) {
-	return models.OrderModel{}, nil
+func (r *PGXOrderRepository) CreateOrder(ctx context.Context, userID int, order int) (models.OrderModel, error) {
+	const query = `
+		INSERT INTO orders (user_id, order_id)
+		VALUES ($1, $2)
+		RETURNING id, user_id, order_id, status, accrual, created_at
+	`
+	row := r.pgxPool.QueryRow(ctx, query, userID, order)
+	var orderModel models.OrderModel
+	err := row.Scan(&orderModel.OrderID, &orderModel.UserID, &orderModel.Status, &orderModel.Accrual, &orderModel.CreatedAt)
+	if err != nil {
+		return models.EMPTY_ORDER_MODEL, NewOrderRepositoryError(OrderRepositoryErrorInternalError, "Failed to create order")
+	}
+	return orderModel, nil
 }
 
-func (r *PGXOrderRepository) GetOrdersList(userID int) ([]models.OrderModel, error) {
-	return []models.OrderModel{}, nil
+func (r *PGXOrderRepository) GetOrdersList(ctx context.Context, userID int) ([]models.OrderModel, error) {
+	const query = `
+		SELECT id, user_id, order_id, status, accrual, created_at
+		FROM orders
+		WHERE user_id = $1
+	`
+	rows, err := r.pgxPool.Query(ctx, query, userID)
+	if err != nil {
+		return []models.OrderModel{}, NewOrderRepositoryError(OrderRepositoryErrorInternalError, "Failed to get orders list")
+	}
+	defer rows.Close()
+	var orders = []models.OrderModel{}
+	for rows.Next() {
+		var orderModel models.OrderModel
+		err := rows.Scan(&orderModel.OrderID, &orderModel.UserID, &orderModel.Status, &orderModel.Accrual, &orderModel.CreatedAt)
+		if err != nil {
+			return []models.OrderModel{}, NewOrderRepositoryError(OrderRepositoryErrorInternalError, "Failed to get orders list")
+		}
+		orders = append(orders, orderModel)
+	}
+	return orders, nil
 }
 
-func (r *PGXOrderRepository) GetOrder(orderID int) (models.OrderModel, error) {
-	return models.OrderModel{}, nil
+func (r *PGXOrderRepository) GetOrder(ctx context.Context, orderID int) (models.OrderModel, error) {
+	const query = `
+		SELECT id, user_id, order_id, status, accrual, created_at
+		FROM orders
+		WHERE order_id = $1
+	`
+	row := r.pgxPool.QueryRow(ctx, query, orderID)
+	var orderModel models.OrderModel
+	err := row.Scan(&orderModel.OrderID, &orderModel.UserID, &orderModel.Status, &orderModel.Accrual, &orderModel.CreatedAt)
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return models.EMPTY_ORDER_MODEL, NewOrderRepositoryError(OrderRepositoryErrorInternalError, "Failed to get order")
+		}
+		return models.EMPTY_ORDER_MODEL, NewOrderRepositoryError(OrderRepositoryErrorInternalError, "Failed to get order")
+	}
+	return orderModel, nil
 }

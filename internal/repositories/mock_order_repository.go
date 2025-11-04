@@ -5,6 +5,7 @@
 package repositories
 
 import (
+	context "context"
 	reflect "reflect"
 
 	models "github.com/Sorrowful-free/gopher-market-loyalty-service/internal/models"
@@ -35,46 +36,46 @@ func (m *MockOrderRepository) EXPECT() *MockOrderRepositoryMockRecorder {
 }
 
 // CreateOrder mocks base method.
-func (m *MockOrderRepository) CreateOrder(userID, order int) (models.OrderModel, error) {
+func (m *MockOrderRepository) CreateOrder(ctx context.Context, userID, order int) (models.OrderModel, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateOrder", userID, order)
+	ret := m.ctrl.Call(m, "CreateOrder", ctx, userID, order)
 	ret0, _ := ret[0].(models.OrderModel)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // CreateOrder indicates an expected call of CreateOrder.
-func (mr *MockOrderRepositoryMockRecorder) CreateOrder(userID, order interface{}) *gomock.Call {
+func (mr *MockOrderRepositoryMockRecorder) CreateOrder(ctx, userID, order interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateOrder", reflect.TypeOf((*MockOrderRepository)(nil).CreateOrder), userID, order)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateOrder", reflect.TypeOf((*MockOrderRepository)(nil).CreateOrder), ctx, userID, order)
 }
 
 // GetOrder mocks base method.
-func (m *MockOrderRepository) GetOrder(orderID int) (models.OrderModel, error) {
+func (m *MockOrderRepository) GetOrder(ctx context.Context, orderID int) (models.OrderModel, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetOrder", orderID)
+	ret := m.ctrl.Call(m, "GetOrder", ctx, orderID)
 	ret0, _ := ret[0].(models.OrderModel)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetOrder indicates an expected call of GetOrder.
-func (mr *MockOrderRepositoryMockRecorder) GetOrder(orderID interface{}) *gomock.Call {
+func (mr *MockOrderRepositoryMockRecorder) GetOrder(ctx, orderID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetOrder", reflect.TypeOf((*MockOrderRepository)(nil).GetOrder), orderID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetOrder", reflect.TypeOf((*MockOrderRepository)(nil).GetOrder), ctx, orderID)
 }
 
 // GetOrdersList mocks base method.
-func (m *MockOrderRepository) GetOrdersList(userID int) ([]models.OrderModel, error) {
+func (m *MockOrderRepository) GetOrdersList(ctx context.Context, userID int) ([]models.OrderModel, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetOrdersList", userID)
+	ret := m.ctrl.Call(m, "GetOrdersList", ctx, userID)
 	ret0, _ := ret[0].([]models.OrderModel)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetOrdersList indicates an expected call of GetOrdersList.
-func (mr *MockOrderRepositoryMockRecorder) GetOrdersList(userID interface{}) *gomock.Call {
+func (mr *MockOrderRepositoryMockRecorder) GetOrdersList(ctx, userID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetOrdersList", reflect.TypeOf((*MockOrderRepository)(nil).GetOrdersList), userID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetOrdersList", reflect.TypeOf((*MockOrderRepository)(nil).GetOrdersList), ctx, userID)
 }

@@ -51,8 +51,8 @@ func (a *App) BuildLogger() error {
 func (a *App) BuildDatabase() error {
 	pgxPool, err := pgxpool.New(context.Background(), a.config.DatabaseURI())
 
-	if err == nil {
-		a.logger.Error("Failed to connect to pgx", "error", err)
+	if err != nil {
+		a.logger.Error("Failed to connect to database", "error", err)
 		return err
 	}
 
