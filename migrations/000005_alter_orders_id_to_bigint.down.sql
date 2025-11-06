@@ -1,0 +1,5 @@
+ALTER TABLE balance DROP CONSTRAINT IF EXISTS fk_order_id;
+ALTER TABLE balance ALTER COLUMN order_id TYPE INT;
+ALTER TABLE orders ALTER COLUMN id TYPE INT;
+ALTER TABLE balance ADD CONSTRAINT fk_order_id FOREIGN KEY (order_id) REFERENCES orders(id);
+

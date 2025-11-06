@@ -23,7 +23,7 @@ func (r *PGXUserRepository) Create(ctx context.Context, login string, password s
 	const query = `
 		INSERT INTO users (login, pass_hash)
 		VALUES ($1, $2)
-		RETURNING id, login, pass_hash
+		RETURNING id, login
 	`
 
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
@@ -31,7 +31,7 @@ func (r *PGXUserRepository) Create(ctx context.Context, login string, password s
 		return models.EMPTY_USER_MODEL, NewUserRepositoryError(UserRepositoryErrorInternalError, "Failed to generate password hash")
 	}
 	var user models.UserModel
-	err = r.pgxPool.QueryRow(ctx, query, login, string(hash)).Scan(&user.ID, &user.Login, &user.Password)
+	err = r.pgxPool.QueryRow(ctx, query, login, string(hash)).Scan(&user.ID, &user.Login)
 
 	var pgxErr *pgconn.PgError
 	if errors.As(err, &pgxErr) {
@@ -69,13 +69,13 @@ func (r *PGXUserRepository) GetByLoginAndPassword(ctx context.Context, login str
 func (r *PGXUserRepository) GetByID(ctx context.Context, id int) (models.UserModel, error) {
 
 	const query = `
-		SELECT id, login, password
+		SELECT id, login
 		FROM users
 		WHERE id = $1
 	`
 	row := r.pgxPool.QueryRow(ctx, query, id)
 	var user models.UserModel
-	err := row.Scan(&user.ID, &user.Login, &user.Password)
+	err := row.Scan(&user.ID, &user.Login)
 	if err != nil && err != pgx.ErrNoRows {
 		return models.EMPTY_USER_MODEL, NewUserRepositoryError(UserRepositoryErrorInternalError, "Failed to get user by id")
 	}

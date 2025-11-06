@@ -2,6 +2,7 @@ package repositories
 
 import (
 	context "context"
+	"time"
 
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/models"
 	"github.com/jackc/pgx/v5"
@@ -16,13 +17,13 @@ func NewPGXOrderRepository(pgxPool *pgxpool.Pool) OrderRepository {
 	return &PGXOrderRepository{pgxPool: pgxPool}
 }
 
-func (r *PGXOrderRepository) CreateOrder(ctx context.Context, userID int, order int) (models.OrderModel, error) {
+func (r *PGXOrderRepository) CreateOrder(ctx context.Context, userID int, orderID int) (models.OrderModel, error) {
 	const query = `
-		INSERT INTO orders (user_id, order_id)
-		VALUES ($1, $2)
-		RETURNING id, user_id, order_id, status, accrual, created_at
+		INSERT INTO orders (id, user_id, status, accrual, uploaded_at)
+		VALUES ($1, $2, $3, $4, $5)
+		RETURNING id, user_id, status, accrual, uploaded_at
 	`
-	row := r.pgxPool.QueryRow(ctx, query, userID, order)
+	row := r.pgxPool.QueryRow(ctx, query, orderID, userID, models.OrderStatusNew, 0, time.Now().UTC())
 	var orderModel models.OrderModel
 	err := row.Scan(&orderModel.OrderID, &orderModel.UserID, &orderModel.Status, &orderModel.Accrual, &orderModel.CreatedAt)
 	if err != nil {
