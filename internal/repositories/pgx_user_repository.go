@@ -2,9 +2,11 @@ package repositories
 
 import (
 	context "context"
+	"errors"
 
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/models"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -30,6 +32,14 @@ func (r *PGXUserRepository) Create(ctx context.Context, login string, password s
 	}
 	var user models.UserModel
 	err = r.pgxPool.QueryRow(ctx, query, login, string(hash)).Scan(&user.ID, &user.Login, &user.Password)
+
+	var pgxErr *pgconn.PgError
+	if errors.As(err, &pgxErr) {
+		if pgxErr.Code == "23505" {
+			return models.EMPTY_USER_MODEL, NewUserRepositoryError(UserRepositoryErrorUserAlreadyExists, "User already exists")
+		}
+	}
+
 	if err != nil {
 		return models.EMPTY_USER_MODEL, NewUserRepositoryError(UserRepositoryErrorInternalError, "Failed to create user")
 	}
@@ -39,14 +49,15 @@ func (r *PGXUserRepository) Create(ctx context.Context, login string, password s
 func (r *PGXUserRepository) GetByLoginAndPassword(ctx context.Context, login string, password string) (models.UserModel, error) {
 
 	const query = `
-		SELECT id, login, password
+		SELECT id, login, pass_hash
 		FROM users
 		WHERE login = $1
 	`
 	row := r.pgxPool.QueryRow(ctx, query, login)
 	var user models.UserModel
-	err := row.Scan(&user.ID, &user.Login, &user.Password)
-	if err != nil && err != pgx.ErrNoRows {
+	var passHash string
+	err := row.Scan(&user.ID, &user.Login, &passHash)
+	if err != nil && err != pgx.ErrNoRows || bcrypt.CompareHashAndPassword([]byte(passHash), []byte(password)) != nil {
 		return models.EMPTY_USER_MODEL, NewUserRepositoryError(UserRepositoryErrorInvalidCredentials, "Invalid credentials")
 	}
 	if err == pgx.ErrNoRows {

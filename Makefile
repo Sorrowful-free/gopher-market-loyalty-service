@@ -7,11 +7,13 @@ migrate-up:
 	$(PSQL_BIN) $(DB_URI) -f $(MIGRATIONS_DIR)/000001_create_users_table.up.sql
 	$(PSQL_BIN) $(DB_URI) -f $(MIGRATIONS_DIR)/000002_create_orders_table.up.sql
 	$(PSQL_BIN) $(DB_URI) -f $(MIGRATIONS_DIR)/000003_create_balance_table.up.sql
+	$(PSQL_BIN) $(DB_URI) -f $(MIGRATIONS_DIR)/000004_create_user_login_index.up.sql
 
 migrate-down:
 	$(PSQL_BIN) $(DB_URI) -f $(MIGRATIONS_DIR)/000001_create_users_table.down.sql
 	$(PSQL_BIN) $(DB_URI) -f $(MIGRATIONS_DIR)/000002_create_orders_table.down.sql
 	$(PSQL_BIN) $(DB_URI) -f $(MIGRATIONS_DIR)/000003_create_balance_table.down.sql
+	$(PSQL_BIN) $(DB_URI) -f $(MIGRATIONS_DIR)/000004_create_user_login_index.down.sql
 
 migrate-reset:
 	make migrate-down
