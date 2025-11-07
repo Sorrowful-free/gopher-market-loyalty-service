@@ -9,6 +9,6 @@ import (
 //go:generate mockgen -source=balance_repository.go -destination=mock_balance_repository.go -package=repositories
 type BalanceRepository interface {
 	GetBalance(ctx context.Context, userID int) (models.BalanceModel, error)
-	Withdraw(ctx context.Context, userID int, orderID int, sum float64) error
+	Withdraw(ctx context.Context, userID int, orderNumber string, sum float64) error
 	GetWithdrawals(ctx context.Context, userID int) ([]models.WithdrawalModel, error)
 }

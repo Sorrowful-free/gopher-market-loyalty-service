@@ -8,12 +8,16 @@ migrate-up:
 	$(PSQL_BIN) $(DB_URI) -f $(MIGRATIONS_DIR)/000002_create_orders_table.up.sql
 	$(PSQL_BIN) $(DB_URI) -f $(MIGRATIONS_DIR)/000003_create_balance_table.up.sql
 	$(PSQL_BIN) $(DB_URI) -f $(MIGRATIONS_DIR)/000004_create_user_login_index.up.sql
+	$(PSQL_BIN) $(DB_URI) -f $(MIGRATIONS_DIR)/000005_alter_orders_id_to_bigint.up.sql
+	$(PSQL_BIN) $(DB_URI) -f $(MIGRATIONS_DIR)/000006_alter_orders_add_order_number_and_change_id_to_serial.up.sql
 
 migrate-down:
 	$(PSQL_BIN) $(DB_URI) -f $(MIGRATIONS_DIR)/000001_create_users_table.down.sql
 	$(PSQL_BIN) $(DB_URI) -f $(MIGRATIONS_DIR)/000002_create_orders_table.down.sql
 	$(PSQL_BIN) $(DB_URI) -f $(MIGRATIONS_DIR)/000003_create_balance_table.down.sql
 	$(PSQL_BIN) $(DB_URI) -f $(MIGRATIONS_DIR)/000004_create_user_login_index.down.sql
+	$(PSQL_BIN) $(DB_URI) -f $(MIGRATIONS_DIR)/000005_alter_orders_id_to_bigint.down.sql
+	$(PSQL_BIN) $(DB_URI) -f $(MIGRATIONS_DIR)/000006_alter_orders_add_order_number_and_change_id_to_serial.down.sql
 
 migrate-reset:
 	make migrate-down

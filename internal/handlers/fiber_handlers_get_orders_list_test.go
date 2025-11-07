@@ -22,9 +22,9 @@ func TestGetOrdersListHandler(t *testing.T) {
 
 		orders := []models.OrderModel{
 			{
-				OrderID:   TestOrderID,
-				Status:    models.OrderStatusNew,
-				CreatedAt: time.Now(),
+				OrderID:    TestOrderID,
+				Status:     models.OrderStatusNew,
+				UploadedAt: time.Now(),
 			},
 		}
 

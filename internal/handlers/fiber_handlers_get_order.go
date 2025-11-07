@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"errors"
-	"strconv"
 
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/services"
 	"github.com/gofiber/fiber/v2"
@@ -10,15 +9,9 @@ import (
 
 func (h *FiberHandlers) GetOrderHandler(c *fiber.Ctx) error {
 
-	orderID, err := strconv.Atoi(c.Params("order"))
+	orderNumber := c.Params("order")
 
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Cannot parse order id because it must be a number (integer)",
-		})
-	}
-
-	order, err := h.orderService.GetOrder(c.Context(), orderID)
+	order, err := h.orderService.GetOrder(c.Context(), orderNumber)
 
 	var orderServiceError services.OrderServiceError
 	if errors.As(err, &orderServiceError) {

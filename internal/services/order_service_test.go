@@ -17,9 +17,9 @@ func TestOrderService(t *testing.T) {
 
 	t.Run("successful_create_order", func(t *testing.T) {
 		orderRepository.EXPECT().CreateOrder(gomock.Any(), gomock.Any(), gomock.Any()).Return(models.OrderModel{
-			OrderID: TestValidOrderID,
-			Status:  models.OrderStatusNew,
-			Accrual: 100,
+			OrderNumber: TestValidOrderID,
+			Status:      models.OrderStatusNew,
+			Accrual:     100,
 		}, nil)
 		order, err := orderService.CreateOrder(context.TODO(), TestUserID, TestValidOrderID)
 		require.NoError(t, err)
@@ -29,9 +29,9 @@ func TestOrderService(t *testing.T) {
 	t.Run("successful_get_orders_list", func(t *testing.T) {
 		orderRepository.EXPECT().GetOrdersList(gomock.Any(), gomock.Any()).Return([]models.OrderModel{
 			{
-				OrderID: TestValidOrderID,
-				Status:  models.OrderStatusNew,
-				Accrual: 100,
+				OrderNumber: TestValidOrderID,
+				Status:      models.OrderStatusNew,
+				Accrual:     100,
 			},
 		}, nil)
 
@@ -42,9 +42,9 @@ func TestOrderService(t *testing.T) {
 
 	t.Run("successful_get_order", func(t *testing.T) {
 		orderRepository.EXPECT().GetOrder(gomock.Any(), gomock.Any()).Return(models.OrderModel{
-			OrderID: TestValidOrderID,
-			Status:  models.OrderStatusNew,
-			Accrual: 100,
+			OrderNumber: TestValidOrderID,
+			Status:      models.OrderStatusNew,
+			Accrual:     100,
 		}, nil)
 
 		order, err := orderService.GetOrder(context.TODO(), TestValidOrderID)

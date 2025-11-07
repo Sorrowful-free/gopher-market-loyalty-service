@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"errors"
-	"strconv"
 
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/middlewares"
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/services"
@@ -11,17 +10,10 @@ import (
 
 func (h *FiberHandlers) CreateOrderHandler(c *fiber.Ctx) error {
 
-	user, createOrderRequestRawString, err := middlewares.GetUserAndRequestBody[string](c)
+	user, createOrderRequest, err := middlewares.GetUserAndRequestBody[string](c)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Internal server error",
-		})
-	}
-
-	createOrderRequest, err := strconv.Atoi(createOrderRequestRawString)
-	if err != nil {
-		return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{
-			"error": "Order id is invalid",
 		})
 	}
 

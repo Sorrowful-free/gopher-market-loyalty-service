@@ -35,13 +35,13 @@ func (r *PGXBalanceRepository) GetBalance(ctx context.Context, userID int) (mode
 	}
 	return balanceModel, nil
 }
-func (r *PGXBalanceRepository) Withdraw(ctx context.Context, userID int, orderID int, sum float64) error {
+func (r *PGXBalanceRepository) Withdraw(ctx context.Context, userID int, orderNumber string, sum float64) error {
 	const query = `
-		INSERT INTO withdrawals (user_id, order_id, sum)
+		INSERT INTO withdrawals (user_id, order_number, sum)
 		VALUES ($1, $2, $3)
-		RETURNING id, user_id, order_id, sum, processed_at
+		RETURNING id, user_id, order_number, sum, processed_at
 	`
-	row := r.pgxPool.QueryRow(ctx, query, userID, orderID, sum)
+	row := r.pgxPool.QueryRow(ctx, query, userID, orderNumber, sum)
 	var withdrawalModel models.WithdrawalModel
 	err := row.Scan(&withdrawalModel.ID, &withdrawalModel.UserID, &withdrawalModel.OrderID, &withdrawalModel.Sum, &withdrawalModel.ProcessedAt)
 	if err != nil {

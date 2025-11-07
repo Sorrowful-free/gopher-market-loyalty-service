@@ -13,7 +13,7 @@ import (
 //go:generate mockgen -source=balance_service.go -destination=mock_balance_service.go -package=services
 type BalanceService interface {
 	GetBalance(ctx context.Context, userID int) (models.BalanceModel, error)
-	Withdraw(ctx context.Context, userID int, orderID int, sum float64) error
+	Withdraw(ctx context.Context, userID int, orderNumber string, sum float64) error
 	GetWithdrawals(ctx context.Context, userID int) ([]models.WithdrawalModel, error)
 }
 
@@ -45,12 +45,12 @@ func (s *BalanceServiceImpl) GetBalance(ctx context.Context, userID int) (models
 	return balance, nil
 }
 
-func (s *BalanceServiceImpl) Withdraw(ctx context.Context, userID int, orderID int, sum float64) error {
+func (s *BalanceServiceImpl) Withdraw(ctx context.Context, userID int, orderNumber string, sum float64) error {
 	if ctx.Err() != nil {
 		return ctx.Err()
 	}
 
-	if !utils.ValidateLuhn(orderID) {
+	if !utils.ValidateLuhn(orderNumber) {
 		return NewBalanceServiceError(BalanceServiceErrorOrderIdIsInvalid, "Order id is invalid")
 	}
 
@@ -71,7 +71,7 @@ func (s *BalanceServiceImpl) Withdraw(ctx context.Context, userID int, orderID i
 		return NewBalanceServiceError(BalanceServiceErrorNotEnoughBalance, "Not enough balance")
 	}
 
-	return s.balanceRepository.Withdraw(ctx, userID, orderID, sum)
+	return s.balanceRepository.Withdraw(ctx, userID, orderNumber, sum)
 }
 
 func (s *BalanceServiceImpl) GetWithdrawals(ctx context.Context, userID int) ([]models.WithdrawalModel, error) {

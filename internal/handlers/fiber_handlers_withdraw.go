@@ -20,7 +20,7 @@ func (h *FiberHandlers) WithdrawHandler(c *fiber.Ctx) error {
 
 	userID := user.ID
 
-	err = h.balanceService.Withdraw(c.Context(), userID, withdrawRequest.Order, float64(withdrawRequest.Sum))
+	err = h.balanceService.Withdraw(c.Context(), userID, withdrawRequest.OrderNumber, float64(withdrawRequest.Sum))
 
 	var balanceServiceError services.BalanceServiceError
 	if errors.As(err, &balanceServiceError) {

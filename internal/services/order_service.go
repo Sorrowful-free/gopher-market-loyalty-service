@@ -11,9 +11,9 @@ import (
 
 //go:generate mockgen -source=order_service.go -destination=mock_order_service.go -package=services
 type OrderService interface {
-	CreateOrder(ctx context.Context, userID int, orderID int) (models.OrderModel, error)
+	CreateOrder(ctx context.Context, userID int, orderNumber string) (models.OrderModel, error)
 	GetOrdersList(ctx context.Context, userID int) ([]models.OrderModel, error)
-	GetOrder(ctx context.Context, orderID int) (models.OrderModel, error)
+	GetOrder(ctx context.Context, orderNumber string) (models.OrderModel, error)
 }
 
 type OrderServiceImpl struct {
@@ -24,16 +24,16 @@ func NewOrderService(orderRepository repositories.OrderRepository) OrderService 
 	return &OrderServiceImpl{orderRepository: orderRepository}
 }
 
-func (s *OrderServiceImpl) CreateOrder(ctx context.Context, userID int, orderID int) (models.OrderModel, error) {
+func (s *OrderServiceImpl) CreateOrder(ctx context.Context, userID int, orderNumber string) (models.OrderModel, error) {
 	if ctx.Err() != nil {
 		return models.EmptyOrderModel, ctx.Err()
 	}
 
-	if !utils.ValidateLuhn(orderID) {
+	if !utils.ValidateLuhn(orderNumber) {
 		return models.EmptyOrderModel, NewOrderServiceError(OrderServiceErrorOrderIdIsInvalid, "Order id is invalid")
 	}
 
-	orderModel, err := s.orderRepository.CreateOrder(ctx, userID, orderID)
+	orderModel, err := s.orderRepository.CreateOrder(ctx, userID, orderNumber)
 
 	var orderRepositoryError repositories.OrderRepositoryError
 	if errors.As(err, &orderRepositoryError) {
@@ -63,17 +63,17 @@ func (s *OrderServiceImpl) GetOrdersList(ctx context.Context, userID int) ([]mod
 	return orders, nil
 }
 
-func (s *OrderServiceImpl) GetOrder(ctx context.Context, orderID int) (models.OrderModel, error) {
+func (s *OrderServiceImpl) GetOrder(ctx context.Context, orderNumber string) (models.OrderModel, error) {
 
 	if ctx.Err() != nil {
 		return models.EmptyOrderModel, ctx.Err()
 	}
 
-	if !utils.ValidateLuhn(orderID) {
+	if !utils.ValidateLuhn(orderNumber) {
 		return models.EmptyOrderModel, NewOrderServiceError(OrderServiceErrorOrderIdIsInvalid, "Order id is invalid")
 	}
 
-	orderModel, err := s.orderRepository.GetOrder(ctx, orderID)
+	orderModel, err := s.orderRepository.GetOrder(ctx, orderNumber)
 	var orderRepositoryError repositories.OrderRepositoryError
 	if errors.As(err, &orderRepositoryError) {
 		switch orderRepositoryError.Code {

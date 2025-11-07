@@ -66,15 +66,15 @@ func (mr *MockBalanceRepositoryMockRecorder) GetWithdrawals(ctx, userID interfac
 }
 
 // Withdraw mocks base method.
-func (m *MockBalanceRepository) Withdraw(ctx context.Context, userID, orderID int, sum float64) error {
+func (m *MockBalanceRepository) Withdraw(ctx context.Context, userID int, orderNumber string, sum float64) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Withdraw", ctx, userID, orderID, sum)
+	ret := m.ctrl.Call(m, "Withdraw", ctx, userID, orderNumber, sum)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Withdraw indicates an expected call of Withdraw.
-func (mr *MockBalanceRepositoryMockRecorder) Withdraw(ctx, userID, orderID, sum interface{}) *gomock.Call {
+func (mr *MockBalanceRepositoryMockRecorder) Withdraw(ctx, userID, orderNumber, sum interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Withdraw", reflect.TypeOf((*MockBalanceRepository)(nil).Withdraw), ctx, userID, orderID, sum)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Withdraw", reflect.TypeOf((*MockBalanceRepository)(nil).Withdraw), ctx, userID, orderNumber, sum)
 }
