@@ -2,10 +2,12 @@ package repositories
 
 import (
 	context "context"
+	"errors"
 	"time"
 
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/models"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -26,6 +28,14 @@ func (r *PGXOrderRepository) CreateOrder(ctx context.Context, userID int, orderI
 	row := r.pgxPool.QueryRow(ctx, query, orderID, userID, models.OrderStatusNew, 0, time.Now().UTC())
 	var orderModel models.OrderModel
 	err := row.Scan(&orderModel.OrderID, &orderModel.UserID, &orderModel.Status, &orderModel.Accrual, &orderModel.CreatedAt)
+
+	var pgxErr *pgconn.PgError
+	if errors.As(err, &pgxErr) {
+		if pgxErr.Code == "23505" {
+			return models.EMPTY_ORDER_MODEL, NewOrderRepositoryError(OrderRepositoryErrorOrderAlreadyExists, "Order already exists")
+		}
+	}
+
 	if err != nil {
 		return models.EMPTY_ORDER_MODEL, NewOrderRepositoryError(OrderRepositoryErrorInternalError, "Failed to create order")
 	}
