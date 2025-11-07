@@ -68,7 +68,7 @@ func (r *PGXOrderRepository) CreateOrder(ctx context.Context, userID int, orderI
 
 func (r *PGXOrderRepository) GetOrdersList(ctx context.Context, userID int) ([]models.OrderModel, error) {
 	const query = `
-		SELECT id, user_id, order_id, status, accrual, created_at
+		SELECT id, user_id, status, accrual, uploaded_at
 		FROM orders
 		WHERE user_id = $1
 	`
@@ -91,9 +91,9 @@ func (r *PGXOrderRepository) GetOrdersList(ctx context.Context, userID int) ([]m
 
 func (r *PGXOrderRepository) GetOrder(ctx context.Context, orderID int) (models.OrderModel, error) {
 	const query = `
-		SELECT id, user_id, order_id, status, accrual, created_at
+		SELECT id, user_id, status, accrual, uploaded_at
 		FROM orders
-		WHERE order_id = $1
+		WHERE id = $1
 	`
 	row := r.pgxPool.QueryRow(ctx, query, orderID)
 	var orderModel models.OrderModel
