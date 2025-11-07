@@ -24,8 +24,8 @@ func (r *PGXOrderRepository) CreateOrder(ctx context.Context, userID int, orderN
 		WHERE order_number = $1
 	`
 	const insertQuery = `
-		INSERT INTO orders (id, order_number, user_id, status, accrual, uploaded_at)
-		VALUES ($1, $2, $3, $4, $5, $6)
+		INSERT INTO orders (order_number, user_id, status, accrual, uploaded_at)
+		VALUES ($1, $2, $3, $4, $5)
 		RETURNING id, order_number, user_id, status, accrual, uploaded_at
 	`
 
@@ -68,7 +68,7 @@ func (r *PGXOrderRepository) CreateOrder(ctx context.Context, userID int, orderN
 
 func (r *PGXOrderRepository) GetOrdersList(ctx context.Context, userID int) ([]models.OrderModel, error) {
 	const query = `
-		SELECT id, user_id, order_number, status, accrual, uploaded_at
+		SELECT id, order_number, user_id, status, accrual, uploaded_at
 		FROM orders
 		WHERE user_id = $1
 	`
