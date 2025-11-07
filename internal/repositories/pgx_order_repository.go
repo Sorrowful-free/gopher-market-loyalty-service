@@ -21,7 +21,7 @@ func (r *PGXOrderRepository) CreateOrder(ctx context.Context, userID int, orderI
 	const selectQuery = `
 		SELECT id, user_id
 		FROM orders
-		WHERE order_id = $1
+		WHERE id = $1
 	`
 	const insertQuery = `
 		INSERT INTO orders (id, user_id, status, accrual, uploaded_at)
