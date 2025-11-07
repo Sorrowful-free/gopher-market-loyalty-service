@@ -5,7 +5,7 @@ type UserModel struct {
 	Login string `json:"login"`
 }
 
-var EMPTY_USER_MODEL = UserModel{}
+var EmptyUserModel = UserModel{}
 
 func NewUserModel(id int, login string, password string, current int64, withdrawn int64) *UserModel {
 	return &UserModel{

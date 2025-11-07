@@ -31,7 +31,7 @@ func (r *PGXOrderRepository) CreateOrder(ctx context.Context, userID int, orderI
 
 	tx, err := r.pgxPool.Begin(ctx)
 	if err != nil {
-		return models.EMPTY_ORDER_MODEL, NewOrderRepositoryError(OrderRepositoryErrorInternalError, "Failed to begin transaction")
+		return models.EmptyOrderModel, NewOrderRepositoryError(OrderRepositoryErrorInternalError, "Failed to begin transaction")
 	}
 
 	row := tx.QueryRow(ctx, selectQuery, orderID)
@@ -45,24 +45,24 @@ func (r *PGXOrderRepository) CreateOrder(ctx context.Context, userID int, orderI
 		row = tx.QueryRow(ctx, insertQuery, orderID, userID, models.OrderStatusNew, 0, time.Now().UTC())
 		err = row.Scan(&orderModel.OrderID, &orderModel.UserID, &orderModel.Status, &orderModel.Accrual, &orderModel.CreatedAt)
 		if err != nil {
-			return models.EMPTY_ORDER_MODEL, NewOrderRepositoryError(OrderRepositoryErrorInternalError, "Failed to insert order")
+			return models.EmptyOrderModel, NewOrderRepositoryError(OrderRepositoryErrorInternalError, "Failed to insert order")
 		}
 
 		err = tx.Commit(ctx)
 		if err != nil {
 			err = tx.Rollback(ctx)
 			if err != nil {
-				return models.EMPTY_ORDER_MODEL, NewOrderRepositoryError(OrderRepositoryErrorInternalError, "Failed to rollback transaction")
+				return models.EmptyOrderModel, NewOrderRepositoryError(OrderRepositoryErrorInternalError, "Failed to rollback transaction")
 			}
-			return models.EMPTY_ORDER_MODEL, NewOrderRepositoryError(OrderRepositoryErrorInternalError, "Failed to commit transaction")
+			return models.EmptyOrderModel, NewOrderRepositoryError(OrderRepositoryErrorInternalError, "Failed to commit transaction")
 		}
 		return orderModel, nil
 	}
 
 	if userIDFromDB != userID {
-		return models.EMPTY_ORDER_MODEL, NewOrderRepositoryError(OrderRepositoryErrorOrderCreatedOtherUser, "Order created by other user")
+		return models.EmptyOrderModel, NewOrderRepositoryError(OrderRepositoryErrorOrderCreatedOtherUser, "Order created by other user")
 	} else {
-		return models.EMPTY_ORDER_MODEL, NewOrderRepositoryError(OrderRepositoryErrorOrderAlreadyExists, "Order already exists")
+		return models.EmptyOrderModel, NewOrderRepositoryError(OrderRepositoryErrorOrderAlreadyExists, "Order already exists")
 	}
 }
 
@@ -100,9 +100,9 @@ func (r *PGXOrderRepository) GetOrder(ctx context.Context, orderID int) (models.
 	err := row.Scan(&orderModel.OrderID, &orderModel.UserID, &orderModel.Status, &orderModel.Accrual, &orderModel.CreatedAt)
 	if err != nil {
 		if err == pgx.ErrNoRows {
-			return models.EMPTY_ORDER_MODEL, NewOrderRepositoryError(OrderRepositoryErrorInternalError, "Failed to get order")
+			return models.EmptyOrderModel, NewOrderRepositoryError(OrderRepositoryErrorInternalError, "Failed to get order")
 		}
-		return models.EMPTY_ORDER_MODEL, NewOrderRepositoryError(OrderRepositoryErrorInternalError, "Failed to get order")
+		return models.EmptyOrderModel, NewOrderRepositoryError(OrderRepositoryErrorInternalError, "Failed to get order")
 	}
 	return orderModel, nil
 }

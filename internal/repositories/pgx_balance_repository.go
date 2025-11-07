@@ -29,9 +29,9 @@ func (r *PGXBalanceRepository) GetBalance(ctx context.Context, userID int) (mode
 	err := row.Scan(&balanceModel.Current, &balanceModel.Withdrawn)
 	if err != nil {
 		if err == pgx.ErrNoRows {
-			return models.EMPTY_BALANCE_MODEL, NewBalanceRepositoryError(BalanceRepositoryErrorUserNotFound, "User not found")
+			return models.EmptyBalanceModel, NewBalanceRepositoryError(BalanceRepositoryErrorUserNotFound, "User not found")
 		}
-		return models.EMPTY_BALANCE_MODEL, NewBalanceRepositoryError(BalanceRepositoryErrorInternalError, "Failed to get balance by user id")
+		return models.EmptyBalanceModel, NewBalanceRepositoryError(BalanceRepositoryErrorInternalError, "Failed to get balance by user id")
 	}
 	return balanceModel, nil
 }

@@ -43,7 +43,7 @@ func TestGetOrdersListHandler(t *testing.T) {
 
 	t.Run("successful_get_orders_list_with_empty_list", func(t *testing.T) {
 
-		orderService.EXPECT().GetOrdersList(gomock.Any(), gomock.Any()).Return(models.EMPTY_ARRAY_OF_ORDER_MODEL, nil)
+		orderService.EXPECT().GetOrdersList(gomock.Any(), gomock.Any()).Return(models.EmptyArrayOfOrderModel, nil)
 		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(models.EMPTY_JWT_CLAIMS, nil)
 		jwtService.EXPECT().ExtractToken(gomock.Any()).Return("userID", nil)
 
@@ -58,7 +58,7 @@ func TestGetOrdersListHandler(t *testing.T) {
 
 	t.Run("failed_get_orders_list_with_internal_error", func(t *testing.T) {
 
-		orderService.EXPECT().GetOrdersList(gomock.Any(), gomock.Any()).Return(models.EMPTY_ARRAY_OF_ORDER_MODEL, errors.New("internal server error"))
+		orderService.EXPECT().GetOrdersList(gomock.Any(), gomock.Any()).Return(models.EmptyArrayOfOrderModel, errors.New("internal server error"))
 		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(models.EMPTY_JWT_CLAIMS, nil)
 		jwtService.EXPECT().ExtractToken(gomock.Any()).Return("userID", nil)
 

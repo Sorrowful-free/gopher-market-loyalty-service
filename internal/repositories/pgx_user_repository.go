@@ -28,7 +28,7 @@ func (r *PGXUserRepository) Create(ctx context.Context, login string, password s
 
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		return models.EMPTY_USER_MODEL, NewUserRepositoryError(UserRepositoryErrorInternalError, "Failed to generate password hash")
+		return models.EmptyUserModel, NewUserRepositoryError(UserRepositoryErrorInternalError, "Failed to generate password hash")
 	}
 	var user models.UserModel
 	err = r.pgxPool.QueryRow(ctx, query, login, string(hash)).Scan(&user.ID, &user.Login)
@@ -36,12 +36,12 @@ func (r *PGXUserRepository) Create(ctx context.Context, login string, password s
 	var pgxErr *pgconn.PgError
 	if errors.As(err, &pgxErr) {
 		if pgxErr.Code == "23505" {
-			return models.EMPTY_USER_MODEL, NewUserRepositoryError(UserRepositoryErrorUserAlreadyExists, "User already exists")
+			return models.EmptyUserModel, NewUserRepositoryError(UserRepositoryErrorUserAlreadyExists, "User already exists")
 		}
 	}
 
 	if err != nil {
-		return models.EMPTY_USER_MODEL, NewUserRepositoryError(UserRepositoryErrorInternalError, "Failed to create user")
+		return models.EmptyUserModel, NewUserRepositoryError(UserRepositoryErrorInternalError, "Failed to create user")
 	}
 	return user, nil
 }
@@ -58,10 +58,10 @@ func (r *PGXUserRepository) GetByLoginAndPassword(ctx context.Context, login str
 	var passHash string
 	err := row.Scan(&user.ID, &user.Login, &passHash)
 	if err != nil && err != pgx.ErrNoRows || bcrypt.CompareHashAndPassword([]byte(passHash), []byte(password)) != nil {
-		return models.EMPTY_USER_MODEL, NewUserRepositoryError(UserRepositoryErrorInvalidCredentials, "Invalid credentials")
+		return models.EmptyUserModel, NewUserRepositoryError(UserRepositoryErrorInvalidCredentials, "Invalid credentials")
 	}
 	if err == pgx.ErrNoRows {
-		return models.EMPTY_USER_MODEL, NewUserRepositoryError(UserRepositoryErrorUserNotFound, "User not found")
+		return models.EmptyUserModel, NewUserRepositoryError(UserRepositoryErrorUserNotFound, "User not found")
 	}
 	return user, nil
 }
@@ -77,10 +77,10 @@ func (r *PGXUserRepository) GetByID(ctx context.Context, id int) (models.UserMod
 	var user models.UserModel
 	err := row.Scan(&user.ID, &user.Login)
 	if err != nil && err != pgx.ErrNoRows {
-		return models.EMPTY_USER_MODEL, NewUserRepositoryError(UserRepositoryErrorInternalError, "Failed to get user by id")
+		return models.EmptyUserModel, NewUserRepositoryError(UserRepositoryErrorInternalError, "Failed to get user by id")
 	}
 	if err == pgx.ErrNoRows {
-		return models.EMPTY_USER_MODEL, NewUserRepositoryError(UserRepositoryErrorUserNotFound, "User not found by id")
+		return models.EmptyUserModel, NewUserRepositoryError(UserRepositoryErrorUserNotFound, "User not found by id")
 	}
 	return user, nil
 }

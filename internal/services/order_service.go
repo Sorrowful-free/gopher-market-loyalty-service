@@ -26,11 +26,11 @@ func NewOrderService(orderRepository repositories.OrderRepository) OrderService 
 
 func (s *OrderServiceImpl) CreateOrder(ctx context.Context, userID int, orderID int) (models.OrderModel, error) {
 	if ctx.Err() != nil {
-		return models.EMPTY_ORDER_MODEL, ctx.Err()
+		return models.EmptyOrderModel, ctx.Err()
 	}
 
 	if !utils.ValidateLuhn(orderID) {
-		return models.EMPTY_ORDER_MODEL, NewOrderServiceError(OrderServiceErrorOrderIdIsInvalid, "Order id is invalid")
+		return models.EmptyOrderModel, NewOrderServiceError(OrderServiceErrorOrderIdIsInvalid, "Order id is invalid")
 	}
 
 	orderModel, err := s.orderRepository.CreateOrder(ctx, userID, orderID)
@@ -46,7 +46,7 @@ func (s *OrderServiceImpl) CreateOrder(ctx context.Context, userID int, orderID 
 		}
 	}
 	if err != nil {
-		return models.EMPTY_ORDER_MODEL, err
+		return models.EmptyOrderModel, err
 	}
 	return orderModel, nil
 }
@@ -66,11 +66,11 @@ func (s *OrderServiceImpl) GetOrdersList(ctx context.Context, userID int) ([]mod
 func (s *OrderServiceImpl) GetOrder(ctx context.Context, orderID int) (models.OrderModel, error) {
 
 	if ctx.Err() != nil {
-		return models.EMPTY_ORDER_MODEL, ctx.Err()
+		return models.EmptyOrderModel, ctx.Err()
 	}
 
 	if !utils.ValidateLuhn(orderID) {
-		return models.EMPTY_ORDER_MODEL, NewOrderServiceError(OrderServiceErrorOrderIdIsInvalid, "Order id is invalid")
+		return models.EmptyOrderModel, NewOrderServiceError(OrderServiceErrorOrderIdIsInvalid, "Order id is invalid")
 	}
 
 	orderModel, err := s.orderRepository.GetOrder(ctx, orderID)
@@ -78,7 +78,7 @@ func (s *OrderServiceImpl) GetOrder(ctx context.Context, orderID int) (models.Or
 	if errors.As(err, &orderRepositoryError) {
 		switch orderRepositoryError.Code {
 		case repositories.OrderRepositoryErrorOrderNotFound:
-			return models.EMPTY_ORDER_MODEL, NewOrderServiceError(OrderServiceErrorOrderNotFound, "Order not found")
+			return models.EmptyOrderModel, NewOrderServiceError(OrderServiceErrorOrderNotFound, "Order not found")
 		}
 	}
 	return orderModel, nil

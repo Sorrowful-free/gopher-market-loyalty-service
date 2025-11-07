@@ -30,7 +30,7 @@ func NewUserService(userRepository repositories.UserRepository) UserService {
 func (s *UserServiceImpl) Register(ctx context.Context, login string, password string) (models.UserModel, error) {
 
 	if ctx.Err() != nil {
-		return models.EMPTY_USER_MODEL, ctx.Err()
+		return models.EmptyUserModel, ctx.Err()
 	}
 
 	user, err := s.userRepository.Create(ctx, login, password)
@@ -39,18 +39,18 @@ func (s *UserServiceImpl) Register(ctx context.Context, login string, password s
 	if errors.As(err, &userRepositoryError) {
 		switch userRepositoryError.Code {
 		case repositories.UserRepositoryErrorUserAlreadyExists:
-			return models.EMPTY_USER_MODEL, userExistsError
+			return models.EmptyUserModel, userExistsError
 		}
 	}
 	if err != nil {
-		return models.EMPTY_USER_MODEL, fmt.Errorf("failed to create user: %w", err)
+		return models.EmptyUserModel, fmt.Errorf("failed to create user: %w", err)
 	}
 	return user, nil
 }
 
 func (s *UserServiceImpl) Login(ctx context.Context, login string, password string) (models.UserModel, error) {
 	if ctx.Err() != nil {
-		return models.EMPTY_USER_MODEL, ctx.Err()
+		return models.EmptyUserModel, ctx.Err()
 	}
 
 	user, err := s.userRepository.GetByLoginAndPassword(ctx, login, password)
@@ -59,29 +59,29 @@ func (s *UserServiceImpl) Login(ctx context.Context, login string, password stri
 	if errors.As(err, &userRepositoryError) {
 		switch userRepositoryError.Code {
 		case repositories.UserRepositoryErrorUserNotFound:
-			return models.EMPTY_USER_MODEL, userNotFoundError
+			return models.EmptyUserModel, userNotFoundError
 		}
 	}
 	if err != nil {
-		return models.EMPTY_USER_MODEL, fmt.Errorf("failed to get user: %w", err)
+		return models.EmptyUserModel, fmt.Errorf("failed to get user: %w", err)
 	}
 	return user, nil
 }
 
 func (s *UserServiceImpl) GetUser(ctx context.Context, userID int) (models.UserModel, error) {
 	if ctx.Err() != nil {
-		return models.EMPTY_USER_MODEL, ctx.Err()
+		return models.EmptyUserModel, ctx.Err()
 	}
 
 	user, err := s.userRepository.GetByID(ctx, userID)
 	if err != nil {
-		return models.EMPTY_USER_MODEL, fmt.Errorf("failed to get user: %w", err)
+		return models.EmptyUserModel, fmt.Errorf("failed to get user: %w", err)
 	}
 	var userRepositoryError repositories.UserRepositoryError
 	if errors.As(err, &userRepositoryError) {
 		switch userRepositoryError.Code {
 		case repositories.UserRepositoryErrorUserNotFound:
-			return models.EMPTY_USER_MODEL, userNotFoundError
+			return models.EmptyUserModel, userNotFoundError
 		}
 	}
 	return user, nil

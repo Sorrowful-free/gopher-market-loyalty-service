@@ -24,10 +24,10 @@ func TestBalanceService(t *testing.T) {
 	})
 
 	t.Run("failed_get_balance_with_internal_error", func(t *testing.T) {
-		balanceRepository.EXPECT().GetBalance(gomock.Any(), gomock.Any()).Return(models.EMPTY_BALANCE_MODEL, errors.New("internal server error"))
+		balanceRepository.EXPECT().GetBalance(gomock.Any(), gomock.Any()).Return(models.EmptyBalanceModel, errors.New("internal server error"))
 		balance, err := balanceService.GetBalance(context.TODO(), TestUserID)
 		require.Error(t, err)
-		require.Equal(t, models.EMPTY_BALANCE_MODEL, balance)
+		require.Equal(t, models.EmptyBalanceModel, balance)
 	})
 
 	t.Run("successful_withdraw", func(t *testing.T) {
@@ -61,7 +61,7 @@ func TestBalanceService(t *testing.T) {
 	})
 
 	t.Run("failed_withdraw_with_user_not_found", func(t *testing.T) {
-		balanceRepository.EXPECT().GetBalance(gomock.Any(), gomock.Any()).Return(models.EMPTY_BALANCE_MODEL, repositories.NewBalanceRepositoryError(repositories.BalanceRepositoryErrorUserNotFound, "User not found"))
+		balanceRepository.EXPECT().GetBalance(gomock.Any(), gomock.Any()).Return(models.EmptyBalanceModel, repositories.NewBalanceRepositoryError(repositories.BalanceRepositoryErrorUserNotFound, "User not found"))
 		err := balanceService.Withdraw(context.TODO(), TestUserID, TestValidOrderID, TestSum)
 		var balanceServiceError BalanceServiceError
 		require.ErrorAs(t, err, &balanceServiceError)
@@ -70,7 +70,7 @@ func TestBalanceService(t *testing.T) {
 	})
 
 	t.Run("failed_withdraw_with_internal_error", func(t *testing.T) {
-		balanceRepository.EXPECT().GetBalance(gomock.Any(), gomock.Any()).Return(models.EMPTY_BALANCE_MODEL, errors.New("internal server error"))
+		balanceRepository.EXPECT().GetBalance(gomock.Any(), gomock.Any()).Return(models.EmptyBalanceModel, errors.New("internal server error"))
 		err := balanceService.Withdraw(context.TODO(), TestUserID, TestValidOrderID, TestSum)
 		var balanceServiceError BalanceServiceError
 		require.ErrorAs(t, err, &balanceServiceError)
@@ -79,15 +79,15 @@ func TestBalanceService(t *testing.T) {
 	})
 
 	t.Run("successful_get_withdrawals", func(t *testing.T) {
-		balanceRepository.EXPECT().GetWithdrawals(gomock.Any(), gomock.Any()).Return(models.EMPTY_ARRAY_OF_WITHDRAWAL_MODEL, nil)
+		balanceRepository.EXPECT().GetWithdrawals(gomock.Any(), gomock.Any()).Return(models.EmptyArrayOfWithdrawalModel, nil)
 
 		withdrawals, err := balanceService.GetWithdrawals(context.TODO(), TestUserID)
 		require.NoError(t, err)
-		require.Equal(t, models.EMPTY_ARRAY_OF_WITHDRAWAL_MODEL, withdrawals)
+		require.Equal(t, models.EmptyArrayOfWithdrawalModel, withdrawals)
 	})
 
 	t.Run("successful_get_withdrawals", func(t *testing.T) {
-		balanceRepository.EXPECT().GetWithdrawals(gomock.Any(), gomock.Any()).Return(models.EMPTY_ARRAY_OF_WITHDRAWAL_MODEL, repositories.NewBalanceRepositoryError(repositories.BalanceRepositoryErrorUserNotFound, "User not found"))
+		balanceRepository.EXPECT().GetWithdrawals(gomock.Any(), gomock.Any()).Return(models.EmptyArrayOfWithdrawalModel, repositories.NewBalanceRepositoryError(repositories.BalanceRepositoryErrorUserNotFound, "User not found"))
 
 		_, err := balanceService.GetWithdrawals(context.TODO(), TestUserID)
 		var balanceServiceError BalanceServiceError

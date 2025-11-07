@@ -10,8 +10,8 @@ type WithdrawalModel struct {
 	ProcessedAt time.Time `json:"processed_at"`
 }
 
-var EMPTY_WITHDRAWAL_MODEL = WithdrawalModel{}
-var EMPTY_ARRAY_OF_WITHDRAWAL_MODEL = []WithdrawalModel{}
+var EmptyWithdrawalModel = WithdrawalModel{}
+var EmptyArrayOfWithdrawalModel = []WithdrawalModel{}
 
 func NewWithdrawalModel(id int, userID int, orderID int, sum float64, processedAt time.Time) *WithdrawalModel {
 	return &WithdrawalModel{

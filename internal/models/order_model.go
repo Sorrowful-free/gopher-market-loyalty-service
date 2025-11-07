@@ -12,15 +12,15 @@ const (
 )
 
 type OrderModel struct {
-	OrderID   int         `json:"order"`
+	OrderID   int         `json:"number"`
 	UserID    int         `json:"user_id"`
 	Status    OrderStatus `json:"status"`
 	Accrual   float64     `json:"accrual"`
 	CreatedAt time.Time   `json:"uploaded_at"`
 }
 
-var EMPTY_ORDER_MODEL = OrderModel{}
-var EMPTY_ARRAY_OF_ORDER_MODEL = []OrderModel{}
+var EmptyOrderModel = OrderModel{}
+var EmptyArrayOfOrderModel = []OrderModel{}
 
 func NewOrderModel(orderID int, userID int, status OrderStatus, accrual float64) *OrderModel {
 	return &OrderModel{

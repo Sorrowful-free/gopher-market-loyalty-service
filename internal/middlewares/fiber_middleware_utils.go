@@ -10,7 +10,7 @@ func GetUser(c *fiber.Ctx) (models.UserModel, error) {
 	if ok {
 		return user, nil
 	}
-	return models.EMPTY_USER_MODEL, NewFiberAuthMiddlewareError("Cannot convert user struct")
+	return models.EmptyUserModel, NewFiberAuthMiddlewareError("Cannot convert user struct")
 }
 
 func GetRequestBody[T any](c *fiber.Ctx) (T, error) {
@@ -27,13 +27,13 @@ func GetUserAndRequestBody[T any](c *fiber.Ctx) (models.UserModel, T, error) {
 	var requestBody T
 
 	if err != nil {
-		return models.EMPTY_USER_MODEL, requestBody, err
+		return models.EmptyUserModel, requestBody, err
 	}
 
 	requestBody, err = GetRequestBody[T](c)
 
 	if err != nil {
-		return models.EMPTY_USER_MODEL, requestBody, err
+		return models.EmptyUserModel, requestBody, err
 	}
 
 	return user, requestBody, nil

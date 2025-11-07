@@ -1,7 +1,7 @@
 package services
 
 type ExternalAccrualService interface {
-	GetScroing(order string) (int, error)
+	GetScroing(orderID int) (float64, error)
 }
 
 type ExternalAccrualServiceImpl struct {
@@ -12,6 +12,6 @@ func NewExternalAccrualService(accrualSystemAddress string) ExternalAccrualServi
 	return &ExternalAccrualServiceImpl{accrualSystemAddress: accrualSystemAddress}
 }
 
-func (s *ExternalAccrualServiceImpl) GetScroing(order string) (int, error) {
+func (s *ExternalAccrualServiceImpl) GetScroing(orderID int) (float64, error) {
 	return 0, nil
 }

@@ -22,7 +22,7 @@ func TestCreateOrderHandler(t *testing.T) {
 
 	t.Run("successful_already_created_order", func(t *testing.T) {
 
-		orderService.EXPECT().CreateOrder(gomock.Any(), gomock.Any(), gomock.Any()).Return(models.EMPTY_ORDER_MODEL, services.NewOrderServiceError(services.OrderServiceErrorOrderAlreadyExists, "Order already exists"))
+		orderService.EXPECT().CreateOrder(gomock.Any(), gomock.Any(), gomock.Any()).Return(models.EmptyOrderModel, services.NewOrderServiceError(services.OrderServiceErrorOrderAlreadyExists, "Order already exists"))
 		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(models.EMPTY_JWT_CLAIMS, nil)
 		jwtService.EXPECT().ExtractToken(gomock.Any()).Return("userID", nil)
 
@@ -38,7 +38,7 @@ func TestCreateOrderHandler(t *testing.T) {
 
 	t.Run("successful_create_order", func(t *testing.T) {
 
-		orderService.EXPECT().CreateOrder(gomock.Any(), gomock.Any(), gomock.Any()).Return(models.EMPTY_ORDER_MODEL, nil)
+		orderService.EXPECT().CreateOrder(gomock.Any(), gomock.Any(), gomock.Any()).Return(models.EmptyOrderModel, nil)
 		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(models.EMPTY_JWT_CLAIMS, nil)
 		jwtService.EXPECT().ExtractToken(gomock.Any()).Return("userID", nil)
 
@@ -54,7 +54,7 @@ func TestCreateOrderHandler(t *testing.T) {
 
 	t.Run("failed_create_order_with_other_user_order", func(t *testing.T) {
 
-		orderService.EXPECT().CreateOrder(gomock.Any(), gomock.Any(), gomock.Any()).Return(models.EMPTY_ORDER_MODEL, services.NewOrderServiceError(services.OrderServiceErrorOrderCreatedOtherUser, "Order created other user"))
+		orderService.EXPECT().CreateOrder(gomock.Any(), gomock.Any(), gomock.Any()).Return(models.EmptyOrderModel, services.NewOrderServiceError(services.OrderServiceErrorOrderCreatedOtherUser, "Order created other user"))
 		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(models.EMPTY_JWT_CLAIMS, nil)
 		jwtService.EXPECT().ExtractToken(gomock.Any()).Return("userID", nil)
 
@@ -70,7 +70,7 @@ func TestCreateOrderHandler(t *testing.T) {
 
 	t.Run("failed_create_order_with_invalid_order", func(t *testing.T) {
 
-		orderService.EXPECT().CreateOrder(gomock.Any(), gomock.Any(), gomock.Any()).Return(models.EMPTY_ORDER_MODEL, services.NewOrderServiceError(services.OrderServiceErrorOrderIdIsInvalid, "Order invalid"))
+		orderService.EXPECT().CreateOrder(gomock.Any(), gomock.Any(), gomock.Any()).Return(models.EmptyOrderModel, services.NewOrderServiceError(services.OrderServiceErrorOrderIdIsInvalid, "Order invalid"))
 		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(models.EMPTY_JWT_CLAIMS, nil)
 		jwtService.EXPECT().ExtractToken(gomock.Any()).Return("userID", nil)
 
@@ -86,7 +86,7 @@ func TestCreateOrderHandler(t *testing.T) {
 
 	t.Run("failed_create_order_with_internal_error", func(t *testing.T) {
 
-		orderService.EXPECT().CreateOrder(gomock.Any(), gomock.Any(), gomock.Any()).Return(models.EMPTY_ORDER_MODEL, errors.New("internal server error"))
+		orderService.EXPECT().CreateOrder(gomock.Any(), gomock.Any(), gomock.Any()).Return(models.EmptyOrderModel, errors.New("internal server error"))
 		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(models.EMPTY_JWT_CLAIMS, nil)
 		jwtService.EXPECT().ExtractToken(gomock.Any()).Return("userID", nil)
 
