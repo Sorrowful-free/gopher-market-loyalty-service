@@ -51,7 +51,7 @@ func (s *BalanceServiceImpl) Withdraw(ctx context.Context, userID int, orderNumb
 	}
 
 	if !utils.ValidateLuhn(orderNumber) {
-		return NewBalanceServiceError(BalanceServiceErrorOrderIdIsInvalid, "Order id is invalid")
+		return NewBalanceServiceError(BalanceServiceErrorOrderIDIsInvalid, "Order id is invalid")
 	}
 
 	balance, err := s.balanceRepository.GetBalance(ctx, userID)

@@ -4,7 +4,7 @@ import "fmt"
 
 const (
 	BalanceServiceErrorNotEnoughBalance = iota
-	BalanceServiceErrorOrderIdIsInvalid
+	BalanceServiceErrorOrderIDIsInvalid
 	BalanceServiceErrorWrongOrder
 	BalanceServiceErrorUserNotFound
 	BalanceServiceErrorInternalError

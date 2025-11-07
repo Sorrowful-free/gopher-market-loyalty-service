@@ -44,7 +44,7 @@ func TestBalanceService(t *testing.T) {
 		err := balanceService.Withdraw(context.TODO(), TestUserID, TestInvalidOrderID, TestSum)
 		var balanceServiceError BalanceServiceError
 		require.ErrorAs(t, err, &balanceServiceError)
-		require.Equal(t, BalanceServiceErrorOrderIdIsInvalid, balanceServiceError.Code)
+		require.Equal(t, BalanceServiceErrorOrderIDIsInvalid, balanceServiceError.Code)
 		require.Equal(t, "Order id is invalid", balanceServiceError.Message)
 	})
 
