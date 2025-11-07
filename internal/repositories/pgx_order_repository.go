@@ -50,14 +50,13 @@ func (r *PGXOrderRepository) CreateOrder(ctx context.Context, userID int, orderI
 
 		err = tx.Commit(ctx)
 		if err != nil {
+			tx.Rollback(ctx)
+			if err != nil {
+				return models.EMPTY_ORDER_MODEL, NewOrderRepositoryError(OrderRepositoryErrorInternalError, "Failed to rollback transaction")
+			}
 			return models.EMPTY_ORDER_MODEL, NewOrderRepositoryError(OrderRepositoryErrorInternalError, "Failed to commit transaction")
 		}
 		return orderModel, nil
-	}
-
-	tx.Rollback(ctx)
-	if err != nil {
-		return models.EMPTY_ORDER_MODEL, NewOrderRepositoryError(OrderRepositoryErrorInternalError, "Failed to rollback transaction")
 	}
 
 	if userIDFromDB != userID {
