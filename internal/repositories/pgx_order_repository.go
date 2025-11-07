@@ -2,12 +2,10 @@ package repositories
 
 import (
 	context "context"
-	"errors"
 	"time"
 
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/models"
 	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -20,26 +18,53 @@ func NewPGXOrderRepository(pgxPool *pgxpool.Pool) OrderRepository {
 }
 
 func (r *PGXOrderRepository) CreateOrder(ctx context.Context, userID int, orderID int) (models.OrderModel, error) {
-	const query = `
+	const selectQuery = `
+		SELECT id, user_id
+		FROM orders
+		WHERE order_id = $1
+	`
+	const insertQuery = `
 		INSERT INTO orders (id, user_id, status, accrual, uploaded_at)
 		VALUES ($1, $2, $3, $4, $5)
 		RETURNING id, user_id, status, accrual, uploaded_at
 	`
-	row := r.pgxPool.QueryRow(ctx, query, orderID, userID, models.OrderStatusNew, 0, time.Now().UTC())
-	var orderModel models.OrderModel
-	err := row.Scan(&orderModel.OrderID, &orderModel.UserID, &orderModel.Status, &orderModel.Accrual, &orderModel.CreatedAt)
 
-	var pgxErr *pgconn.PgError
-	if errors.As(err, &pgxErr) {
-		if pgxErr.Code == "23505" {
-			return models.EMPTY_ORDER_MODEL, NewOrderRepositoryError(OrderRepositoryErrorOrderAlreadyExists, "Order already exists")
-		}
-	}
-
+	tx, err := r.pgxPool.Begin(ctx)
 	if err != nil {
-		return models.EMPTY_ORDER_MODEL, NewOrderRepositoryError(OrderRepositoryErrorInternalError, "Failed to create order")
+		return models.EMPTY_ORDER_MODEL, NewOrderRepositoryError(OrderRepositoryErrorInternalError, "Failed to begin transaction")
 	}
-	return orderModel, nil
+
+	row := tx.QueryRow(ctx, selectQuery, orderID)
+	var orderIDFromDB int
+	var userIDFromDB int
+	err = row.Scan(&orderIDFromDB, &userIDFromDB)
+
+	var orderModel models.OrderModel
+
+	if err == pgx.ErrNoRows { // we cannot find order in database
+		row = tx.QueryRow(ctx, insertQuery, orderID, userID, models.OrderStatusNew, 0, time.Now().UTC())
+		err = row.Scan(&orderModel.OrderID, &orderModel.UserID, &orderModel.Status, &orderModel.Accrual, &orderModel.CreatedAt)
+		if err != nil {
+			return models.EMPTY_ORDER_MODEL, NewOrderRepositoryError(OrderRepositoryErrorInternalError, "Failed to insert order")
+		}
+
+		err = tx.Commit(ctx)
+		if err != nil {
+			return models.EMPTY_ORDER_MODEL, NewOrderRepositoryError(OrderRepositoryErrorInternalError, "Failed to commit transaction")
+		}
+		return orderModel, nil
+	}
+
+	tx.Rollback(ctx)
+	if err != nil {
+		return models.EMPTY_ORDER_MODEL, NewOrderRepositoryError(OrderRepositoryErrorInternalError, "Failed to rollback transaction")
+	}
+
+	if userIDFromDB != userID {
+		return models.EMPTY_ORDER_MODEL, NewOrderRepositoryError(OrderRepositoryErrorOrderCreatedOtherUser, "Order created by other user")
+	} else {
+		return models.EMPTY_ORDER_MODEL, NewOrderRepositoryError(OrderRepositoryErrorOrderAlreadyExists, "Order already exists")
+	}
 }
 
 func (r *PGXOrderRepository) GetOrdersList(ctx context.Context, userID int) ([]models.OrderModel, error) {
