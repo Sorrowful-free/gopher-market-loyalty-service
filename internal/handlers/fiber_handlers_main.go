@@ -45,7 +45,6 @@ func (h *FiberHandlers) BuildRoutes() {
 
 	h.orderGroup.Post(CreateOrderPath, h.authMiddleware.RequireAuth, middlewares.ValidateRequestAsText(), h.CreateOrderHandler)
 	h.orderGroup.Get(GetOrdersListPath, h.authMiddleware.RequireAuth, h.GetOrdersListHandler)
-	h.orderGroup.Get(GetOrderPath, h.GetOrderHandler)
 
 	h.balanceGroup.Use(h.authMiddleware.RequireAuth)
 	h.balanceGroup.Get(GetBalancePath, h.GetBalanceHandler)

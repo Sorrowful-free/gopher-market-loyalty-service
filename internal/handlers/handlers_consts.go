@@ -8,9 +8,8 @@ const (
 
 	OrderGroup = "/orders" //api/user/orders
 
-	CreateOrderPath   = "/"       //POST api/user/orders
-	GetOrdersListPath = "/"       //GET api/user/orders
-	GetOrderPath      = "/:order" //GET api/user/orders/:order
+	CreateOrderPath   = "/" //POST api/user/orders
+	GetOrdersListPath = "/" //GET api/user/orders
 
 	BalanceGroup = "/balance" //api/user/balance
 

@@ -2,8 +2,10 @@ package services
 
 import "fmt"
 
+type BalanceServiceErrorCode int
+
 const (
-	BalanceServiceErrorNotEnoughBalance = iota
+	BalanceServiceErrorNotEnoughBalance BalanceServiceErrorCode = iota
 	BalanceServiceErrorOrderIDIsInvalid
 	BalanceServiceErrorWrongOrder
 	BalanceServiceErrorUserNotFound
@@ -11,7 +13,7 @@ const (
 )
 
 type BalanceServiceError struct {
-	Code    int
+	Code    BalanceServiceErrorCode
 	Message string
 }
 
@@ -19,6 +21,6 @@ func (e BalanceServiceError) Error() string {
 	return fmt.Sprintf("Balance service error: %d - %s", e.Code, e.Message)
 }
 
-func NewBalanceServiceError(code int, message string) BalanceServiceError {
+func NewBalanceServiceError(code BalanceServiceErrorCode, message string) BalanceServiceError {
 	return BalanceServiceError{Code: code, Message: message}
 }
