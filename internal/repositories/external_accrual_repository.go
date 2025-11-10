@@ -15,7 +15,7 @@ const (
 
 //go:generate mockgen -source=external_accrual_repository.go -destination=mock_external_accrual_repository.go -package=repositories
 type ExternalAccrualRepository interface {
-	GetScroing(ctx context.Context, orderNumber string) (float64, error)
+	GetScoring(ctx context.Context, orderNumber string) (float64, error)
 }
 
 type ExternalAccrualRepositoryImpl struct {
@@ -28,7 +28,7 @@ func NewExternalAccrualRepository(accrualSystemAddress string) ExternalAccrualRe
 	return &ExternalAccrualRepositoryImpl{accrualSystemAddress: accrualSystemAddress, client: client}
 }
 
-func (r *ExternalAccrualRepositoryImpl) GetScroing(ctx context.Context, orderNumber string) (float64, error) {
+func (r *ExternalAccrualRepositoryImpl) GetScoring(ctx context.Context, orderNumber string) (float64, error) {
 
 	if ctx.Err() != nil {
 		return 0, ctx.Err()
