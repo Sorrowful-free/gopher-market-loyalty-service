@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/logger"
+	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/models"
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/services"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang/mock/gomock"
@@ -45,4 +46,13 @@ func SetupMockFiberHandlers(t *testing.T) *FiberHandlersMock {
 
 		fiberApp: fiberHandlers.fiberApp,
 	}
+}
+
+func (f *FiberHandlersMock) MakeValideAuthRequest(t *testing.T) {
+	f.jwtService.EXPECT().ExtractToken(gomock.Any()).Return("token", nil)
+	f.jwtService.EXPECT().ValidateToken(gomock.Any()).Return(models.EmptyJWTClaims, nil)
+	f.userService.EXPECT().GetUser(gomock.Any(), gomock.Any()).Return(models.UserModel{
+		ID:    1,
+		Login: "test",
+	}, nil)
 }

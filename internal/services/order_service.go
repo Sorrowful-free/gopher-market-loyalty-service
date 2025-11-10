@@ -104,7 +104,7 @@ func (s *OrderServiceImpl) GetOrdersList(ctx context.Context, userID int) ([]mod
 			order.Accrual = scoring.Accrual
 
 		}
-		s.orderRepository.UpdateOrder(ctx, order.OrderNumber, order.Status, order.Accrual)
+		order, err = s.orderRepository.UpdateOrder(ctx, order.OrderNumber, order.Status, order.Accrual)
 
 		var orderRepositoryError repositories.OrderRepositoryError
 		if errors.As(err, &orderRepositoryError) {

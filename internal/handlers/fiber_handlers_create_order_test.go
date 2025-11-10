@@ -23,8 +23,7 @@ func TestCreateOrderHandler(t *testing.T) {
 	t.Run("successful_already_created_order", func(t *testing.T) {
 
 		orderService.EXPECT().CreateOrder(gomock.Any(), gomock.Any(), gomock.Any()).Return(models.EmptyOrderModel, services.NewOrderServiceError(services.OrderServiceErrorOrderAlreadyExists, "Order already exists"))
-		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(models.EmptyJWTClaims, nil)
-		jwtService.EXPECT().ExtractToken(gomock.Any()).Return("userID", nil)
+		fiberHandlers.MakeValideAuthRequest(t)
 
 		req := httptest.NewRequest(fiber.MethodPost, TestCreateOrderPath, bytes.NewBuffer([]byte(strconv.Itoa(TestOrderID))))
 		req.Header.Set(fiber.HeaderContentType, fiber.MIMETextPlain)
@@ -39,8 +38,7 @@ func TestCreateOrderHandler(t *testing.T) {
 	t.Run("successful_create_order", func(t *testing.T) {
 
 		orderService.EXPECT().CreateOrder(gomock.Any(), gomock.Any(), gomock.Any()).Return(models.EmptyOrderModel, nil)
-		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(models.EmptyJWTClaims, nil)
-		jwtService.EXPECT().ExtractToken(gomock.Any()).Return("userID", nil)
+		fiberHandlers.MakeValideAuthRequest(t)
 
 		req := httptest.NewRequest(fiber.MethodPost, TestCreateOrderPath, bytes.NewBuffer([]byte(strconv.Itoa(TestOrderID))))
 		req.Header.Set(fiber.HeaderContentType, fiber.MIMETextPlain)
@@ -55,8 +53,7 @@ func TestCreateOrderHandler(t *testing.T) {
 	t.Run("failed_create_order_with_other_user_order", func(t *testing.T) {
 
 		orderService.EXPECT().CreateOrder(gomock.Any(), gomock.Any(), gomock.Any()).Return(models.EmptyOrderModel, services.NewOrderServiceError(services.OrderServiceErrorOrderCreatedOtherUser, "Order created other user"))
-		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(models.EmptyJWTClaims, nil)
-		jwtService.EXPECT().ExtractToken(gomock.Any()).Return("userID", nil)
+		fiberHandlers.MakeValideAuthRequest(t)
 
 		req := httptest.NewRequest(fiber.MethodPost, TestCreateOrderPath, bytes.NewBuffer([]byte(strconv.Itoa(TestOrderID))))
 		req.Header.Set(fiber.HeaderContentType, fiber.MIMETextPlain)

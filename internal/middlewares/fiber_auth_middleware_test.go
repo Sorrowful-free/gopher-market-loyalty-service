@@ -22,6 +22,10 @@ func TestFiberAuthMiddleware(t *testing.T) {
 
 		jwtService.EXPECT().ExtractToken(gomock.Any()).Return("token", nil)
 		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(models.EmptyJWTClaims, nil)
+		userService.EXPECT().GetUser(gomock.Any(), gomock.Any()).Return(models.UserModel{
+			ID:    1,
+			Login: "test",
+		}, nil)
 
 		fiberApp := fiber.New()
 		fiberApp.Use(fiberAuthMiddleware.RequireAuth)

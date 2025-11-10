@@ -15,12 +15,10 @@ func TestBalanceHandler(t *testing.T) {
 	fiberHandlers := SetupMockFiberHandlers(t)
 	fiberApp := fiberHandlers.fiberApp
 	balanceService := fiberHandlers.balanceService
-	jwtService := fiberHandlers.jwtService
 
 	t.Run("successful_balance", func(t *testing.T) {
 		balanceService.EXPECT().GetBalance(gomock.Any(), gomock.Any()).Return(models.BalanceModel{}, nil)
-		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(models.EmptyJWTClaims, nil)
-		jwtService.EXPECT().ExtractToken(gomock.Any()).Return("userID", nil)
+		fiberHandlers.MakeValideAuthRequest(t)
 
 		req := httptest.NewRequest(fiber.MethodGet, TestGetBalancePath, nil)
 		resp, err := fiberApp.Test(req)
@@ -33,8 +31,7 @@ func TestBalanceHandler(t *testing.T) {
 
 	t.Run("failed_balance_with_internal_error", func(t *testing.T) {
 		balanceService.EXPECT().GetBalance(gomock.Any(), gomock.Any()).Return(models.BalanceModel{}, errors.New("internal server error"))
-		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(models.EmptyJWTClaims, nil)
-		jwtService.EXPECT().ExtractToken(gomock.Any()).Return("userID", nil)
+		fiberHandlers.MakeValideAuthRequest(t)
 
 		req := httptest.NewRequest(fiber.MethodGet, TestGetBalancePath, nil)
 		resp, err := fiberApp.Test(req)
