@@ -7,4 +7,4 @@ type JWTClaims struct {
 	jwt.RegisteredClaims
 }
 
-var EMPTY_JWT_CLAIMS = JWTClaims{}
+var EmptyJWTClaims = JWTClaims{}

@@ -53,18 +53,18 @@ func (s *JWTServiceImpl) ValidateToken(tokenString string) (models.JWTClaims, er
 	})
 
 	if err != nil {
-		return models.EMPTY_JWT_CLAIMS, err
+		return models.EmptyJWTClaims, err
 	}
 
 	if !token.Valid {
 		s.logger.Error("Invalid token")
-		return models.EMPTY_JWT_CLAIMS, fiber.NewError(fiber.StatusUnauthorized, "Invalid token")
+		return models.EmptyJWTClaims, fiber.NewError(fiber.StatusUnauthorized, "Invalid token")
 	}
 
 	newClaims, ok := (token.Claims).(*models.JWTClaims)
 	if !ok {
 		s.logger.Error("Invalid token claims")
-		return models.EMPTY_JWT_CLAIMS, fiber.NewError(fiber.StatusUnauthorized, "Invalid token claims")
+		return models.EmptyJWTClaims, fiber.NewError(fiber.StatusUnauthorized, "Invalid token claims")
 	}
 
 	return *newClaims, nil

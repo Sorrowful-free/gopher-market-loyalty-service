@@ -21,7 +21,7 @@ func TestFiberAuthMiddleware(t *testing.T) {
 	t.Run("successful_auth", func(t *testing.T) {
 
 		jwtService.EXPECT().ExtractToken(gomock.Any()).Return("token", nil)
-		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(models.EMPTY_JWT_CLAIMS, nil)
+		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(models.EmptyJWTClaims, nil)
 
 		fiberApp := fiber.New()
 		fiberApp.Use(fiberAuthMiddleware.RequireAuth)
@@ -42,7 +42,7 @@ func TestFiberAuthMiddleware(t *testing.T) {
 	t.Run("failed_auth", func(t *testing.T) {
 
 		jwtService.EXPECT().ExtractToken(gomock.Any()).Return("token", nil)
-		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(models.EMPTY_JWT_CLAIMS, errors.New("invalid token"))
+		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(models.EmptyJWTClaims, errors.New("invalid token"))
 
 		fiberApp := fiber.New()
 		fiberApp.Use(fiberAuthMiddleware.RequireAuth)

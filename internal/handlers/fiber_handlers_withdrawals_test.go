@@ -29,7 +29,7 @@ func TestWithdrawalsHandler(t *testing.T) {
 			},
 		}
 		balanceService.EXPECT().GetWithdrawals(gomock.Any(), gomock.Any()).Return(withdrawals, nil)
-		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(models.EMPTY_JWT_CLAIMS, nil)
+		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(models.EmptyJWTClaims, nil)
 		jwtService.EXPECT().ExtractToken(gomock.Any()).Return("userID", nil)
 
 		req := httptest.NewRequest(fiber.MethodGet, TestWithdrawalsPath, nil)
@@ -43,7 +43,7 @@ func TestWithdrawalsHandler(t *testing.T) {
 
 	t.Run("successful_withdrawals_with_empty_list", func(t *testing.T) {
 		balanceService.EXPECT().GetWithdrawals(gomock.Any(), gomock.Any()).Return([]models.WithdrawalModel{}, nil)
-		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(models.EMPTY_JWT_CLAIMS, nil)
+		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(models.EmptyJWTClaims, nil)
 		jwtService.EXPECT().ExtractToken(gomock.Any()).Return("userID", nil)
 
 		req := httptest.NewRequest(fiber.MethodGet, TestWithdrawalsPath, nil)
@@ -57,7 +57,7 @@ func TestWithdrawalsHandler(t *testing.T) {
 
 	t.Run("failed_withdrawals_with_internal_error", func(t *testing.T) {
 		balanceService.EXPECT().GetWithdrawals(gomock.Any(), gomock.Any()).Return([]models.WithdrawalModel{}, errors.New("internal server error"))
-		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(models.EMPTY_JWT_CLAIMS, nil)
+		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(models.EmptyJWTClaims, nil)
 		jwtService.EXPECT().ExtractToken(gomock.Any()).Return("userID", nil)
 
 		req := httptest.NewRequest(fiber.MethodGet, TestWithdrawalsPath, nil)

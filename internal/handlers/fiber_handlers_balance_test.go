@@ -19,7 +19,7 @@ func TestBalanceHandler(t *testing.T) {
 
 	t.Run("successful_balance", func(t *testing.T) {
 		balanceService.EXPECT().GetBalance(gomock.Any(), gomock.Any()).Return(models.BalanceModel{}, nil)
-		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(models.EMPTY_JWT_CLAIMS, nil)
+		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(models.EmptyJWTClaims, nil)
 		jwtService.EXPECT().ExtractToken(gomock.Any()).Return("userID", nil)
 
 		req := httptest.NewRequest(fiber.MethodGet, TestGetBalancePath, nil)
@@ -33,7 +33,7 @@ func TestBalanceHandler(t *testing.T) {
 
 	t.Run("failed_balance_with_internal_error", func(t *testing.T) {
 		balanceService.EXPECT().GetBalance(gomock.Any(), gomock.Any()).Return(models.BalanceModel{}, errors.New("internal server error"))
-		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(models.EMPTY_JWT_CLAIMS, nil)
+		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(models.EmptyJWTClaims, nil)
 		jwtService.EXPECT().ExtractToken(gomock.Any()).Return("userID", nil)
 
 		req := httptest.NewRequest(fiber.MethodGet, TestGetBalancePath, nil)
