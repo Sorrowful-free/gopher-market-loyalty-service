@@ -30,7 +30,7 @@ gen_mocks:
 	mockgen -source=internal/services/balance_service.go -destination=internal/services/mock_balance_service.go -package=services
 	mockgen -source=internal/repositories/order_repository.go -destination=internal/repositories/mock_order_repository.go -package=repositories
 	mockgen -source=internal/repositories/user_repository.go -destination=internal/repositories/mock_user_repository.go -package=repositories
-	mockgen -source=internal/services/external_accrual_service.go -destination=internal/services/mock_external_accrual_service.go -package=services
+	mockgen -source=internal/repositories/external_accrual_repository.go -destination=internal/repositories/mock_external_accrual_repository.go -package=repositories
 	
 test:
 	make gen_mocks

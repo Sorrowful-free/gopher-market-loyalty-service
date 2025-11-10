@@ -17,9 +17,10 @@ type App struct {
 
 	pgxPool *pgxpool.Pool
 
-	userRepository    repositories.UserRepository
-	orderRepository   repositories.OrderRepository
-	balanceRepository repositories.BalanceRepository
+	userRepository            repositories.UserRepository
+	orderRepository           repositories.OrderRepository
+	balanceRepository         repositories.BalanceRepository
+	externalAccrualRepository repositories.ExternalAccrualRepository
 
 	jwtService     services.JWTService
 	userService    services.UserService
@@ -64,6 +65,7 @@ func (a *App) BuildRepositories() error {
 	a.userRepository = repositories.NewPGXUserRepository(a.pgxPool)
 	a.orderRepository = repositories.NewPGXOrderRepository(a.pgxPool)
 	a.balanceRepository = repositories.NewPGXBalanceRepository(a.pgxPool)
+	a.externalAccrualRepository = repositories.NewExternalAccrualRepository(a.config.AccrualSystemAddress())
 	return nil
 }
 

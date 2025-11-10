@@ -10,12 +10,14 @@ import (
 )
 
 type FiberHandlersMock struct {
-	logger         logger.Logger
+	logger logger.Logger
+
 	jwtService     *services.MockJWTService
 	userService    *services.MockUserService
 	orderService   *services.MockOrderService
 	balanceService *services.MockBalanceService
-	fiberApp       *fiber.App
+
+	fiberApp *fiber.App
 }
 
 func SetupMockFiberHandlers(t *testing.T) *FiberHandlersMock {
@@ -34,11 +36,13 @@ func SetupMockFiberHandlers(t *testing.T) *FiberHandlersMock {
 	fiberHandlers.BuildRoutes()
 
 	return &FiberHandlersMock{
-		logger:         logger,
+		logger: logger,
+
 		jwtService:     jwtService,
 		userService:    userService,
 		orderService:   orderService,
 		balanceService: balanceService,
-		fiberApp:       fiberHandlers.fiberApp,
+
+		fiberApp: fiberHandlers.fiberApp,
 	}
 }

@@ -14,7 +14,8 @@ type FiberHandlers struct {
 	orderGroup   fiber.Router
 	balanceGroup fiber.Router
 
-	logger         logger.Logger
+	logger logger.Logger
+
 	jwtService     services.JWTService
 	userService    services.UserService
 	orderService   services.OrderService
