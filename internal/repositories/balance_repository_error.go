@@ -6,7 +6,7 @@ type BalanceRepositoryErrorCode int
 
 const (
 	BalanceRepositoryErrorNotEnoughBalance BalanceRepositoryErrorCode = iota
-	BalanceRepositoryErrorOrderIdIsInvaliD
+	BalanceRepositoryErrorOrderIDIsInvalid
 	BalanceRepositoryErrorWrongOrder
 	BalanceRepositoryErrorUserNotFound
 	BalanceRepositoryErrorInternalError
