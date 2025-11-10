@@ -30,7 +30,7 @@ func (s *OrderServiceImpl) CreateOrder(ctx context.Context, userID int, orderNum
 	}
 
 	if !utils.ValidateLuhn(orderNumber) {
-		return models.EmptyOrderModel, NewOrderServiceError(OrderServiceErrorOrderIdIsInvalid, "Order id is invalid")
+		return models.EmptyOrderModel, NewOrderServiceError(OrderServiceErrorOrderIDIsInvalid, "Order id is invalid")
 	}
 
 	orderModel, err := s.orderRepository.CreateOrder(ctx, userID, orderNumber)
@@ -70,7 +70,7 @@ func (s *OrderServiceImpl) GetOrder(ctx context.Context, orderNumber string) (mo
 	}
 
 	if !utils.ValidateLuhn(orderNumber) {
-		return models.EmptyOrderModel, NewOrderServiceError(OrderServiceErrorOrderIdIsInvalid, "Order id is invalid")
+		return models.EmptyOrderModel, NewOrderServiceError(OrderServiceErrorOrderIDIsInvalid, "Order id is invalid")
 	}
 
 	orderModel, err := s.orderRepository.GetOrder(ctx, orderNumber)

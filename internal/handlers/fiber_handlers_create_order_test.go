@@ -70,7 +70,7 @@ func TestCreateOrderHandler(t *testing.T) {
 
 	t.Run("failed_create_order_with_invalid_order", func(t *testing.T) {
 
-		orderService.EXPECT().CreateOrder(gomock.Any(), gomock.Any(), gomock.Any()).Return(models.EmptyOrderModel, services.NewOrderServiceError(services.OrderServiceErrorOrderIdIsInvalid, "Order invalid"))
+		orderService.EXPECT().CreateOrder(gomock.Any(), gomock.Any(), gomock.Any()).Return(models.EmptyOrderModel, services.NewOrderServiceError(services.OrderServiceErrorOrderIDIsInvalid, "Order invalid"))
 		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(models.EMPTY_JWT_CLAIMS, nil)
 		jwtService.EXPECT().ExtractToken(gomock.Any()).Return("userID", nil)
 

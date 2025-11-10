@@ -65,7 +65,7 @@ func TestOrderService(t *testing.T) {
 		_, err := orderService.GetOrder(context.TODO(), TestInvalidOrderID)
 		var orderServiceError OrderServiceError
 		require.ErrorAs(t, err, &orderServiceError)
-		require.Equal(t, OrderServiceErrorOrderIdIsInvalid, orderServiceError.Code)
+		require.Equal(t, OrderServiceErrorOrderIDIsInvalid, orderServiceError.Code)
 		require.Equal(t, "Order id is invalid", orderServiceError.Message)
 	})
 

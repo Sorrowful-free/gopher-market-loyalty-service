@@ -8,7 +8,7 @@ const (
 	OrderServiceErrorOrderNotFound OrderServiceErrorCode = iota
 	OrderServiceErrorOrderAlreadyExists
 	OrderServiceErrorOrderCreatedOtherUser
-	OrderServiceErrorOrderIdIsInvalid
+	OrderServiceErrorOrderIDIsInvalid
 	OrderServiceErrorOrderTooManyRequests
 )
 
