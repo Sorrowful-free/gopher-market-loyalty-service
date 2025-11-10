@@ -15,7 +15,7 @@ const (
 
 //go:generate mockgen -source=external_accrual_repository.go -destination=mock_external_accrual_repository.go -package=repositories
 type ExternalAccrualRepository interface {
-	GetScoring(ctx context.Context, orderNumber string) (float64, error)
+	GetScoring(ctx context.Context, orderNumber string) (models.ScoringModel, error)
 }
 
 type ExternalAccrualRepositoryImpl struct {
@@ -28,38 +28,38 @@ func NewExternalAccrualRepository(accrualSystemAddress string) ExternalAccrualRe
 	return &ExternalAccrualRepositoryImpl{accrualSystemAddress: accrualSystemAddress, client: client}
 }
 
-func (r *ExternalAccrualRepositoryImpl) GetScoring(ctx context.Context, orderNumber string) (float64, error) {
+func (r *ExternalAccrualRepositoryImpl) GetScoring(ctx context.Context, orderNumber string) (models.ScoringModel, error) {
 
 	if ctx.Err() != nil {
-		return 0, ctx.Err()
+		return models.EmptyScoringModel, ctx.Err()
 	}
 
 	url, err := url.JoinPath(r.accrualSystemAddress, GetOrderPath, orderNumber)
 	if err != nil {
-		return 0, NewExternalAccrualRepositoryError(ExternalAccrualRepositoryErrorInternalError, "Internal server error")
+		return models.EmptyScoringModel, NewExternalAccrualRepositoryError(ExternalAccrualRepositoryErrorInternalError, "Internal server error")
 	}
 
 	resp, err := r.client.R().
 		SetContext(ctx).
 		Get(url)
 	if err != nil {
-		return 0, NewExternalAccrualRepositoryError(ExternalAccrualRepositoryErrorInternalError, "Internal server error")
+		return models.EmptyScoringModel, NewExternalAccrualRepositoryError(ExternalAccrualRepositoryErrorInternalError, "Internal server error")
 	}
 	if code := resp.StatusCode(); code != 200 {
 		switch code {
 		case 204:
-			return 0, NewExternalAccrualRepositoryError(ExternalAccrualRepositoryErrorOrderNotRegistered, "Order not registered")
+			return models.EmptyScoringModel, NewExternalAccrualRepositoryError(ExternalAccrualRepositoryErrorOrderNotRegistered, "Order not registered")
 		case 429:
-			return 0, NewExternalAccrualRepositoryError(ExternalAccrualRepositoryErrorOrderTooManyRequests, "Order too many requests")
+			return models.EmptyScoringModel, NewExternalAccrualRepositoryError(ExternalAccrualRepositoryErrorOrderTooManyRequests, "Order too many requests")
 		case 500:
-			return 0, NewExternalAccrualRepositoryError(ExternalAccrualRepositoryErrorInternalError, "Internal server error")
+			return models.EmptyScoringModel, NewExternalAccrualRepositoryError(ExternalAccrualRepositoryErrorInternalError, "Internal server error")
 		}
 	}
 
-	var getOrderResponse models.GetOrderResponse
-	err = json.Unmarshal(resp.Body(), &getOrderResponse)
+	var scoringModel models.ScoringModel
+	err = json.Unmarshal(resp.Body(), &scoringModel)
 	if err != nil {
-		return 0, NewExternalAccrualRepositoryError(ExternalAccrualRepositoryErrorInternalError, "Internal server error")
+		return models.EmptyScoringModel, NewExternalAccrualRepositoryError(ExternalAccrualRepositoryErrorInternalError, "Internal server error")
 	}
-	return 0, nil
+	return scoringModel, nil
 }

@@ -5,7 +5,6 @@ import "time"
 type OrderStatus string
 
 const (
-	OrderStatusRegistered = "REGISTERED"
 	OrderStatusNew        = "NEW"
 	OrderStatusProcessing = "PROCESSING"
 	OrderStatusInvalid    = "INVALID"

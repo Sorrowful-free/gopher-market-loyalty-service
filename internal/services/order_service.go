@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/models"
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/repositories"
@@ -17,11 +18,12 @@ type OrderService interface {
 }
 
 type OrderServiceImpl struct {
-	orderRepository repositories.OrderRepository
+	orderRepository           repositories.OrderRepository
+	externalAccrualRepository repositories.ExternalAccrualRepository
 }
 
-func NewOrderService(orderRepository repositories.OrderRepository) OrderService {
-	return &OrderServiceImpl{orderRepository: orderRepository}
+func NewOrderService(orderRepository repositories.OrderRepository, externalAccrualRepository repositories.ExternalAccrualRepository) OrderService {
+	return &OrderServiceImpl{orderRepository: orderRepository, externalAccrualRepository: externalAccrualRepository}
 }
 
 func (s *OrderServiceImpl) CreateOrder(ctx context.Context, userID int, orderNumber string) (models.OrderModel, error) {
@@ -33,7 +35,38 @@ func (s *OrderServiceImpl) CreateOrder(ctx context.Context, userID int, orderNum
 		return models.EmptyOrderModel, NewOrderServiceError(OrderServiceErrorOrderIDIsInvalid, "Order id is invalid")
 	}
 
-	orderModel, err := s.orderRepository.CreateOrder(ctx, userID, orderNumber)
+	scoring, err := s.externalAccrualRepository.GetScoring(ctx, orderNumber)
+
+	var externalAccrualRepositoryError repositories.ExternalAccrualRepositoryError
+	if errors.As(err, &externalAccrualRepositoryError) {
+		switch externalAccrualRepositoryError.Code {
+		case repositories.ExternalAccrualRepositoryErrorOrderNotRegistered:
+			return models.EmptyOrderModel, NewOrderServiceError(OrderServiceErrorOrderNotRegistered, "Order not registered")
+		case repositories.ExternalAccrualRepositoryErrorOrderTooManyRequests:
+			return models.EmptyOrderModel, NewOrderServiceError(OrderServiceErrorOrderTooManyRequests, "Order too many requests")
+		case repositories.ExternalAccrualRepositoryErrorInternalError:
+			return models.EmptyOrderModel, NewOrderServiceError(OrderServiceErrorInternalError, fmt.Sprintf("External accrual repository error: %s", externalAccrualRepositoryError.Message))
+		}
+	}
+
+	if err != nil {
+		return models.EmptyOrderModel, err
+	}
+
+	var orderStatus models.OrderStatus = models.OrderStatusNew
+	var accrual float64 = 0
+	if scoring.Status == models.ScoringStatusProcessed {
+		orderStatus = models.OrderStatusProcessed
+		accrual = scoring.Accrual
+	} else if scoring.Status == models.ScoringStatusInvalid {
+		orderStatus = models.OrderStatusInvalid
+	} else if scoring.Status == models.ScoringStatusProcessing {
+		orderStatus = models.OrderStatusProcessing
+	} else if scoring.Status == models.ScoringStatusRegistered {
+		orderStatus = models.OrderStatusNew
+	}
+
+	orderModel, err := s.orderRepository.CreateOrder(ctx, userID, orderNumber, orderStatus, accrual)
 
 	var orderRepositoryError repositories.OrderRepositoryError
 	if errors.As(err, &orderRepositoryError) {
@@ -60,6 +93,33 @@ func (s *OrderServiceImpl) GetOrdersList(ctx context.Context, userID int) ([]mod
 	if err != nil {
 		return nil, err
 	}
+
+	for idx, order := range orders {
+		scoring, err := s.externalAccrualRepository.GetScoring(ctx, order.OrderNumber)
+		if err != nil {
+			return nil, err
+		}
+		if scoring.Status == models.ScoringStatusProcessed {
+			order.Status = models.OrderStatusProcessed
+			order.Accrual = scoring.Accrual
+
+		}
+		s.orderRepository.UpdateOrder(ctx, order.OrderNumber, order.Status, order.Accrual)
+
+		var orderRepositoryError repositories.OrderRepositoryError
+		if errors.As(err, &orderRepositoryError) {
+			switch orderRepositoryError.Code {
+			case repositories.OrderRepositoryErrorOrderNotFound:
+				return nil, NewOrderServiceError(OrderServiceErrorOrderNotFound, "Order not found")
+			}
+		}
+
+		if err != nil {
+			return nil, err
+		}
+		orders[idx] = order
+	}
+
 	return orders, nil
 }
 

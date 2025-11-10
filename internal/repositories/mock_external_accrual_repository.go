@@ -8,6 +8,7 @@ import (
 	context "context"
 	reflect "reflect"
 
+	models "github.com/Sorrowful-free/gopher-market-loyalty-service/internal/models"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -34,17 +35,17 @@ func (m *MockExternalAccrualRepository) EXPECT() *MockExternalAccrualRepositoryM
 	return m.recorder
 }
 
-// GetScroing mocks base method.
-func (m *MockExternalAccrualRepository) GetScroing(ctx context.Context, orderNumber string) (float64, error) {
+// GetScoring mocks base method.
+func (m *MockExternalAccrualRepository) GetScoring(ctx context.Context, orderNumber string) (models.ScoringModel, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetScroing", ctx, orderNumber)
-	ret0, _ := ret[0].(float64)
+	ret := m.ctrl.Call(m, "GetScoring", ctx, orderNumber)
+	ret0, _ := ret[0].(models.ScoringModel)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetScroing indicates an expected call of GetScroing.
-func (mr *MockExternalAccrualRepositoryMockRecorder) GetScroing(ctx, orderNumber interface{}) *gomock.Call {
+// GetScoring indicates an expected call of GetScoring.
+func (mr *MockExternalAccrualRepositoryMockRecorder) GetScoring(ctx, orderNumber interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetScroing", reflect.TypeOf((*MockExternalAccrualRepository)(nil).GetScroing), ctx, orderNumber)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetScoring", reflect.TypeOf((*MockExternalAccrualRepository)(nil).GetScoring), ctx, orderNumber)
 }

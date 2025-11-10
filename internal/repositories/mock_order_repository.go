@@ -36,18 +36,18 @@ func (m *MockOrderRepository) EXPECT() *MockOrderRepositoryMockRecorder {
 }
 
 // CreateOrder mocks base method.
-func (m *MockOrderRepository) CreateOrder(ctx context.Context, userID int, orderNumber string) (models.OrderModel, error) {
+func (m *MockOrderRepository) CreateOrder(ctx context.Context, userID int, orderNumber string, orderStatus models.OrderStatus, accrual float64) (models.OrderModel, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateOrder", ctx, userID, orderNumber)
+	ret := m.ctrl.Call(m, "CreateOrder", ctx, userID, orderNumber, orderStatus, accrual)
 	ret0, _ := ret[0].(models.OrderModel)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // CreateOrder indicates an expected call of CreateOrder.
-func (mr *MockOrderRepositoryMockRecorder) CreateOrder(ctx, userID, orderNumber interface{}) *gomock.Call {
+func (mr *MockOrderRepositoryMockRecorder) CreateOrder(ctx, userID, orderNumber, orderStatus, accrual interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateOrder", reflect.TypeOf((*MockOrderRepository)(nil).CreateOrder), ctx, userID, orderNumber)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateOrder", reflect.TypeOf((*MockOrderRepository)(nil).CreateOrder), ctx, userID, orderNumber, orderStatus, accrual)
 }
 
 // GetOrder mocks base method.
@@ -78,4 +78,19 @@ func (m *MockOrderRepository) GetOrdersList(ctx context.Context, userID int) ([]
 func (mr *MockOrderRepositoryMockRecorder) GetOrdersList(ctx, userID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetOrdersList", reflect.TypeOf((*MockOrderRepository)(nil).GetOrdersList), ctx, userID)
+}
+
+// UpdateOrder mocks base method.
+func (m *MockOrderRepository) UpdateOrder(ctx context.Context, orderNumber string, orderStatus models.OrderStatus, accrual float64) (models.OrderModel, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateOrder", ctx, orderNumber, orderStatus, accrual)
+	ret0, _ := ret[0].(models.OrderModel)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateOrder indicates an expected call of UpdateOrder.
+func (mr *MockOrderRepositoryMockRecorder) UpdateOrder(ctx, orderNumber, orderStatus, accrual interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateOrder", reflect.TypeOf((*MockOrderRepository)(nil).UpdateOrder), ctx, orderNumber, orderStatus, accrual)
 }

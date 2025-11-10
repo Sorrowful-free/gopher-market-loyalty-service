@@ -9,7 +9,9 @@ const (
 	OrderServiceErrorOrderAlreadyExists
 	OrderServiceErrorOrderCreatedOtherUser
 	OrderServiceErrorOrderIDIsInvalid
+	OrderServiceErrorOrderNotRegistered
 	OrderServiceErrorOrderTooManyRequests
+	OrderServiceErrorInternalError
 )
 
 type OrderServiceError struct {

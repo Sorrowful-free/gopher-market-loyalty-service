@@ -72,7 +72,7 @@ func (a *App) BuildRepositories() error {
 func (a *App) BuildServices() error {
 	a.jwtService = services.NewJWTService(a.config.JwtSecret(), a.logger)
 	a.userService = services.NewUserService(a.userRepository)
-	a.orderService = services.NewOrderService(a.orderRepository)
+	a.orderService = services.NewOrderService(a.orderRepository, a.externalAccrualRepository)
 	a.balanceService = services.NewBalanceService(a.balanceRepository)
 	return nil
 }

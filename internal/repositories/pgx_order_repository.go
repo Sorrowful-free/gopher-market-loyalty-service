@@ -17,7 +17,7 @@ func NewPGXOrderRepository(pgxPool *pgxpool.Pool) OrderRepository {
 	return &PGXOrderRepository{pgxPool: pgxPool}
 }
 
-func (r *PGXOrderRepository) CreateOrder(ctx context.Context, userID int, orderNumber string) (models.OrderModel, error) {
+func (r *PGXOrderRepository) CreateOrder(ctx context.Context, userID int, orderNumber string, orderStatus models.OrderStatus, accrual float64) (models.OrderModel, error) {
 	const selectQuery = `
 		SELECT order_number, user_id
 		FROM orders
@@ -42,7 +42,7 @@ func (r *PGXOrderRepository) CreateOrder(ctx context.Context, userID int, orderN
 	var orderModel models.OrderModel
 
 	if err == pgx.ErrNoRows { // we cannot find order in database
-		row = tx.QueryRow(ctx, insertQuery, orderNumber, userID, models.OrderStatusNew, 0, time.Now().UTC())
+		row = tx.QueryRow(ctx, insertQuery, orderNumber, userID, orderStatus, accrual, time.Now().UTC())
 		err = row.Scan(&orderModel.OrderID, &orderModel.OrderNumber, &orderModel.UserID, &orderModel.Status, &orderModel.Accrual, &orderModel.UploadedAt)
 		if err != nil {
 			return models.EmptyOrderModel, NewOrderRepositoryError(OrderRepositoryErrorInternalError, "Failed to insert order")
@@ -103,6 +103,25 @@ func (r *PGXOrderRepository) GetOrder(ctx context.Context, orderNumber string) (
 			return models.EmptyOrderModel, NewOrderRepositoryError(OrderRepositoryErrorInternalError, "Failed to get order")
 		}
 		return models.EmptyOrderModel, NewOrderRepositoryError(OrderRepositoryErrorInternalError, "Failed to get order")
+	}
+	return orderModel, nil
+}
+
+func (r *PGXOrderRepository) UpdateOrder(ctx context.Context, orderNumber string, orderStatus models.OrderStatus, accrual float64) (models.OrderModel, error) {
+	const query = `
+		UPDATE orders
+		SET status = $1, accrual = $2, uploaded_at = $3
+		WHERE order_number = $4
+		RETURNING id, order_number, user_id, status, accrual, uploaded_at
+	`
+	row := r.pgxPool.QueryRow(ctx, query, orderStatus, accrual, time.Now().UTC(), orderNumber)
+	var orderModel models.OrderModel
+	err := row.Scan(&orderModel.OrderID, &orderModel.OrderNumber, &orderModel.UserID, &orderModel.Status, &orderModel.Accrual, &orderModel.UploadedAt)
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return models.EmptyOrderModel, NewOrderRepositoryError(OrderRepositoryErrorOrderNotFound, "Order not found")
+		}
+		return models.EmptyOrderModel, NewOrderRepositoryError(OrderRepositoryErrorInternalError, "Failed to update order")
 	}
 	return orderModel, nil
 }

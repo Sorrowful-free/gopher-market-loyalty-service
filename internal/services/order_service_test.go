@@ -13,10 +13,11 @@ import (
 func TestOrderService(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	orderRepository := repositories.NewMockOrderRepository(ctrl)
-	orderService := NewOrderService(orderRepository)
+	externalAccrualRepository := repositories.NewMockExternalAccrualRepository(ctrl)
+	orderService := NewOrderService(orderRepository, externalAccrualRepository)
 
 	t.Run("successful_create_order", func(t *testing.T) {
-		orderRepository.EXPECT().CreateOrder(gomock.Any(), gomock.Any(), gomock.Any()).Return(models.OrderModel{
+		orderRepository.EXPECT().CreateOrder(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(models.OrderModel{
 			OrderNumber: TestValidOrderID,
 			Status:      models.OrderStatusNew,
 			Accrual:     100,
@@ -70,7 +71,7 @@ func TestOrderService(t *testing.T) {
 	})
 
 	t.Run("failed_crete_order_is_created_by_other_user", func(t *testing.T) {
-		orderRepository.EXPECT().CreateOrder(gomock.Any(), gomock.Any(), gomock.Any()).Return(models.EmptyOrderModel, repositories.NewOrderRepositoryError(repositories.OrderRepositoryErrorOrderCreatedOtherUser, "Order created by other user"))
+		orderRepository.EXPECT().CreateOrder(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(models.EmptyOrderModel, repositories.NewOrderRepositoryError(repositories.OrderRepositoryErrorOrderCreatedOtherUser, "Order created by other user"))
 		_, err := orderService.CreateOrder(context.TODO(), TestUserID, TestValidOrderID)
 		var orderServiceError OrderServiceError
 		require.ErrorAs(t, err, &orderServiceError)
