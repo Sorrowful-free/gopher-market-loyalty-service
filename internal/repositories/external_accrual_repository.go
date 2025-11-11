@@ -3,6 +3,7 @@ package repositories
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/url"
 
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/models"
@@ -36,7 +37,7 @@ func (r *ExternalAccrualRepositoryImpl) GetScoring(ctx context.Context, orderNum
 
 	url, err := url.JoinPath(r.accrualSystemAddress, GetOrderPath, orderNumber)
 	if err != nil {
-		return models.EmptyScoringModel, NewExternalAccrualRepositoryError(ExternalAccrualRepositoryErrorInternalError, "Internal server error")
+		return models.EmptyScoringModel, fmt.Errorf("failed to join path: %w", err)
 	}
 
 	resp, err := r.client.R().

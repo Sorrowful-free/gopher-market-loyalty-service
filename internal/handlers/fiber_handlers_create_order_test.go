@@ -18,7 +18,6 @@ func TestCreateOrderHandler(t *testing.T) {
 	fiberHandlers := SetupMockFiberHandlers(t)
 	fiberApp := fiberHandlers.fiberApp
 	orderService := fiberHandlers.orderService
-	jwtService := fiberHandlers.jwtService
 
 	t.Run("successful_already_created_order", func(t *testing.T) {
 
@@ -68,8 +67,7 @@ func TestCreateOrderHandler(t *testing.T) {
 	t.Run("failed_create_order_with_invalid_order", func(t *testing.T) {
 
 		orderService.EXPECT().CreateOrder(gomock.Any(), gomock.Any(), gomock.Any()).Return(models.EmptyOrderModel, services.NewOrderServiceError(services.OrderServiceErrorOrderIDIsInvalid, "Order invalid"))
-		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(models.EmptyJWTClaims, nil)
-		jwtService.EXPECT().ExtractToken(gomock.Any()).Return("userID", nil)
+		fiberHandlers.MakeValideAuthRequest(t)
 
 		req := httptest.NewRequest(fiber.MethodPost, TestCreateOrderPath, bytes.NewBuffer([]byte(strconv.Itoa(TestOrderID))))
 		req.Header.Set(fiber.HeaderContentType, fiber.MIMETextPlain)
@@ -84,8 +82,7 @@ func TestCreateOrderHandler(t *testing.T) {
 	t.Run("failed_create_order_with_internal_error", func(t *testing.T) {
 
 		orderService.EXPECT().CreateOrder(gomock.Any(), gomock.Any(), gomock.Any()).Return(models.EmptyOrderModel, errors.New("internal server error"))
-		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(models.EmptyJWTClaims, nil)
-		jwtService.EXPECT().ExtractToken(gomock.Any()).Return("userID", nil)
+		fiberHandlers.MakeValideAuthRequest(t)
 
 		req := httptest.NewRequest(fiber.MethodPost, TestCreateOrderPath, bytes.NewBuffer([]byte(strconv.Itoa(TestOrderID))))
 		req.Header.Set(fiber.HeaderContentType, fiber.MIMETextPlain)

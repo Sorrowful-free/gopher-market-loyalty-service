@@ -5,5 +5,6 @@ const (
 	TestJWTSecret      = "test"
 	TestValidOrderID   = "3773213834"
 	TestInvalidOrderID = "1234567890"
-	TestSum            = 100
+	TestSum            = float64(100)
+	TestAccrual        = float64(100)
 )

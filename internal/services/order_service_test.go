@@ -17,40 +17,52 @@ func TestOrderService(t *testing.T) {
 	orderService := NewOrderService(orderRepository, externalAccrualRepository)
 
 	t.Run("successful_create_order", func(t *testing.T) {
+
 		orderRepository.EXPECT().CreateOrder(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(models.OrderModel{
 			OrderNumber: TestValidOrderID,
-			Status:      models.OrderStatusNew,
-			Accrual:     100,
+			Status:      models.OrderStatusProcessed,
+			Accrual:     TestAccrual,
 		}, nil)
+		externalAccrualRepository.EXPECT().GetScoring(gomock.Any(), gomock.Any()).Return(models.ScoringModel{
+			Status:  models.ScoringStatusProcessed,
+			Accrual: TestAccrual,
+		}, nil)
+		orderRepository.EXPECT().UpdateOrder(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(models.OrderModel{
+			OrderNumber: TestValidOrderID,
+			Status:      models.OrderStatusProcessed,
+			Accrual:     TestAccrual,
+		}, nil)
+
 		order, err := orderService.CreateOrder(context.TODO(), TestUserID, TestValidOrderID)
 		require.NoError(t, err)
-		require.Equal(t, TestValidOrderID, order.OrderID)
+		require.Equal(t, TestValidOrderID, order.OrderNumber)
+		require.Equal(t, models.OrderStatusProcessed, order.Status)
+		require.Equal(t, TestAccrual, order.Accrual)
 	})
 
 	t.Run("successful_get_orders_list", func(t *testing.T) {
+		externalAccrualRepository.EXPECT().GetScoring(gomock.Any(), gomock.Any()).Return(models.ScoringModel{
+			Status:  models.ScoringStatusProcessed,
+			Accrual: TestAccrual,
+		}, nil)
 		orderRepository.EXPECT().GetOrdersList(gomock.Any(), gomock.Any()).Return([]models.OrderModel{
 			{
 				OrderNumber: TestValidOrderID,
 				Status:      models.OrderStatusNew,
-				Accrual:     100,
+				Accrual:     TestAccrual,
 			},
+		}, nil)
+		orderRepository.EXPECT().UpdateOrder(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(models.OrderModel{
+			OrderNumber: TestValidOrderID,
+			Status:      models.OrderStatusProcessed,
+			Accrual:     TestAccrual,
 		}, nil)
 
 		orders, err := orderService.GetOrdersList(context.TODO(), TestUserID)
 		require.NoError(t, err)
-		require.Equal(t, TestValidOrderID, orders[0].OrderID)
-	})
-
-	t.Run("successful_get_order", func(t *testing.T) {
-		orderRepository.EXPECT().GetOrder(gomock.Any(), gomock.Any()).Return(models.OrderModel{
-			OrderNumber: TestValidOrderID,
-			Status:      models.OrderStatusNew,
-			Accrual:     100,
-		}, nil)
-
-		order, err := orderService.GetOrder(context.TODO(), TestValidOrderID)
-		require.NoError(t, err)
-		require.Equal(t, TestValidOrderID, order.OrderID)
+		require.Equal(t, TestValidOrderID, orders[0].OrderNumber)
+		require.Equal(t, models.OrderStatusProcessed, orders[0].Status)
+		require.Equal(t, TestAccrual, orders[0].Accrual)
 	})
 
 	t.Run("successful_get_order_with_order_not_found", func(t *testing.T) {

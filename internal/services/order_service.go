@@ -35,6 +35,22 @@ func (s *OrderServiceImpl) CreateOrder(ctx context.Context, userID int, orderNum
 		return models.EmptyOrderModel, NewOrderServiceError(OrderServiceErrorOrderIDIsInvalid, "Order id is invalid")
 	}
 
+	orderModel, err := s.orderRepository.CreateOrder(ctx, userID, orderNumber, models.OrderStatusNew, 0)
+
+	var orderRepositoryError repositories.OrderRepositoryError
+	if errors.As(err, &orderRepositoryError) {
+		switch orderRepositoryError.Code {
+
+		case repositories.OrderRepositoryErrorOrderAlreadyExists:
+			return models.OrderModel{}, NewOrderServiceError(OrderServiceErrorOrderAlreadyExists, "Order already exists")
+		case repositories.OrderRepositoryErrorOrderCreatedOtherUser:
+			return models.OrderModel{}, NewOrderServiceError(OrderServiceErrorOrderCreatedOtherUser, "Order created by other user")
+		}
+	}
+	if err != nil {
+		return models.EmptyOrderModel, fmt.Errorf("failed to create order: %w", err)
+	}
+
 	scoring, err := s.externalAccrualRepository.GetScoring(ctx, orderNumber)
 
 	var externalAccrualRepositoryError repositories.ExternalAccrualRepositoryError
@@ -50,7 +66,7 @@ func (s *OrderServiceImpl) CreateOrder(ctx context.Context, userID int, orderNum
 	}
 
 	if err != nil {
-		return models.EmptyOrderModel, err
+		return models.EmptyOrderModel, fmt.Errorf("failed to get scoring: %w", err)
 	}
 
 	var orderStatus models.OrderStatus = models.OrderStatusNew
@@ -66,21 +82,11 @@ func (s *OrderServiceImpl) CreateOrder(ctx context.Context, userID int, orderNum
 		orderStatus = models.OrderStatusNew
 	}
 
-	orderModel, err := s.orderRepository.CreateOrder(ctx, userID, orderNumber, orderStatus, accrual)
-
-	var orderRepositoryError repositories.OrderRepositoryError
-	if errors.As(err, &orderRepositoryError) {
-		switch orderRepositoryError.Code {
-
-		case repositories.OrderRepositoryErrorOrderAlreadyExists:
-			return models.OrderModel{}, NewOrderServiceError(OrderServiceErrorOrderAlreadyExists, "Order already exists")
-		case repositories.OrderRepositoryErrorOrderCreatedOtherUser:
-			return models.OrderModel{}, NewOrderServiceError(OrderServiceErrorOrderCreatedOtherUser, "Order created by other user")
-		}
-	}
+	orderModel, err = s.orderRepository.UpdateOrder(ctx, orderNumber, orderStatus, accrual)
 	if err != nil {
-		return models.EmptyOrderModel, err
+		return models.EmptyOrderModel, fmt.Errorf("failed to update order: %w", err)
 	}
+
 	return orderModel, nil
 }
 

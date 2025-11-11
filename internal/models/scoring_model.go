@@ -3,10 +3,10 @@ package models
 type ScoringStatus string
 
 const (
-	ScoringStatusRegistered = "REGISTERED"
-	ScoringStatusInvalid    = "INVALID"
-	ScoringStatusProcessing = "PROCESSING"
-	ScoringStatusProcessed  = "PROCESSED"
+	ScoringStatusRegistered ScoringStatus = "REGISTERED"
+	ScoringStatusInvalid    ScoringStatus = "INVALID"
+	ScoringStatusProcessing ScoringStatus = "PROCESSING"
+	ScoringStatusProcessed  ScoringStatus = "PROCESSED"
 )
 
 type ScoringModel struct {

@@ -16,7 +16,6 @@ func TestGetOrdersListHandler(t *testing.T) {
 	fiberHandlers := SetupMockFiberHandlers(t)
 	fiberApp := fiberHandlers.fiberApp
 	orderService := fiberHandlers.orderService
-	jwtService := fiberHandlers.jwtService
 
 	t.Run("successful_get_orders_list", func(t *testing.T) {
 
@@ -29,8 +28,7 @@ func TestGetOrdersListHandler(t *testing.T) {
 		}
 
 		orderService.EXPECT().GetOrdersList(gomock.Any(), gomock.Any()).Return(orders, nil)
-		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(models.EmptyJWTClaims, nil)
-		jwtService.EXPECT().ExtractToken(gomock.Any()).Return("userID", nil)
+		fiberHandlers.MakeValideAuthRequest(t)
 
 		req := httptest.NewRequest(fiber.MethodGet, TestGetOrdersListPath, nil)
 		resp, err := fiberApp.Test(req)
@@ -44,8 +42,7 @@ func TestGetOrdersListHandler(t *testing.T) {
 	t.Run("successful_get_orders_list_with_empty_list", func(t *testing.T) {
 
 		orderService.EXPECT().GetOrdersList(gomock.Any(), gomock.Any()).Return(models.EmptyArrayOfOrderModel, nil)
-		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(models.EmptyJWTClaims, nil)
-		jwtService.EXPECT().ExtractToken(gomock.Any()).Return("userID", nil)
+		fiberHandlers.MakeValideAuthRequest(t)
 
 		req := httptest.NewRequest(fiber.MethodGet, TestGetOrdersListPath, nil)
 		resp, err := fiberApp.Test(req)
@@ -59,8 +56,7 @@ func TestGetOrdersListHandler(t *testing.T) {
 	t.Run("failed_get_orders_list_with_internal_error", func(t *testing.T) {
 
 		orderService.EXPECT().GetOrdersList(gomock.Any(), gomock.Any()).Return(models.EmptyArrayOfOrderModel, errors.New("internal server error"))
-		jwtService.EXPECT().ValidateToken(gomock.Any()).Return(models.EmptyJWTClaims, nil)
-		jwtService.EXPECT().ExtractToken(gomock.Any()).Return("userID", nil)
+		fiberHandlers.MakeValideAuthRequest(t)
 
 		req := httptest.NewRequest(fiber.MethodGet, TestGetOrdersListPath, nil)
 		resp, err := fiberApp.Test(req)
