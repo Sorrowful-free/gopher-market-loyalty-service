@@ -4,5 +4,5 @@ type Handlers interface {
 	BuildGroups()
 	BuildAuthMiddleware()
 	BuildRoutes()
-	Run() error
+	Run(runAddress string) error
 }

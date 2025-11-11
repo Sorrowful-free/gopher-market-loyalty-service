@@ -53,6 +53,6 @@ func (h *FiberHandlers) BuildRoutes() {
 	h.balanceGroup.Get(WithdrawalsPath, h.WithdrawalsHandler)
 }
 
-func (h *FiberHandlers) Run() error {
-	return h.fiberApp.Listen(":8080")
+func (h *FiberHandlers) Run(runAddress string) error {
+	return h.fiberApp.Listen(runAddress)
 }

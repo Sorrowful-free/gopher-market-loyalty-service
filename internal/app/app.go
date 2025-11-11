@@ -86,5 +86,5 @@ func (a *App) BuildHandlers() error {
 }
 
 func (a *App) Run() error {
-	return a.handlers.Run()
+	return a.handlers.Run(a.config.RunAddress())
 }
