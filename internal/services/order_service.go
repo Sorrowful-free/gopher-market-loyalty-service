@@ -71,14 +71,15 @@ func (s *OrderServiceImpl) CreateOrder(ctx context.Context, userID int, orderNum
 
 	var orderStatus models.OrderStatus = models.OrderStatusNew
 	var accrual float64 = 0
-	if scoring.Status == models.ScoringStatusProcessed {
+	switch scoring.Status {
+	case models.ScoringStatusProcessed:
 		orderStatus = models.OrderStatusProcessed
 		accrual = scoring.Accrual
-	} else if scoring.Status == models.ScoringStatusInvalid {
+	case models.ScoringStatusInvalid:
 		orderStatus = models.OrderStatusInvalid
-	} else if scoring.Status == models.ScoringStatusProcessing {
+	case models.ScoringStatusProcessing:
 		orderStatus = models.OrderStatusProcessing
-	} else if scoring.Status == models.ScoringStatusRegistered {
+	case models.ScoringStatusRegistered:
 		orderStatus = models.OrderStatusNew
 	}
 
