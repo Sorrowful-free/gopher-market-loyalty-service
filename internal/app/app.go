@@ -65,7 +65,7 @@ func (a *App) BuildRepositories() error {
 	a.userRepository = repositories.NewPGXUserRepository(a.pgxPool)
 	a.orderRepository = repositories.NewPGXOrderRepository(a.pgxPool)
 	a.balanceRepository = repositories.NewPGXBalanceRepository(a.pgxPool)
-	a.externalAccrualRepository = repositories.NewExternalAccrualRepository(a.config.AccrualSystemAddress())
+	a.externalAccrualRepository = repositories.NewExternalAccrualRepository(a.config.AccrualSystemAddress(), a.logger)
 	return nil
 }
 

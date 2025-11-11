@@ -26,7 +26,7 @@ func (c *LocalConfig) Parse() error {
 
 	flag.StringVar(&c.runAddress, "a", "localhost:8080", "run address")
 	flag.StringVar(&c.databaseURI, "d", "localhost:5432", "database URI")
-	flag.StringVar(&c.accrualSystemAddress, "r", "localhost:8080", "accrual system address")
+	flag.StringVar(&c.accrualSystemAddress, "r", "http://localhost:8080", "accrual system address")
 	flag.StringVar(&c.jwtSecret, "j", "secret", "jwt secret")
 	flag.Parse()
 
