@@ -103,8 +103,18 @@ func (s *OrderServiceImpl) GetOrdersList(ctx context.Context, userID int) ([]mod
 
 	for idx, order := range orders {
 		scoring, err := s.externalAccrualRepository.GetScoring(ctx, order.OrderNumber)
+
+		var externalAccrualRepositoryError repositories.ExternalAccrualRepositoryError
+		if errors.As(err, &externalAccrualRepositoryError) {
+			switch externalAccrualRepositoryError.Code {
+			case repositories.ExternalAccrualRepositoryErrorOrderNotRegistered:
+				continue // that means we need to wait for the order to be processed
+			case repositories.ExternalAccrualRepositoryErrorOrderTooManyRequests:
+				continue // that expected behavior
+			}
+		}
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("failed to get scoring: %w", err)
 		}
 		if scoring.Status == models.ScoringStatusProcessed {
 			order.Status = models.OrderStatusProcessed
