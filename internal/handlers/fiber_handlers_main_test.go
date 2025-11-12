@@ -23,7 +23,7 @@ type FiberHandlersMock struct {
 
 func SetupMockFiberHandlers(t *testing.T) *FiberHandlersMock {
 
-	logger := logger.NewZapLogger()
+	logger := logger.NewZapLogger(false, false)
 	ctrl := gomock.NewController(t)
 	jwtService := services.NewMockJWTService(ctrl)
 	userService := services.NewMockUserService(ctrl)

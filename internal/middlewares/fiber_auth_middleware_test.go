@@ -17,7 +17,7 @@ func TestFiberAuthMiddleware(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	jwtService := services.NewMockJWTService(ctrl)
 	userService := services.NewMockUserService(ctrl)
-	fiberAuthMiddleware := NewFiberAuthMiddleware(logger.NewZapLogger(), jwtService, userService)
+	fiberAuthMiddleware := NewFiberAuthMiddleware(logger.NewZapLogger(false, false), jwtService, userService)
 	t.Run("successful_auth", func(t *testing.T) {
 
 		jwtService.EXPECT().ExtractToken(gomock.Any()).Return("token", nil)

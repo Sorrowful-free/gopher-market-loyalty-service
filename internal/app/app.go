@@ -45,7 +45,7 @@ func (a *App) BuildConfig() error {
 }
 
 func (a *App) BuildLogger() error {
-	a.logger = logger.NewZapLogger()
+	a.logger = logger.NewZapLogger(a.config.IsProduction(), a.config.IsStackTrace())
 	return nil
 }
 
