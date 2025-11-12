@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/models"
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/repositories"
@@ -57,7 +58,6 @@ func (s *OrderServiceImpl) CreateOrder(ctx context.Context, userID int, orderNum
 	if errors.As(err, &externalAccrualRepositoryError) {
 		switch externalAccrualRepositoryError.Code {
 		case repositories.ExternalAccrualRepositoryErrorOrderNotRegistered: // that means we need to wait for the order to be processed
-			return orderModel, nil // that expected behavior
 		case repositories.ExternalAccrualRepositoryErrorOrderTooManyRequests:
 			return orderModel, nil // that expected behavior
 		case repositories.ExternalAccrualRepositoryErrorInternalError:
@@ -102,15 +102,25 @@ func (s *OrderServiceImpl) GetOrdersList(ctx context.Context, userID int) ([]mod
 	}
 
 	for idx, order := range orders {
+
+		if order.Status == models.OrderStatusProcessed ||
+			order.Status == models.OrderStatusInvalid ||
+			order.UploadedAt.Before(time.Now().UTC().Add(-1*time.Second*15)) { // 15 seconds is the time to wait for the order to be processed
+			continue
+		}
+
 		scoring, err := s.externalAccrualRepository.GetScoring(ctx, order.OrderNumber)
 
 		var externalAccrualRepositoryError repositories.ExternalAccrualRepositoryError
 		if errors.As(err, &externalAccrualRepositoryError) {
 			switch externalAccrualRepositoryError.Code {
-			case repositories.ExternalAccrualRepositoryErrorOrderNotRegistered:
-				continue // that means we need to wait for the order to be processed
 			case repositories.ExternalAccrualRepositoryErrorOrderTooManyRequests:
-				continue // that expected behavior
+			case repositories.ExternalAccrualRepositoryErrorOrderNotRegistered:
+				_, err = s.orderRepository.UpdateOrder(ctx, order.OrderNumber, order.Status, order.Accrual) // refresh order in case of order not registered
+				if err != nil {
+					return nil, fmt.Errorf("failed to update order: %w", err)
+				}
+				continue
 			}
 		}
 		if err != nil {
@@ -119,7 +129,12 @@ func (s *OrderServiceImpl) GetOrdersList(ctx context.Context, userID int) ([]mod
 		if scoring.Status == models.ScoringStatusProcessed {
 			order.Status = models.OrderStatusProcessed
 			order.Accrual = scoring.Accrual
-
+		}
+		if scoring.Status == models.ScoringStatusInvalid {
+			order.Status = models.OrderStatusInvalid
+		}
+		if scoring.Status == models.ScoringStatusProcessing {
+			order.Status = models.OrderStatusProcessing
 		}
 		order, err = s.orderRepository.UpdateOrder(ctx, order.OrderNumber, order.Status, order.Accrual)
 

@@ -116,7 +116,7 @@ func (r *PGXOrderRepository) UpdateOrder(ctx context.Context, orderNumber string
 	`
 	row := r.pgxPool.QueryRow(ctx, query, orderStatus, accrual, time.Now().UTC(), orderNumber)
 	var orderModel models.OrderModel
-	err := row.Scan(&orderModel.OrderID, &orderModel.OrderNumber, &orderModel.UserID, &orderModel.Status, &orderModel.Accrual, &orderModel.UploadedAt)
+	err := row.Scan(&orderModel.OrderID, &orderModel.OrderNumber, &orderModel.UserID, &orderModel.Status, &orderModel.Accrual, time.Now().UTC())
 	if err != nil {
 		if err == pgx.ErrNoRows {
 			return models.EmptyOrderModel, NewOrderRepositoryError(OrderRepositoryErrorOrderNotFound, "Order not found")
