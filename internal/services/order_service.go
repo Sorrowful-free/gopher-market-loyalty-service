@@ -56,10 +56,10 @@ func (s *OrderServiceImpl) CreateOrder(ctx context.Context, userID int, orderNum
 	var externalAccrualRepositoryError repositories.ExternalAccrualRepositoryError
 	if errors.As(err, &externalAccrualRepositoryError) {
 		switch externalAccrualRepositoryError.Code {
-		case repositories.ExternalAccrualRepositoryErrorOrderNotRegistered:
-			return models.EmptyOrderModel, NewOrderServiceError(OrderServiceErrorOrderNotRegistered, "Order not registered")
+		case repositories.ExternalAccrualRepositoryErrorOrderNotRegistered: // that means we need to wait for the order to be processed
+			return orderModel, nil // that expected behavior
 		case repositories.ExternalAccrualRepositoryErrorOrderTooManyRequests:
-			return models.EmptyOrderModel, NewOrderServiceError(OrderServiceErrorOrderTooManyRequests, "Order too many requests")
+			return orderModel, nil // that expected behavior
 		case repositories.ExternalAccrualRepositoryErrorInternalError:
 			return models.EmptyOrderModel, NewOrderServiceError(OrderServiceErrorInternalError, fmt.Sprintf("External accrual repository error: %s", externalAccrualRepositoryError.Message))
 		}
