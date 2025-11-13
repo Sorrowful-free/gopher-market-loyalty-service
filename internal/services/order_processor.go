@@ -17,8 +17,8 @@ type OrderProcessor struct {
 	balanceRepository         repositories.BalanceRepository
 	logger                    logger.Logger
 
-	pollInterval time.Duration
-	batchSize int
+	pollInterval   time.Duration
+	batchSize      int
 	rateLimitDelay time.Duration
 }
 
@@ -30,12 +30,12 @@ func NewOrderProcessor(
 ) *OrderProcessor {
 	return &OrderProcessor{
 		orderRepository:           orderRepository,
-		externalAccrualRepository:  externalAccrualRepository,
+		externalAccrualRepository: externalAccrualRepository,
 		balanceRepository:         balanceRepository,
 		logger:                    logger,
-		pollInterval:              5 * time.Second,
+		pollInterval:              1 * time.Second,
 		batchSize:                 10,
-		rateLimitDelay:            60 * time.Second,
+		rateLimitDelay:            1 * time.Second,
 	}
 }
 
@@ -154,4 +154,3 @@ func (p *OrderProcessor) processOrder(ctx context.Context, order models.OrderMod
 func (p *OrderProcessor) accrualBalance(ctx context.Context, order models.OrderModel) error {
 	return p.balanceRepository.Accrual(ctx, order.UserID, order.OrderID, order.Accrual)
 }
-
