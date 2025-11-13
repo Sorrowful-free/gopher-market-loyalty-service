@@ -1,6 +1,6 @@
 package models
 
 type WithdrawRequest struct {
-	Order string `json:"order"`
-	Sum   int32  `json:"sum"`
+	OrderNumber string  `json:"order"`
+	Sum         float64 `json:"sum"`
 }

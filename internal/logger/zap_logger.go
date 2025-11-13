@@ -1,17 +1,32 @@
 package logger
 
-import "go.uber.org/zap"
+import (
+	"fmt"
+
+	"go.uber.org/zap"
+)
 
 type ZapLogger struct {
 	zapSugarLogger *zap.SugaredLogger
 }
 
-func NewZapLogger() *ZapLogger {
-	logger, err := zap.NewProduction()
-	if err != nil {
-		panic(err)
+func NewZapLogger(isProduction bool, isStackTrace bool) *ZapLogger {
+	var zapLogger *zap.Logger
+	var err error
+
+	var cfg zap.Config
+	if isProduction {
+		cfg = zap.NewProductionConfig()
+	} else {
+		cfg = zap.NewDevelopmentConfig()
 	}
-	return &ZapLogger{zapSugarLogger: logger.Sugar()}
+
+	cfg.DisableStacktrace = !isStackTrace
+	zapLogger, err = cfg.Build()
+	if err != nil {
+		panic(fmt.Errorf("failed to create zap logger: %w", err))
+	}
+	return &ZapLogger{zapSugarLogger: zapLogger.Sugar()}
 }
 
 func (l *ZapLogger) Debug(msg string, args ...any) {

@@ -1,7 +1,33 @@
 package handlers
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/middlewares"
+	"github.com/gofiber/fiber/v2"
+)
 
-func Withdrawals(c *fiber.Ctx) error {
-	return nil
+func (h *FiberHandlers) WithdrawalsHandler(c *fiber.Ctx) error {
+	user, err := middlewares.GetUser(c)
+
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Internal server error",
+		})
+	}
+
+	userID := user.ID
+	withdrawals, err := h.balanceService.GetWithdrawals(c.Context(), userID)
+
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Internal server error",
+		})
+	}
+
+	if len(withdrawals) == 0 {
+		return c.Status(fiber.StatusNoContent).JSON(fiber.Map{
+			"info": "No withdrawals found",
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(withdrawals)
 }

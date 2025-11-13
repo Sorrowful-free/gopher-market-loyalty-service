@@ -7,4 +7,6 @@ type Config interface {
 	DatabaseURI() string
 	AccrualSystemAddress() string
 	JwtSecret() string
+	IsProduction() bool
+	IsStackTrace() bool
 }

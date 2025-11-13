@@ -1,15 +1,15 @@
 package models
 
 type UserModel struct {
-	ID       string `json:"id"`
-	Login    string `json:"login"`
-	Password string `json:"password"`
+	ID    int    `json:"id"`
+	Login string `json:"login"`
 }
 
-func NewUserModel(id string, login string, password string) *UserModel {
+var EmptyUserModel = UserModel{}
+
+func NewUserModel(id int, login string, password string, current int64, withdrawn int64) *UserModel {
 	return &UserModel{
-		ID:       id,
-		Login:    login,
-		Password: password,
+		ID:    id,
+		Login: login,
 	}
 }

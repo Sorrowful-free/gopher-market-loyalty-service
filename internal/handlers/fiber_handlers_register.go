@@ -4,20 +4,23 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/middlewares"
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/models"
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/services"
 	"github.com/gofiber/fiber/v2"
 )
 
 func (h *FiberHandlers) RegisterHandler(c *fiber.Ctx) error {
-	var registerRequest models.RegisterRequest
-	if err := c.BodyParser(&registerRequest); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Invalid request body",
+
+	registerRequest, err := middlewares.GetRequestBody[models.RegisterRequest](c)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": fmt.Sprintf("Internal server error: %s", err.Error()),
 		})
 	}
 
-	userID, err := h.userService.Register(registerRequest.Login, registerRequest.Password)
+	user, err := h.userService.Register(c.Context(), registerRequest.Login, registerRequest.Password)
+	userID := user.ID
 
 	var userServiceError services.UserServiceError
 	if errors.As(err, &userServiceError) && userServiceError.Code == services.UserServiceErrorUserExists {

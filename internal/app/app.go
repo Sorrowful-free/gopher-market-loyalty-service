@@ -1,27 +1,34 @@
 package app
 
 import (
-	"database/sql"
+	"context"
 
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/config"
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/handlers"
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/logger"
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/repositories"
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/services"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type App struct {
 	logger logger.Logger
 	config config.Config
 
-	db *sql.DB
+	pgxPool *pgxpool.Pool
 
-	userRepository  repositories.UserRepository
-	orderRepository repositories.OrderRepository
+	userRepository            repositories.UserRepository
+	orderRepository           repositories.OrderRepository
+	balanceRepository         repositories.BalanceRepository
+	externalAccrualRepository repositories.ExternalAccrualRepository
 
-	jwtService   services.JWTService
-	userService  services.UserService
-	orderService services.OrderService
+	jwtService     services.JWTService
+	userService    services.UserService
+	orderService   services.OrderService
+	balanceService services.BalanceService
+
+	orderProcessor     *services.OrderProcessor
+	orderProcessorPool *services.OrderProcessorPool
 
 	handlers handlers.Handlers
 }
@@ -41,41 +48,58 @@ func (a *App) BuildConfig() error {
 }
 
 func (a *App) BuildLogger() error {
-	a.logger = logger.NewZapLogger()
+	a.logger = logger.NewZapLogger(a.config.IsProduction(), a.config.IsStackTrace())
 	return nil
 }
 
 func (a *App) BuildDatabase() error {
-	db, err := sql.Open("postgres", a.config.DatabaseURI())
+	pgxPool, err := pgxpool.New(context.Background(), a.config.DatabaseURI())
+
 	if err != nil {
-		a.logger.Error("Failed to open database", "error", err)
+		a.logger.Error("Failed to connect to database", "error", err)
 		return err
 	}
-	a.db = db
+
+	a.pgxPool = pgxPool
 	return nil
 }
 
 func (a *App) BuildRepositories() error {
-	a.userRepository = repositories.NewPGUserRepository(a.db)
-	a.orderRepository = repositories.NewPGOrderRepository(a.db)
+	a.userRepository = repositories.NewPGXUserRepository(a.pgxPool)
+	a.orderRepository = repositories.NewPGXOrderRepository(a.pgxPool)
+	a.balanceRepository = repositories.NewPGXBalanceRepository(a.pgxPool)
+	a.externalAccrualRepository = repositories.NewExternalAccrualRepository(a.config.AccrualSystemAddress(), a.logger)
 	return nil
 }
 
 func (a *App) BuildServices() error {
 	a.jwtService = services.NewJWTService(a.config.JwtSecret(), a.logger)
 	a.userService = services.NewUserService(a.userRepository)
-	a.orderService = services.NewOrderService(a.orderRepository)
+	a.orderService = services.NewOrderService(a.orderRepository, a.externalAccrualRepository)
+	a.balanceService = services.NewBalanceService(a.balanceRepository)
+
+	a.orderProcessorPool = services.NewOrderProcessorPool(
+		a.orderRepository,
+		a.externalAccrualRepository,
+		a.balanceRepository,
+		a.logger,
+	)
+
+	a.orderProcessor = services.NewOrderProcessor(a.orderRepository, a.externalAccrualRepository, a.balanceRepository, a.logger)
 	return nil
 }
 
 func (a *App) BuildHandlers() error {
-	a.handlers = handlers.NewFiberHandlers(a.logger, a.jwtService, a.userService, a.orderService)
+	a.handlers = handlers.NewFiberHandlers(a.logger, a.jwtService, a.userService, a.orderService, a.balanceService)
 	a.handlers.BuildGroups()
-	a.handlers.BuildAuthMiddleware(a.config.JwtSecret())
+	a.handlers.BuildAuthMiddleware()
 	a.handlers.BuildRoutes()
 	return nil
 }
 
 func (a *App) Run() error {
-	return a.handlers.Run()
+	ctx := context.Background()
+	go a.orderProcessorPool.Start(ctx)
+
+	return a.handlers.Run(a.config.RunAddress())
 }

@@ -30,6 +30,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Install PostgreSQL client
+        run: apt-get update && apt-get install -y postgresql-client
+
+      - name: Apply up migrations
+        run: |
+          make migrate-up DB_URI="postgresql://postgres:postgres@postgres/praktikum?sslmode=disable"
+
       - name: Download autotests binaries
         uses: robinraju/release-downloader@v1.8
         with:
@@ -45,6 +52,14 @@ jobs:
           mv $GITHUB_WORKSPACE/.tools/gophermarttest /usr/local/bin/gophermarttest
           mv $GITHUB_WORKSPACE/.tools/random /usr/local/bin/random
 
+      - name: Install mockgen
+        run: |
+          go install github.com/golang/mock/mockgen@latest
+  
+      - name: Generate mocks
+        run: |
+          make gen_mocks
+      
       - name: Prepare binaries
         run: |
           (cd cmd/gophermart && go build -buildvcs=false -o gophermart)

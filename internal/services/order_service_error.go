@@ -2,20 +2,27 @@ package services
 
 import "fmt"
 
+type OrderServiceErrorCode int
+
 const (
-	OrderServiceErrorOrderNotFound = "order_not_found"
-	OrderServiceErrorInternalError = "internal_error"
+	OrderServiceErrorOrderNotFound OrderServiceErrorCode = iota
+	OrderServiceErrorOrderAlreadyExists
+	OrderServiceErrorOrderCreatedOtherUser
+	OrderServiceErrorOrderIDIsInvalid
+	OrderServiceErrorOrderNotRegistered
+	OrderServiceErrorOrderTooManyRequests
+	OrderServiceErrorInternalError
 )
 
 type OrderServiceError struct {
-	Code    string
+	Code    OrderServiceErrorCode
 	Message string
 }
 
 func (e OrderServiceError) Error() string {
-	return fmt.Sprintf("Order service error: %s - %s", e.Code, e.Message)
+	return fmt.Sprintf("Order service error: %d - %s", e.Code, e.Message)
 }
 
-func NewOrderServiceError(code string, message string) OrderServiceError {
+func NewOrderServiceError(code OrderServiceErrorCode, message string) OrderServiceError {
 	return OrderServiceError{Code: code, Message: message}
 }

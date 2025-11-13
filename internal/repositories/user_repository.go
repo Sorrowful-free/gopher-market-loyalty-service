@@ -1,12 +1,14 @@
 package repositories
 
-import "github.com/Sorrowful-free/gopher-market-loyalty-service/internal/models"
+import (
+	"context"
 
+	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/models"
+)
+
+//go:generate mockgen -source=user_repository.go -destination=mock_user_repository.go -package=repositories
 type UserRepository interface {
-	Create(login string, password string) (models.UserModel, error)
-	GetByLoginAndPassword(login string, password string) (models.UserModel, error)
-	GetByID(id int64) (models.UserModel, error)
-
-	CheckIfUserExists(login string) (bool, error)
-	CheckIfTokenIsValid(token string) (bool, error)
+	Create(ctx context.Context, login string, password string) (models.UserModel, error)
+	GetByLoginAndPassword(ctx context.Context, login string, password string) (models.UserModel, error)
+	GetByID(ctx context.Context, id int) (models.UserModel, error)
 }

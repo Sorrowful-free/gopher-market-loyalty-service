@@ -2,25 +2,33 @@ package models
 
 import "time"
 
+type OrderStatus string
+
 const (
-	OrderStatusNew        = "NEW"
-	OrderStatusProcessing = "PROCESSING"
-	OrderStatusInvalid    = "INVALID"
-	OrderStatusProcessed  = "PROCESSED"
+	OrderStatusNew        OrderStatus = "NEW"
+	OrderStatusProcessing OrderStatus = "PROCESSING"
+	OrderStatusInvalid    OrderStatus = "INVALID"
+	OrderStatusProcessed  OrderStatus = "PROCESSED"
 )
 
 type OrderModel struct {
-	Number    string    `json:"number"`
-	Status    string    `json:"status"`
-	Accrual   int64     `json:"accrual"`
-	CreatedAt time.Time `json:"uploaded_at"`
+	OrderID     int         `json:"order_id"`
+	OrderNumber string      `json:"number"`
+	UserID      int         `json:"user_id"`
+	Status      OrderStatus `json:"status"`
+	Accrual     float64     `json:"accrual"`
+	UploadedAt  time.Time   `json:"uploaded_at"`
 }
 
-func NewOrderModel(number string, status string, accrual int64) *OrderModel {
+var EmptyOrderModel = OrderModel{}
+var EmptyArrayOfOrderModel = []OrderModel{}
+
+func NewOrderModel(orderID int, userID int, status OrderStatus, accrual float64) *OrderModel {
 	return &OrderModel{
-		Number:    number,
-		Status:    status,
-		Accrual:   accrual,
-		CreatedAt: time.Now(),
+		OrderID:    orderID,
+		UserID:     userID,
+		Status:     status,
+		Accrual:    accrual,
+		UploadedAt: time.Now().UTC(),
 	}
 }
