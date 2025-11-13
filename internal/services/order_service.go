@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"time"
 
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/models"
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/repositories"
@@ -103,8 +102,8 @@ func (s *OrderServiceImpl) GetOrdersList(ctx context.Context, userID int) ([]mod
 	for idx, order := range orders {
 
 		if order.Status == models.OrderStatusProcessed ||
-			order.Status == models.OrderStatusInvalid ||
-			order.UploadedAt.Before(time.Now().UTC().Add(-1*time.Second*15)) { // 15 seconds is the time to wait for the order to be processed
+			order.Status == models.OrderStatusInvalid { //||
+			// order.UploadedAt.Before(time.Now().UTC().Add(-1*time.Second*15)) { // 15 seconds is the time to wait for the order to be processed
 			continue
 		}
 

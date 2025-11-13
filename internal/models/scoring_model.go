@@ -10,9 +10,9 @@ const (
 )
 
 type ScoringModel struct {
-	OrderNumber string
-	Status      ScoringStatus
-	Accrual     float64
+	OrderNumber string        `json:"order"`
+	Status      ScoringStatus `json:"status"`
+	Accrual     float64       `json:"accrual"`
 }
 
 var EmptyScoringModel = ScoringModel{}
