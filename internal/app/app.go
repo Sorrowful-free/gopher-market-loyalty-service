@@ -27,6 +27,9 @@ type App struct {
 	orderService   services.OrderService
 	balanceService services.BalanceService
 
+	orderProcessor     *services.OrderProcessor
+	orderProcessorPool *services.OrderProcessorPool
+
 	handlers handlers.Handlers
 }
 
@@ -74,6 +77,15 @@ func (a *App) BuildServices() error {
 	a.userService = services.NewUserService(a.userRepository)
 	a.orderService = services.NewOrderService(a.orderRepository, a.externalAccrualRepository)
 	a.balanceService = services.NewBalanceService(a.balanceRepository)
+
+	a.orderProcessorPool = services.NewOrderProcessorPool(
+		a.orderRepository,
+		a.externalAccrualRepository,
+		a.balanceRepository,
+		a.logger,
+	)
+
+	a.orderProcessor = services.NewOrderProcessor(a.orderRepository, a.externalAccrualRepository, a.balanceRepository, a.logger)
 	return nil
 }
 
@@ -86,5 +98,8 @@ func (a *App) BuildHandlers() error {
 }
 
 func (a *App) Run() error {
+	ctx := context.Background()
+	go a.orderProcessorPool.Start(ctx)
+
 	return a.handlers.Run(a.config.RunAddress())
 }

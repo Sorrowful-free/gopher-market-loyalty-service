@@ -12,4 +12,5 @@ type OrderRepository interface {
 	GetOrdersList(ctx context.Context, userID int) ([]models.OrderModel, error)
 	GetOrder(ctx context.Context, orderNumber string) (models.OrderModel, error)
 	UpdateOrder(ctx context.Context, orderNumber string, orderStatus models.OrderStatus, accrual float64) (models.OrderModel, error)
+	GetPendingOrders(ctx context.Context, limit int) ([]models.OrderModel, error)
 }

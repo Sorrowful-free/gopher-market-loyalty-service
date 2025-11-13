@@ -125,3 +125,34 @@ func (r *PGXOrderRepository) UpdateOrder(ctx context.Context, orderNumber string
 	}
 	return orderModel, nil
 }
+
+func (r *PGXOrderRepository) GetPendingOrders(ctx context.Context, limit int) ([]models.OrderModel, error) {
+	const query = `
+		SELECT id, order_number, user_id, status, accrual, uploaded_at
+		FROM orders
+		WHERE status IN ('NEW', 'PROCESSING')
+		ORDER BY uploaded_at ASC
+		LIMIT $1
+	`
+	rows, err := r.pgxPool.Query(ctx, query, limit)
+	if err != nil {
+		return []models.OrderModel{}, NewOrderRepositoryError(OrderRepositoryErrorInternalError, "Failed to get pending orders")
+	}
+	defer rows.Close()
+
+	var orders = []models.OrderModel{}
+	for rows.Next() {
+		var orderModel models.OrderModel
+		err := rows.Scan(&orderModel.OrderID, &orderModel.OrderNumber, &orderModel.UserID, &orderModel.Status, &orderModel.Accrual, &orderModel.UploadedAt)
+		if err != nil {
+			return []models.OrderModel{}, NewOrderRepositoryError(OrderRepositoryErrorInternalError, "Failed to scan pending order")
+		}
+		orders = append(orders, orderModel)
+	}
+
+	if err = rows.Err(); err != nil {
+		return []models.OrderModel{}, NewOrderRepositoryError(OrderRepositoryErrorInternalError, "Failed to iterate pending orders")
+	}
+
+	return orders, nil
+}

@@ -94,59 +94,11 @@ func (s *OrderServiceImpl) GetOrdersList(ctx context.Context, userID int) ([]mod
 		return []models.OrderModel{}, ctx.Err()
 	}
 
+	// Получаем список заказов из БД
+	// Фоновая обработка заказов выполняется через OrderProcessor
 	orders, err := s.orderRepository.GetOrdersList(ctx, userID)
 	if err != nil {
 		return nil, err
-	}
-
-	for idx, order := range orders {
-
-		if order.Status == models.OrderStatusProcessed ||
-			order.Status == models.OrderStatusInvalid { //||
-			// order.UploadedAt.Before(time.Now().UTC().Add(-1*time.Second*15)) { // 15 seconds is the time to wait for the order to be processed
-			continue
-		}
-
-		scoring, err := s.externalAccrualRepository.GetScoring(ctx, order.OrderNumber)
-
-		var externalAccrualRepositoryError repositories.ExternalAccrualRepositoryError
-		if errors.As(err, &externalAccrualRepositoryError) {
-			switch externalAccrualRepositoryError.Code {
-			case repositories.ExternalAccrualRepositoryErrorOrderTooManyRequests, repositories.ExternalAccrualRepositoryErrorOrderNotRegistered:
-				_, err = s.orderRepository.UpdateOrder(ctx, order.OrderNumber, order.Status, order.Accrual) // refresh order in case of order not registered
-				if err != nil {
-					return nil, fmt.Errorf("failed to update order: %w", err)
-				}
-				continue
-			}
-		}
-		if err != nil {
-			return nil, fmt.Errorf("failed to get scoring: %w", err)
-		}
-		if scoring.Status == models.ScoringStatusProcessed {
-			order.Status = models.OrderStatusProcessed
-			order.Accrual = scoring.Accrual
-		}
-		if scoring.Status == models.ScoringStatusInvalid {
-			order.Status = models.OrderStatusInvalid
-		}
-		if scoring.Status == models.ScoringStatusProcessing {
-			order.Status = models.OrderStatusProcessing
-		}
-		order, err = s.orderRepository.UpdateOrder(ctx, order.OrderNumber, order.Status, order.Accrual)
-
-		var orderRepositoryError repositories.OrderRepositoryError
-		if errors.As(err, &orderRepositoryError) {
-			switch orderRepositoryError.Code {
-			case repositories.OrderRepositoryErrorOrderNotFound:
-				return nil, NewOrderServiceError(OrderServiceErrorOrderNotFound, "Order not found")
-			}
-		}
-
-		if err != nil {
-			return nil, err
-		}
-		orders[idx] = order
 	}
 
 	return orders, nil
