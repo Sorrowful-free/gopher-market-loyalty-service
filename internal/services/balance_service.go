@@ -31,17 +31,19 @@ func (s *BalanceServiceImpl) GetBalance(ctx context.Context, userID int) (models
 	}
 
 	balance, err := s.balanceRepository.GetBalance(ctx, userID)
+
+	var balanceRepositoryError repositories.BalanceRepositoryError
+	if errors.As(err, &balanceRepositoryError) {
+		switch balanceRepositoryError.Code {
+		case repositories.BalanceRepositoryErrorUserNotFound:
+			return models.EmptyBalanceModel, NewBalanceServiceError(BalanceServiceErrorInternalError, "Internal server error")
+		}
+	}
+
 	if err != nil {
 		return models.EmptyBalanceModel, err
 	}
 
-	var userRepositoryError repositories.UserRepositoryError
-	if errors.As(err, &userRepositoryError) {
-		switch userRepositoryError.Code {
-		case repositories.UserRepositoryErrorUserNotFound:
-			return models.EmptyBalanceModel, NewBalanceServiceError(BalanceServiceErrorUserNotFound, "User not found")
-		}
-	}
 	return balance, nil
 }
 

@@ -19,7 +19,6 @@ func NewPGXBalanceRepository(pgxPool *pgxpool.Pool) *PGXBalanceRepository {
 }
 
 func (r *PGXBalanceRepository) GetBalance(ctx context.Context, userID int) (models.BalanceModel, error) {
-	// Вычисляем баланс из транзакций
 	const query = `
 		SELECT 
 			COALESCE(SUM(CASE WHEN transaction_type = 'ACCRUAL' THEN amount ELSE 0 END), 0) - 
