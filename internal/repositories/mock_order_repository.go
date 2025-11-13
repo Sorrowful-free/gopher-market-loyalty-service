@@ -80,6 +80,21 @@ func (mr *MockOrderRepositoryMockRecorder) GetOrdersList(ctx, userID interface{}
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetOrdersList", reflect.TypeOf((*MockOrderRepository)(nil).GetOrdersList), ctx, userID)
 }
 
+// GetPendingOrders mocks base method.
+func (m *MockOrderRepository) GetPendingOrders(ctx context.Context, limit int) ([]models.OrderModel, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetPendingOrders", ctx, limit)
+	ret0, _ := ret[0].([]models.OrderModel)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetPendingOrders indicates an expected call of GetPendingOrders.
+func (mr *MockOrderRepositoryMockRecorder) GetPendingOrders(ctx, limit interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPendingOrders", reflect.TypeOf((*MockOrderRepository)(nil).GetPendingOrders), ctx, limit)
+}
+
 // UpdateOrder mocks base method.
 func (m *MockOrderRepository) UpdateOrder(ctx context.Context, orderNumber string, orderStatus models.OrderStatus, accrual float64) (models.OrderModel, error) {
 	m.ctrl.T.Helper()
