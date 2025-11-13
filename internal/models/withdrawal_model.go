@@ -5,7 +5,7 @@ import "time"
 type WithdrawalModel struct {
 	ID          int       `json:"id"`
 	UserID      int       `json:"user_id"`
-	OrderID     int       `json:"order"`
+	OrderNumber string    `json:"order"`
 	Sum         float64   `json:"sum"`
 	ProcessedAt time.Time `json:"processed_at"`
 }
@@ -13,11 +13,11 @@ type WithdrawalModel struct {
 var EmptyWithdrawalModel = WithdrawalModel{}
 var EmptyArrayOfWithdrawalModel = []WithdrawalModel{}
 
-func NewWithdrawalModel(id int, userID int, orderID int, sum float64, processedAt time.Time) *WithdrawalModel {
+func NewWithdrawalModel(id int, userID int, orderNumber string, sum float64, processedAt time.Time) *WithdrawalModel {
 	return &WithdrawalModel{
 		ID:          id,
 		UserID:      userID,
-		OrderID:     orderID,
+		OrderNumber: orderNumber,
 		Sum:         sum,
 		ProcessedAt: processedAt,
 	}

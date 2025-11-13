@@ -35,6 +35,20 @@ func (m *MockBalanceRepository) EXPECT() *MockBalanceRepositoryMockRecorder {
 	return m.recorder
 }
 
+// Accrual mocks base method.
+func (m *MockBalanceRepository) Accrual(ctx context.Context, userID, orderID int, amount float64) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Accrual", ctx, userID, orderID, amount)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Accrual indicates an expected call of Accrual.
+func (mr *MockBalanceRepositoryMockRecorder) Accrual(ctx, userID, orderID, amount interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Accrual", reflect.TypeOf((*MockBalanceRepository)(nil).Accrual), ctx, userID, orderID, amount)
+}
+
 // GetBalance mocks base method.
 func (m *MockBalanceRepository) GetBalance(ctx context.Context, userID int) (models.BalanceModel, error) {
 	m.ctrl.T.Helper()

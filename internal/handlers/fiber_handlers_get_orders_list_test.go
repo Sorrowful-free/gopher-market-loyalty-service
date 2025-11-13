@@ -21,7 +21,7 @@ func TestGetOrdersListHandler(t *testing.T) {
 
 		orders := []models.OrderModel{
 			{
-				OrderID:    TestOrderID,
+				OrderID:    TestValidOrderID,
 				Status:     models.OrderStatusNew,
 				UploadedAt: time.Now(),
 			},

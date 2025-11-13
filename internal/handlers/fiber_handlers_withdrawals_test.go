@@ -21,9 +21,9 @@ func TestWithdrawalsHandler(t *testing.T) {
 		withdrawals := []models.WithdrawalModel{
 			{
 				ID:          1,
-				OrderID:     TestOrderID,
 				UserID:      TestUserID,
-				Sum:         100,
+				OrderNumber: TestValidOrderNumber,
+				Sum:         TestWithdrawSum,
 				ProcessedAt: time.Now(),
 			},
 		}

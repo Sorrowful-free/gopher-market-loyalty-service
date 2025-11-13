@@ -10,7 +10,7 @@ import (
 )
 
 func TestJWTService(t *testing.T) {
-	jwtService := NewJWTService(TestJWTSecret, logger.NewZapLogger())
+	jwtService := NewJWTService(TestJWTSecret, logger.NewZapLogger(false, false))
 
 	t.Run("successful_generate_token", func(t *testing.T) {
 		token, err := jwtService.GenerateToken(TestUserID)

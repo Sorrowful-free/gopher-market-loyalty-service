@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"errors"
 	"net/http/httptest"
-	"strconv"
 	"testing"
 
 	"github.com/Sorrowful-free/gopher-market-loyalty-service/internal/models"
@@ -24,7 +23,7 @@ func TestCreateOrderHandler(t *testing.T) {
 		orderService.EXPECT().CreateOrder(gomock.Any(), gomock.Any(), gomock.Any()).Return(models.EmptyOrderModel, services.NewOrderServiceError(services.OrderServiceErrorOrderAlreadyExists, "Order already exists"))
 		fiberHandlers.MakeValideAuthRequest(t)
 
-		req := httptest.NewRequest(fiber.MethodPost, TestCreateOrderPath, bytes.NewBuffer([]byte(strconv.Itoa(TestOrderID))))
+		req := httptest.NewRequest(fiber.MethodPost, TestCreateOrderPath, bytes.NewBuffer([]byte(TestValidOrderNumber)))
 		req.Header.Set(fiber.HeaderContentType, fiber.MIMETextPlain)
 		resp, err := fiberApp.Test(req)
 		if err != nil {
@@ -39,7 +38,7 @@ func TestCreateOrderHandler(t *testing.T) {
 		orderService.EXPECT().CreateOrder(gomock.Any(), gomock.Any(), gomock.Any()).Return(models.EmptyOrderModel, nil)
 		fiberHandlers.MakeValideAuthRequest(t)
 
-		req := httptest.NewRequest(fiber.MethodPost, TestCreateOrderPath, bytes.NewBuffer([]byte(strconv.Itoa(TestOrderID))))
+		req := httptest.NewRequest(fiber.MethodPost, TestCreateOrderPath, bytes.NewBuffer([]byte(TestValidOrderNumber)))
 		req.Header.Set(fiber.HeaderContentType, fiber.MIMETextPlain)
 		resp, err := fiberApp.Test(req)
 		if err != nil {
@@ -54,7 +53,7 @@ func TestCreateOrderHandler(t *testing.T) {
 		orderService.EXPECT().CreateOrder(gomock.Any(), gomock.Any(), gomock.Any()).Return(models.EmptyOrderModel, services.NewOrderServiceError(services.OrderServiceErrorOrderCreatedOtherUser, "Order created other user"))
 		fiberHandlers.MakeValideAuthRequest(t)
 
-		req := httptest.NewRequest(fiber.MethodPost, TestCreateOrderPath, bytes.NewBuffer([]byte(strconv.Itoa(TestOrderID))))
+		req := httptest.NewRequest(fiber.MethodPost, TestCreateOrderPath, bytes.NewBuffer([]byte(TestValidOrderNumber)))
 		req.Header.Set(fiber.HeaderContentType, fiber.MIMETextPlain)
 		resp, err := fiberApp.Test(req)
 		if err != nil {
@@ -69,7 +68,7 @@ func TestCreateOrderHandler(t *testing.T) {
 		orderService.EXPECT().CreateOrder(gomock.Any(), gomock.Any(), gomock.Any()).Return(models.EmptyOrderModel, services.NewOrderServiceError(services.OrderServiceErrorOrderIDIsInvalid, "Order invalid"))
 		fiberHandlers.MakeValideAuthRequest(t)
 
-		req := httptest.NewRequest(fiber.MethodPost, TestCreateOrderPath, bytes.NewBuffer([]byte(strconv.Itoa(TestOrderID))))
+		req := httptest.NewRequest(fiber.MethodPost, TestCreateOrderPath, bytes.NewBuffer([]byte(TestInvalidOrderNumber)))
 		req.Header.Set(fiber.HeaderContentType, fiber.MIMETextPlain)
 		resp, err := fiberApp.Test(req)
 		if err != nil {
@@ -84,7 +83,7 @@ func TestCreateOrderHandler(t *testing.T) {
 		orderService.EXPECT().CreateOrder(gomock.Any(), gomock.Any(), gomock.Any()).Return(models.EmptyOrderModel, errors.New("internal server error"))
 		fiberHandlers.MakeValideAuthRequest(t)
 
-		req := httptest.NewRequest(fiber.MethodPost, TestCreateOrderPath, bytes.NewBuffer([]byte(strconv.Itoa(TestOrderID))))
+		req := httptest.NewRequest(fiber.MethodPost, TestCreateOrderPath, bytes.NewBuffer([]byte(TestValidOrderNumber)))
 		req.Header.Set(fiber.HeaderContentType, fiber.MIMETextPlain)
 		resp, err := fiberApp.Test(req)
 		if err != nil {
